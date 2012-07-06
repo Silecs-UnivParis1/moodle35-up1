@@ -44,7 +44,8 @@ class profile_field_checkbox extends profile_field_base {
         parent::__construct($fieldid, $userid);
 
         if (!empty($this->field)) {
-            $datafield = $DB->get_field('user_info_data', 'data', array('userid' => $this->userid, 'fieldid' => $this->fieldid));
+            $datafield = $DB->get_field('custom_info_data', 'data',
+                    array('objectid' => $this->userid, 'fieldid' => $this->fieldid));
             if ($datafield !== false) {
                 $this->data = $datafield;
             } else {

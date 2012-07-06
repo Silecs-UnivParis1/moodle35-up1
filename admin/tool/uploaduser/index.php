@@ -103,7 +103,7 @@ $STD_FIELDS = array_merge($STD_FIELDS, get_all_user_name_fields());
 
 $PRF_FIELDS = array();
 
-if ($proffields = $DB->get_records('user_info_field')) {
+if ($proffields = $DB->get_records('custom_info_field', array('objectname' => 'user'))) {
     foreach ($proffields as $key => $proffield) {
         $profilefieldname = 'profile_field_'.$proffield->shortname;
         $PRF_FIELDS[] = $profilefieldname;

@@ -58,10 +58,10 @@ if ($dataformat) {
                     'msn'       => 'msn',
                     'country'   => 'country');
 
-    if ($extrafields = $DB->get_records('user_info_field')) {
+    if ($extrafields = $DB->get_records('custom_info_field', array('objectname' => 'user'))) {
         foreach ($extrafields as $n => $field) {
             $fields['profile_field_'.$field->shortname] = 'profile_field_'.$field->shortname;
-            require_once($CFG->dirroot.'/user/profile/field/'.$field->datatype.'/field.class.php');
+            require_once($CFG->dirroot.'/lib/custominfo/profile/field/'.$field->datatype.'/field.class.php');
         }
     }
 
