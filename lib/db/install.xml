@@ -1149,56 +1149,59 @@
         <KEY NAME="roleid" TYPE="foreign" FIELDS="roleid" REFTABLE="role" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="user_info_field" COMMENT="Customisable user profile fields">
+    <TABLE NAME="custom_info_field" COMMENT="Customisable fields for users and courses" PREVIOUS="role_context_levels" NEXT="custom_info_category">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="shortname" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="shortname" SEQUENCE="false" COMMENT="short name for each field"/>
-        <FIELD NAME="name" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="field name"/>
-        <FIELD NAME="datatype" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Type of data held in this field"/>
-        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Description of field"/>
-        <FIELD NAME="descriptionformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="categoryid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="id from category table"/>
-        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="order within the category"/>
-        <FIELD NAME="required" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Field required"/>
-        <FIELD NAME="locked" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Field locked"/>
-        <FIELD NAME="visible" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Visibility: private, public, hidden"/>
-        <FIELD NAME="forceunique" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="should the field contain unique data"/>
-        <FIELD NAME="signup" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="display field on signup page"/>
-        <FIELD NAME="defaultdata" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Default value for this field"/>
-        <FIELD NAME="defaultdataformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="param1" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General parameter field"/>
-        <FIELD NAME="param2" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General parameter field"/>
-        <FIELD NAME="param3" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General parameter field"/>
-        <FIELD NAME="param4" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General parameter field"/>
-        <FIELD NAME="param5" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General parameter field"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="objectname"/>
+        <FIELD NAME="objectname" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="user" SEQUENCE="false" COMMENT="Name of the object (table name). For data that was in user_info_table, objectname='user'" PREVIOUS="id" NEXT="shortname"/>
+        <FIELD NAME="shortname" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="shortname" SEQUENCE="false" COMMENT="short name for each field" PREVIOUS="objectname" NEXT="name"/>
+        <FIELD NAME="name" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="field name" PREVIOUS="shortname" NEXT="datatype"/>
+        <FIELD NAME="datatype" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Type of data held in this field" PREVIOUS="name" NEXT="description"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Description of field" PREVIOUS="datatype" NEXT="descriptionformat"/>
+        <FIELD NAME="descriptionformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="description" NEXT="categoryid"/>
+        <FIELD NAME="categoryid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="id from category table" PREVIOUS="descriptionformat" NEXT="sortorder"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="order within the category" PREVIOUS="categoryid" NEXT="required"/>
+        <FIELD NAME="required" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Field required" PREVIOUS="sortorder" NEXT="locked"/>
+        <FIELD NAME="locked" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Field locked" PREVIOUS="required" NEXT="visible"/>
+        <FIELD NAME="visible" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Visibility: private, public, hidden" PREVIOUS="locked" NEXT="forceunique"/>
+        <FIELD NAME="forceunique" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="should the field contain unique data" PREVIOUS="visible" NEXT="signup"/>
+        <FIELD NAME="signup" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="display field on signup page" PREVIOUS="forceunique" NEXT="defaultdata"/>
+        <FIELD NAME="defaultdata" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Default value for this field" PREVIOUS="signup" NEXT="defaultdataformat"/>
+        <FIELD NAME="defaultdataformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="defaultdata" NEXT="param1"/>
+        <FIELD NAME="param1" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General parameter field" PREVIOUS="defaultdataformat" NEXT="param2"/>
+        <FIELD NAME="param2" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General parameter field" PREVIOUS="param1" NEXT="param3"/>
+        <FIELD NAME="param3" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General parameter field" PREVIOUS="param2" NEXT="param4"/>
+        <FIELD NAME="param4" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General parameter field" PREVIOUS="param3" NEXT="param5"/>
+        <FIELD NAME="param5" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General parameter field" PREVIOUS="param4"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="user_info_category" COMMENT="Customisable fields categories">
+    <TABLE NAME="custom_info_category" COMMENT="Customisable fields categories" PREVIOUS="custom_info_field" NEXT="custom_info_data">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Category name"/>
-        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Display order"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="objectname"/>
+        <FIELD NAME="objectname" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="user" SEQUENCE="false" PREVIOUS="id" NEXT="name"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Category name" PREVIOUS="objectname" NEXT="sortorder"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Display order" PREVIOUS="name"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="user_info_data" COMMENT="Data for the customisable user fields">
+    <TABLE NAME="custom_info_data" COMMENT="Data for the customisable fields" PREVIOUS="custom_info_category" NEXT="question_categories">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="id from the user table"/>
-        <FIELD NAME="fieldid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="id from the field table"/>
-        <FIELD NAME="data" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Field data"/>
-        <FIELD NAME="dataformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="objectname"/>
+        <FIELD NAME="objectname" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="user" SEQUENCE="false" PREVIOUS="id" NEXT="objectid"/>
+        <FIELD NAME="objectid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="id from the table that has custom fields" PREVIOUS="objectname" NEXT="fieldid"/>
+        <FIELD NAME="fieldid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="id from the field table" PREVIOUS="objectid" NEXT="data"/>
+        <FIELD NAME="data" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Field data" PREVIOUS="fieldid" NEXT="dataformat"/>
+        <FIELD NAME="dataformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="data"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="userfieldidx" UNIQUE="true" FIELDS="userid, fieldid"/>
+        <INDEX NAME="objectfieldidx" UNIQUE="false" FIELDS="objectid, fieldid" COMMENT="Composite key"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="question_categories" COMMENT="Categories are for grouping questions">
