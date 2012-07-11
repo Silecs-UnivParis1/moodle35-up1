@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 global $CFG;
 
 require_once($CFG->libdir . '/custominfo/lib.php');
@@ -53,7 +68,8 @@ abstract class profile_field_base extends custominfo_field_base {
 function profile_load_data($user) {
     global $CFG, $DB;
 
-    if ($fields = $DB->get_records('custom_info_field', array('objectname' => 'user'))) {
+    $fields = $DB->get_records('custom_info_field', array('objectname' => 'user'));
+    if ($fields) {
         foreach ($fields as $field) {
             require_once($CFG->libdir.'/custominfo/field/'.$field->datatype.'/field.class.php');
             $newfield = 'profile_field_'.$field->datatype;
@@ -75,12 +91,12 @@ function profile_definition($mform, $userid = 0) {
     // If user is "admin" fields are displayed regardless.
     $update = has_capability('moodle/user:update', context_system::instance());
 
-    if ($categories = $DB->get_records('custom_info_category',
-            array('objectname' => 'user'), 'sortorder ASC')) {
+    $categories = $DB->get_records('custom_info_category', array('objectname' => 'user'), 'sortorder ASC');
+    if ($categories) {
         foreach ($categories as $category) {
-            if ($fields = $DB->get_records('custom_info_field', array('categoryid' => $category->id), 'sortorder ASC')) {
-
-                // Check first if *any* fields will be displayed.
+            $fields = $DB->get_records('custom_info_field', array('categoryid' => $category->id), 'sortorder ASC');
+            if ($fields) {
+                // check first if *any* fields will be displayed
                 $display = false;
                 foreach ($fields as $field) {
                     if ($field->visible != CUSTOMINFO_VISIBLE_NONE) {
@@ -113,7 +129,8 @@ function profile_definition_after_data($mform, $userid) {
 
     $userid = ($userid < 0) ? 0 : (int)$userid;
 
-    if ($fields = $DB->get_records('custom_info_field', array('objectname' => 'user'))) {
+    $fields = $DB->get_records('custom_info_field', array('objectname' => 'user'));
+    if ($fields) {
         foreach ($fields as $field) {
             require_once($CFG->libdir.'/custominfo/field/'.$field->datatype.'/field.class.php');
             $newfield = 'profile_field_'.$field->datatype;
@@ -133,7 +150,8 @@ function profile_validation($usernew, $files) {
     global $CFG, $DB;
 
     $err = array();
-    if ($fields = $DB->get_records('custom_info_field', array('objectname' => 'user'))) {
+    $fields = $DB->get_records('custom_info_field', array('objectname' => 'user'));
+    if ($fields) {
         foreach ($fields as $field) {
             require_once($CFG->libdir.'/custominfo/field/'.$field->datatype.'/field.class.php');
             $newfield = 'profile_field_'.$field->datatype;
@@ -151,7 +169,8 @@ function profile_validation($usernew, $files) {
 function profile_save_data($usernew) {
     global $CFG, $DB;
 
-    if ($fields = $DB->get_records('custom_info_field', array('objectname' => 'user'))) {
+    $fields = $DB->get_records('custom_info_field', array('objectname' => 'user'));
+    if ($fields) {
         foreach ($fields as $field) {
             require_once($CFG->libdir.'/custominfo/field/'.$field->datatype.'/field.class.php');
             $newfield = 'profile_field_'.$field->datatype;
@@ -166,11 +185,13 @@ function profile_save_data($usernew) {
  * @param int $userid
  */
 function profile_display_fields($userid) {
-    global $CFG, $USER, $DB;
+    global $CFG, $DB;
 
-    if ($categories = $DB->get_records('custom_info_category', array('objectname' => 'user'), 'sortorder ASC')) {
+    $categories = $DB->get_records('custom_info_category', array('objectname' => 'user'), 'sortorder ASC');
+    if ($categories) {
         foreach ($categories as $category) {
-            if ($fields = $DB->get_records('custom_info_field', array('categoryid' => $category->id), 'sortorder ASC')) {
+            $fields = $DB->get_records('custom_info_field', array('categoryid' => $category->id), 'sortorder ASC');
+            if ($fields) {
                 foreach ($fields as $field) {
                     require_once($CFG->libdir.'/custominfo/field/'.$field->datatype.'/field.class.php');
                     $newfield = 'profile_field_'.$field->datatype;
@@ -200,8 +221,9 @@ function profile_signup_fields($mform) {
                 JOIN {custom_info_category} c
                 ON f.categoryid = c.id and c.objectname = 'user' AND f.signup = 1 AND uf.visible <> 0
                 ORDER BY c.sortorder ASC, f.sortorder ASC";
-
-    if ( $fields = $DB->get_records_sql($sql)) {
+    $fields = $DB->get_records_sql($sql);
+    if ($fields) {
+        $currentcat = null;
         foreach ($fields as $field) {
             // Check if we change the categories.
             if (!isset($currentcat) || $currentcat != $field->categoryid) {
@@ -227,7 +249,8 @@ function profile_user_record($userid, $onlyinuserobject = true) {
 
     $usercustomfields = new stdClass();
 
-    if ($fields = $DB->get_records('custom_info_field', array('objectname' => 'user'))) {
+    $fields = $DB->get_records('custom_info_field', array('objectname' => 'user'));
+    if ($fields) {
         foreach ($fields as $field) {
             require_once($CFG->libdir.'/custominfo/field/'.$field->datatype.'/field.class.php');
             $newfield = 'profile_field_'.$field->datatype;
