@@ -14,34 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Strings for component 'profilefield_checkbox', language 'en', branch 'MOODLE_20_STABLE'
- *
- * @package   profilefield_checkbox
- * @copyright  2008 onwards Shane Elliot {@link http://pukunui.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-/**
- * Class profile_field_checkbox
- *
- * @copyright  2008 onwards Shane Elliot {@link http://pukunui.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class profile_field_checkbox extends profile_field_base {
+class profile_field_checkbox extends custominfo_field_base {
 
     /**
      * Constructor method.
      * Pulls out the options for the checkbox from the database and sets the
      * the corresponding key for the data if it exists
-     *
-     * @param int $fieldid
-     * @param int $userid
+     * @param string $objectname The model has uses custominfo (e.g. user, course)
+     * @param integer $fieldid    id of the profile from the custom_info_field table
+     * @param integer $objectid   id of the object whose we are displaying data
      */
-    public function __construct($fieldid=0, $userid=0) {
+    function __construct($objectname, $fieldid=0, $objectid=0) {
         global $DB;
         // First call parent constructor.
-        parent::__construct($fieldid, $userid);
+        parent::__construct($objectname, $fieldid, $objectid);
 
         if (!empty($this->field)) {
             $datafield = $DB->get_field('custom_info_data', 'data',
@@ -75,7 +61,7 @@ class profile_field_checkbox extends profile_field_base {
             $checkbox->setChecked(true);
         }
         $mform->setType($this->inputname, PARAM_BOOL);
-        if ($this->is_required() and !has_capability('moodle/user:update', context_system::instance())) {
+        if ($this->is_required() and !has_capability($this->capability, context_system::instance())) {
             $mform->addRule($this->inputname, get_string('required'), 'nonzero', null, 'client');
         }
     }

@@ -28,7 +28,7 @@
  * @copyright  2007 onwards Shane Elliot {@link http://pukunui.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class profile_field_textarea extends profile_field_base {
+class profile_field_textarea extends custominfo_field_base {
 
     /**
      * Adds elements for this field type to the edit form.
@@ -41,10 +41,10 @@ class profile_field_textarea extends profile_field_base {
     }
 
     /**
-     * Overwrite base class method, data in this field type is potentially too large to be included in the user object.
+     * Overwrite base class method, data in this field type is potentially too large to be included in the model object.
      * @return bool
      */
-    public function is_user_object_data() {
+    function is_object_data() {
         return false;
     }
 
@@ -63,13 +63,13 @@ class profile_field_textarea extends profile_field_base {
     }
 
     /**
-     * Load user data for this profile field, ready for editing.
-     * @param stdClass $user
+     * Load model data for this profile field, ready for editing.
+     * @param stdClass $model
      */
-    public function edit_load_user_data($user) {
+    function edit_load_object_data($model) {
         if ($this->data !== null) {
             $this->data = clean_text($this->data, $this->dataformat);
-            $user->{$this->inputname} = array('text' => $this->data, 'format' => $this->dataformat);
+            $model->{$this->inputname} = array('text' => $this->data, 'format' => $this->dataformat);
         }
     }
 
