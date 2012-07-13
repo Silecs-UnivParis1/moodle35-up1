@@ -30,6 +30,7 @@ require_once($CFG->dirroot.'/lib/formslib.php');
 
 /**
  * Class category_form
+ * This class declares the form that describes a custominfo category.
  *
  * @copyright  2007 onwards Shane Elliot {@link http://pukunui.com}
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -40,9 +41,7 @@ class category_form extends moodleform {
      * Define the form.
      */
     public function definition () {
-        global $USER, $CFG;
-
-        $mform = $this->_form;
+        $mform =& $this->_form;
 
         $strrequired = get_string('required');
 
