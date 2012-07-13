@@ -53,7 +53,10 @@ if ($hassiteconfig or has_any_capability($capabilities, $systemcontext)) {
     // Course Default Settings Page.
     // NOTE: these settings must be applied after all other settings because they depend on them.
 
-    // Main course settings.
+    $ADMIN->add('courses', new admin_externalpage('coursecustomfields', new lang_string('coursecustomfields', 'admin'), $CFG->wwwroot . '/course/custominfo/index.php',
+            array('moodle/site:config', 'moodle/course:create')));
+
+    ///main course settings
     $temp = new admin_settingpage('coursesettings', new lang_string('coursesettings'));
     require_once($CFG->dirroot.'/course/lib.php');
 
