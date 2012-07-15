@@ -1748,6 +1748,12 @@ class core_course_renderer extends plugin_renderer_base {
             }
             $output .= $this->single_button($url, get_string('addnewcourse'), 'get');
         }
+        // Wizard for course creation - doesn't require course:create
+        /** @todo get_string fr/en "coursewizardbutton"
+         *  @todo Do not display the button to everyone
+         */
+        echo $OUTPUT->single_button(new moodle_url('wizard/index.php'), 'Assistant création de cours', 'get');
+
         ob_start();
         if (coursecat::count_all() == 1) {
             print_course_request_buttons(context_system::instance());
