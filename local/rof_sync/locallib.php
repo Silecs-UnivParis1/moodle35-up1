@@ -9,7 +9,10 @@ $rofUrl = 'http://formation.univ-paris1.fr/cdm/services/cataManager?wsdl' ;
 
 // echo fetchComponents();
 
-echo fetchProgramsByComponent('01');
+// fetchProgramsByComponent('01');
+
+echo fetchPrograms(2);
+echo "\n\n";
 return 0;
 
 
@@ -94,6 +97,29 @@ global $DB;
 
 /**
  * fetch "programs" from webservice and insert them into table rof_program
+ * @return number of inserted rows
+ * @todo manage updates ?
+ */
+function fetchPrograms($verb=0) {
+global $DB;
+    $total = 0;
+
+    $components = $DB->get_records_menu('rof_component', array(), '', 'id, number');
+    foreach ($components as $id => $number) {
+        $cnt = fetchProgramsByComponent($number);
+        if ($verb > 0) {
+            echo " : $number";
+        }
+        if ($verb > 1) {
+            echo "->$cnt";
+        }
+        $total += $cnt;
+    }
+    return $total;
+}
+
+/**
+ * fetch "programs" from webservice and insert them into table rof_program
  * limited to a Component
  * @param string $componentNumber (01 to 37, or more) = rof_component.number
  * @return number of inserted rows
@@ -118,7 +144,7 @@ global $DB;
         if ($elt != 'program') continue;
         $record->compnumber = $componentNumber;
         $record->rofid = (string)$element->programID;
-        $record->name = (string)$element->programName->text;
+        $record->name  = (string)$element->programName->text;
         foreach($element->programCode as $code) {
             $codeset = (string)$code->attributes();
             $val = (string)$code[0];
@@ -131,8 +157,19 @@ global $DB;
         if ( $lastinsertid) {
             $cnt++;
         }
+        // insert subprograms
+        foreach($element->subProgram as $subp) {
+            $record->rofid = (string)$subp->programID;
+            $record->name  = (string)$subp->programName->text;
+            $record->parentid = $lastinsertid;
+
+            $slastinsertid = $DB->insert_record('rof_program', $record);
+            if ( $slastinsertid) {
+                $cnt++;
+            }
+        }
     }
-    return $lastinsertid;
+    return $cnt;
 }
 
 
