@@ -203,22 +203,62 @@ global $DB;
     $program = $xmlTree->program;
     foreach($program->subProgram as $subp) {
         $subpRofId = (string)$subp->programID;
-        $subs[$subpRofId] = array();
+        $subsProg[$subpRofId] = array();
         echo "$subpRofId  \n";
         $content = $subp->programStructure->subBlock->subBlock; //ELP
         foreach ($content->children() as $element) {
             if ( (string)$element->getName() != 'refCourse') continue;
             $attrs = $element->attributes();
             $courseref = (string)$attrs['ref'];
-            $subs[$subpRofId][] = $courseref;
+            $subsProg[$subpRofId][] = $courseref;
         }
         $dbprogram = $DB->get_record('rof_program', array('rofid' => $subpRofId));
-        $dbprogram->sub = join(',', $subs[$subpRofId]);
+        $dbprogram->sub = join(',', $subsProg[$subpRofId]);
         $DB->update_record('rof_program', $dbprogram);
     }
 
+        foreach ($xmlTree->children() as $element) {
+            if ( (string)$element->getName() != 'course') continue;
+            $record = new stdClass();
+            $record->rofid = (string)$element->courseID;
+            $record->name  = (string)$element->courseName->text;
+            $record->code = (string)$element->courseCode;
+            $record->programid = 0; // non calculé
+            $record->programrofid = $subpRofId;
+            $subsCourse[$record->rofid] = array();
+            $lastinsertid = $DB->insert_record('rof_course', $record);
+            if ( $lastinsertid) {
+                $cnt++;
+            }
+            // print_r($record);
+            $desc = $element->courseDescription;
 
-    // print_r ($subs);
+            //** @todo réécrire la suite en DOM ?
+            foreach ($element->courseDescription->children() as $subBlock) {
+                if ( (string)$subBlock->getName() != 'subBlock') continue;
+                $attrs = $subBlock->attributes();
+                if ( (string)$attrs['userDefined'] != 'courseStructure' ) continue ;
+
+                if ($subBlock->count() > 0) {
+                    $refBlock = $subBlock->subBlock;
+                    // print_r($refBlock); die();
+                    foreach ($refBlock->children() as $refCourse) {
+                        if ( (string)$refCourse->getName() != 'refCourse') continue;
+                        $attrRC = $refCourse->attributes();
+                        $subsCourse[$record->rofid][] = (string)$attrRC['ref'];
+                        // echo $attrRC['ref']." "; die();
+                    }
+                }
+            } // fin réécrire en DOM ?
+        }
+
+    // update courses with subcourses (sub)
+    foreach($subsCourse as $course => $subcourses) {
+        $dbcourse = $DB->get_record('rof_course', array('rofid' => $course));
+        $dbcourse->sub = join(',', $subcourses);
+        $DB->update_record('rof_course', $dbcourse);
+    }
+
     return $cnt;
 }
 
