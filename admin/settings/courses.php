@@ -56,6 +56,9 @@ if ($hassiteconfig or has_any_capability($capabilities, $systemcontext)) {
     $ADMIN->add('courses', new admin_externalpage('coursecustomfields', new lang_string('coursecustomfields', 'admin'), $CFG->wwwroot . '/course/custominfo/index.php',
             array('moodle/site:config', 'moodle/course:create')));
 
+    $ADMIN->add('courses', new admin_externalpage('coursebatchactions', new lang_string('coursebatchactions', 'admin'), $CFG->wwwroot . '/course/batch.php',
+            array('moodle/site:config', 'moodle/course:create')));
+
     ///main course settings
     $temp = new admin_settingpage('coursesettings', new lang_string('coursesettings'));
     require_once($CFG->dirroot.'/course/lib.php');
