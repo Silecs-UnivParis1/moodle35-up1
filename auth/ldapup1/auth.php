@@ -629,7 +629,9 @@ class auth_plugin_ldapup1 extends auth_plugin_base {
         $username = textlib::strtolower($username); // usernames are __always__ lowercase.
         $DB->insert_record_raw('tmp_extuser', array('username' => $username,
                                                     'accountstatus' => $status), false, true);
-        if ($verb >= 1) echo '.';
+        if ($verb >= 1) {
+            echo '.';
+        }
     }
 
     /**
