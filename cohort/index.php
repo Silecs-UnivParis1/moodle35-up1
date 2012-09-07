@@ -178,6 +178,7 @@ foreach($cohorts['cohorts'] as $cohort) {
             $editcolumnisempty = false;
         }
     }
+    $buttons[] = html_writer::link(new moodle_url('/cohort/view.php', array('id'=>$cohort->id)), html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('i/info'), 'alt'=>get_string('assign', 'core_cohort'), 'class'=>'iconsmall')));
     $line[] = implode(' ', $buttons);
 
     $data[] = $row = new html_table_row($line);
