@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    local
  * @subpackage crswizard
@@ -9,9 +10,9 @@ defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
 
-require_once($CFG->libdir.'/formslib.php');
-require_once($CFG->libdir.'/completionlib.php');
-require_once($CFG->libdir.'/custominfo/lib.php');
+require_once($CFG->libdir . '/formslib.php');
+require_once($CFG->libdir . '/completionlib.php');
+require_once($CFG->libdir . '/custominfo/lib.php');
 
 class course_wizard_step3_form extends moodleform {
 
@@ -21,20 +22,20 @@ class course_wizard_step3_form extends moodleform {
         global $USER, $DB, $SESSION;
 
         $tabfreeze = array();
-        $mform    = $this->_form;
+        $mform = $this->_form;
 
         $bockhelpE3 = get_string('bockhelpE3', 'local_crswizard');
         $mform->addElement('html', html_writer::tag('div', $bockhelpE3, array('class' => 'fitem')));
 
-        $mform->addElement('header','general', get_string('categoryblockE3', 'local_crswizard'));
+        $mform->addElement('header', 'general', get_string('categoryblockE3', 'local_crswizard'));
 
-		$myconfig = new my_elements_config();
+        $myconfig = new my_elements_config();
 
         // Next the customisable fields
         $this->custominfo = new custominfo_form_extension('course');
 
-		if (isset($SESSION->wizard['form_step2']['category'])) {
-			$idcat = (int) $SESSION->wizard['form_step2']['category'];
+        if (isset($SESSION->wizard['form_step2']['category'])) {
+            $idcat = (int) $SESSION->wizard['form_step2']['category'];
             $tabcategories = get_list_category($idcat);
             //Composante
             $type = $myconfig->categorie_cours[2];
@@ -72,12 +73,12 @@ class course_wizard_step3_form extends moodleform {
 
             $label = 'up1niveau';
             $field = 'profile_field_' . $label;
-            $mform->addElement('text', $field, get_string($label, 'local_crswizard'),'maxlength="254" size="50"');
+            $mform->addElement('text', $field, get_string($label, 'local_crswizard'), 'maxlength="254" size="50"');
             $mform->setType($field, PARAM_MULTILANG);
             if (isset($SESSION->wizard['form_step3'][$field])) {
                 $mform->setConstant($field, $SESSION->wizard['form_step3'][$field]);
             }
-		}
+        }
 
         $mform->addElement('header','identification', get_string('categoryblockE3s2', 'local_crswizard'));
         // champs de la catégorie "Identification"
@@ -85,7 +86,7 @@ class course_wizard_step3_form extends moodleform {
         foreach ($custominfo_fields as $field) {
             $label = $field;
             $field = 'profile_field_' . $field;
-            $mform->addElement('text', $field, get_string($label, 'local_crswizard'),'maxlength="254" size="50"');
+            $mform->addElement('text', $field, get_string($label, 'local_crswizard'), 'maxlength="254" size="50"');
             $mform->setType($field, PARAM_MULTILANG);
             if (isset($SESSION->wizard['form_step3'][$field])) {
                 $mform->setConstant($field, $SESSION->wizard['form_step3'][$field]);
@@ -105,10 +106,9 @@ class course_wizard_step3_form extends moodleform {
 
 //--------------------------------------------------------------------------------
 
-		$mform->addElement('header','gestion', get_string('managecourseblock', 'local_crswizard'));
-        $mform->addElement('text', 'user_name', get_string('username', 'local_crswizard'),
-			'maxlength="40" size="20", disabled="disabled"');
-        $mform->setConstant('user_name', $USER->firstname . ' '. $USER->lastname);
+        $mform->addElement('header', 'gestion', get_string('managecourseblock', 'local_crswizard'));
+        $mform->addElement('text', 'user_name', get_string('username', 'local_crswizard'), 'maxlength="40" size="20", disabled="disabled"');
+        $mform->setConstant('user_name', $USER->firstname . ' ' . $USER->lastname);
         $tabfreeze[] = 'user_name';
 
         $mform->addElement('text', 'user_login', get_string('userlogin', 'local_crswizard'),
@@ -123,7 +123,7 @@ class course_wizard_step3_form extends moodleform {
 
 //---------------------------------------------------------------------------------
 
-        $buttonarray=array();
+        $buttonarray = array();
         $buttonarray[] = $mform->createElement('submit', 'stepgo_2', get_string('previousstage', 'local_crswizard'));
         $buttonarray[] = $mform->createElement(
                 'submit', 'stepgo_4', get_string('nextstage', 'local_crswizard'));
