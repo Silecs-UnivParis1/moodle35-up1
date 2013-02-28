@@ -169,13 +169,9 @@ class user_edit_form extends moodleform {
                     }
                 }
             }
-
-            /// Next the customisable profile fields
-            $this->custominfo->definition_after_data($mform, $user->id);
-
-        } else {
-            $this->custominfo->definition_after_data($mform, 0);
         }
+        /// Next the customisable profile fields
+        $this->custominfo->definition_after_data($mform);
     }
 
     /**
