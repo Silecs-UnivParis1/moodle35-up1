@@ -158,6 +158,7 @@ $string['configcourseoverviewfileslimit'] = 'The maximum number of files that ca
 $string['configcourserequestnotify'] = 'Type username of user to be notified when new course requested.';
 $string['configcourserequestnotify2'] = 'Users who will be notified when a course is requested. Only users who can approve course requests are listed here.';
 $string['configcoursesperpage'] = 'Enter the number of courses to be displayed per page in a course listing.';
+$string['coursestovalidate'] = 'Courses to validate';
 $string['configcourseswithsummarieslimit'] = 'The maximum number of courses to display in a course listing including summaries before falling back to a simpler listing.';
 $string['configcronclionly'] = 'Running the cron from a web browser can expose privileged information to anonymous users. Thus it is recommended to only run the cron from the command line or set a cron password for remote access.';
 $string['configcronremotepassword'] = 'This means that the cron.php script cannot be run from a web browser without supplying the password using the following form of URL:<pre>
