@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die;
  * @param stdClass $course
  * @return bool
  */
-function report_synopsis_can_access_synopsis($course) {
+function report_coursesynopsis_can_access_synopsis($course) {
     global $USER;
 
     $coursecontext = context_course::instance($course->id);
@@ -55,7 +55,7 @@ function report_synopsis_can_access_synopsis($course) {
  * @param stdClass $currentcontext Current context of block
  * @return array
  */
-function report_synopsis_page_type_list($pagetype, $parentcontext, $currentcontext) {
+function report_coursesynopsis_page_type_list($pagetype, $parentcontext, $currentcontext) {
     $array = array(
         '*'                    => get_string('page-x', 'pagetype'),
         'report-*'             => get_string('page-report-x', 'pagetype'),
@@ -65,7 +65,7 @@ function report_synopsis_page_type_list($pagetype, $parentcontext, $currentconte
     return $array;
 }
 
-function synopsis_report_extend_navigation($reportnav, $course, $context) {
-    $url = new moodle_url('/course/report/synopsis/index.php', array('id' => $course->id));
-    $reportnav->add(get_string('Synopsis', 'coursereport_synopsis'), $url);
+function report_coursesynopsis_extend_navigation($reportnav, $course, $context) {
+    $url = new moodle_url('/report/coursesynopsis/index.php', array('id' => $course->id));
+    $reportnav->add(get_string('Synopsis', 'report_coursesynopsis'), $url);
 }

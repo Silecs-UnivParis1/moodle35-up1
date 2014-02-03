@@ -23,5 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$url = new moodle_url('/course/report/synopsis/index.php', array('id'=>$id));
-echo '<a href="'. $url .'">' . get_string('Synopsis', 'coursereport_synopsis') . '</a>';
+$url = new moodle_url('/report/coursesynopsis/index.php', array('id'=>$id));
+echo '<a href="'. $url .'">' . get_string('Synopsis', 'report_coursesynopsis') . '</a>';
+

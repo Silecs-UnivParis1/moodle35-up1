@@ -26,7 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-function xmldb_coursereport_synopsis_install() {
+function xmldb_report_coursesynopsis_install() {
     global $DB;
 
 }

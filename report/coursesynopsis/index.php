@@ -25,91 +25,61 @@
  */
 
 require('../../../config.php');
-require_once($CFG->dirroot.'/course/report/synopsis/locallib.php');
+require_once(__DIR__ . 'locallib.php');
 require_once($CFG->libdir.'/custominfo/lib.php');
 
-$id = required_param('id',PARAM_INT);       // course id
-$course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
-$context = get_context_instance(CONTEXT_COURSE, $course->id);
+global $DB, $PAGE, $OUTPUT;
+ /* @var $PAGE moodle_page */
 
-$PAGE->set_url('/course/report/synopsis/index.php', array('id'=>$id));
-$PAGE->set_pagelayout('report');
+$id = required_param('id', PARAM_INT);       // course id
+$layout = optional_param('layout', 'report', PARAM_ALPHA); // default layout=report
+if ($layout != 'popup') {
+    $layout = 'report';
+}
 
-require_login($course);
-$context = get_context_instance(CONTEXT_COURSE, $course->id);
-require_capability('report/outline:view', $context); //** @todo trouver une meilleure capacité
+$course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
+$PAGE->set_course($course);
 
-// add_to_log($course->id, 'course', 'course synopsis', "course/report/synopsis/index.php?id=$course->id", $course->id);
+$PAGE->set_url('/report/coursesynopsis/index.php', array('id'=>$id));
+$PAGE->set_pagelayout($layout);
+$PAGE->requires->css(new moodle_url('/report/coursesynopsis/styles.css'));
 
-$strreport = get_string('pluginname', 'coursereport_synopsis');
+$site = get_site();
+$strreport = get_string('pluginname', 'report_coursesynopsis');
+$pagename = up1_meta_get_text($course->id, 'up1nomnorme', false);
+if ( ! $pagename ) {
+    $pagename = $course->fullname;
+}
 
-$PAGE->set_title($course->shortname .': '. $strreport);
-$PAGE->set_heading($course->fullname);
+$PAGE->set_title($pagename); // $course->shortname .': '. $strreport); // tab title
+$PAGE->set_heading($site->fullname);
 echo $OUTPUT->header();
-echo $OUTPUT->heading(format_string($course->fullname));
 
-echo "<h2>" . get_string('Description', 'coursereport_synopsis') . "</h2>\n";
+echo "<h2>" . $pagename . "</h2>\n";
 
-echo "<ul>\n";
-echo "<li>Abrégé : ". $course->shortname ."</li>\n";
-echo "<li>Code : ". $course->idnumber ."</li>\n";
-echo "</ul>\n";
-echo '<div id="summary">' . $course->summary . '</div>';
-
-
-//** @todo utiliser les fonctions prévues
-// $customdata = custominfo_data::type('course')->get_record($course->id);
-// $customdata = custominfo_data::type('course')->display_fields($course->id);
-// var_dump($customdata);
-
-$custominfo_data = custominfo_data::type('course');
-$cinfos = $custominfo_data->get_record($course->id);
-echo "<ul>\n";
-foreach ($cinfos as $label=>$info) {
-    echo "<li>" . $label ." : ". $info. "</li>\n";
+echo '<div id="synopsis-bigbutton">' . "\n";
+html_button_join($course);
+if ( has_capability('local/crswizard:supervalidator', context_system::instance()) )
+{
+    $urlboard = new moodle_url('/local/courseboard/view.php', array('id' => $course->id));
+    $icon = $OUTPUT->action_icon($urlboard, new pix_icon('i/settings', 'Afficher le tableau de bord'));
+    echo $icon;
 }
-echo "</ul>\n";
+echo '</div>' . "\n";
 
+// Description
+echo '<div id="synopsis-summary">'
+    . format_text($course->summary, $course->summaryformat)
+    . '</div>' . "\n\n";
 
-echo "<h2>" . get_string('Teachers', 'coursereport_synopsis') . "</h2>\n";
-// output based on roles ; only editingteacher for now
-// for an output based on capabilities, use instead get_users_by_capability(): much heavier
+echo '<div id="synopsis-informations">' . "\n";
+echo "<h3>Informations sur l'espace de cours</h3>\n";
+html_table_informations($course);
+echo '</div>' . "\n";
 
-echo "<ul>\n";
-$troles = array('editingteacher', 'teacher');
-foreach ($troles as $trole) {
-    $role = $DB->get_record('role', array('shortname' => $trole));
-    $teachers = get_role_users($role->id, $context);
-    foreach ($teachers as $teacher) {
-        echo "<li>" . fullname($teacher) . " - " . $teacher->rolename . "</li>\n";
-    }
-}
-echo "</ul>\n";
-
-
-echo "<h2>" . get_string('Cohorts', 'coursereport_synopsis') . "</h2>\n";
-$cohorts = get_enrolled_cohorts($course->id, array(5)); // 5 = students
-if (empty($cohorts)) {
-    echo get_string('Nocohort', 'coursereport_synopsis');
-} else {
-    echo "<ul>";
-        foreach ($cohorts as $cohort) {
-        echo "<li> (". $cohort->idnumber .") ". $cohort->name ;
-        // echo "(". $cohort->rolename .")
-        echo "</li>";
-    }
-}
-echo "</ul>";
-
-
-echo "<h2>" . get_string('Outline', 'coursereport_synopsis') . "</h2>\n";
-$sections = get_all_sections($course->id);
-echo "<ol>\n";
-foreach ($sections as $section) {
-    $sectiontitle = get_section_name($course, $section);
-    echo "<li>" . $sectiontitle . "</li>";
-}
-echo "</ol>\n";
-
+echo '<div id="synopsis-rattachements">' . "\n";
+echo "<h3>Rattachements à l'offre de formation</h3>\n";
+html_table_rattachements($course);
+echo '</div>' . "\n";
 
 echo $OUTPUT->footer();

@@ -19,5 +19,5 @@ $plugin->maturity  = MATURITY_ALPHA;
 $plugin->release   = 'TODO';
 
 $plugin->dependencies = array(
-    'coursereport_synopsis' => 2012072000,
+    'report_coursesynopsis' => 2012072000,
 );
