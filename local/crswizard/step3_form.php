@@ -51,10 +51,6 @@ class course_wizard_step3_form extends moodleform {
             $mform->setConstant($type, $tabcategories[2]);
             $tabfreeze[] = $type;
 
-            $mform->addElement('hidden', 'composante', null);
-            $mform->setType('composante', PARAM_MULTILANG);
-            $mform->setConstant('composante', $nom);
-
             //Niveau
             $type = strtolower($myconfig->categorie_cours[3]);
             $mform->addElement('text', $type, ucfirst($type), 'maxlength="40" size="20"');
@@ -185,7 +181,6 @@ class course_wizard_step3_form extends moodleform {
         $tabfreeze[] = 'user_login';
 
         $mform->addElement('date_selector', 'requestdate', get_string('courserequestdate', 'local_crswizard'));
-        $mform->setDefault('requestdate', time());
         $tabfreeze[] = 'requestdate';
 
         $mform->hardFreeze($tabfreeze);
