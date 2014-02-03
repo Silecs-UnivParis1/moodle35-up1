@@ -5,7 +5,7 @@ global $OUTPUT, $PAGE;
 
 require_login();
 
-$PAGE->set_context(get_context_instance(CONTEXT_SYSTEM));
+$PAGE->set_context(context_system::instance());
 $PAGE->set_url('/local/widget_coursesearch/coursesearch-demo.php');
 $PAGE->set_title('Démo de la recherche de cours');
 

@@ -31,7 +31,7 @@ if (!empty($validate)) {
    redirect(new moodle_url('/local/course_validated/index.php'));
 }
 
-$systemcontext   = get_context_instance(CONTEXT_SYSTEM);
+$systemcontext   = context_system::instance();
 $PAGE->set_context($systemcontext);
 $PAGE->set_url('/local/course_validated/index.php');
 $PAGE->set_title("Espaces de cours en attente d'approbation");

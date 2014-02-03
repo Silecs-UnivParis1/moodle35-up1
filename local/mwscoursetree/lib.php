@@ -35,7 +35,7 @@ class course_tree {
     public function __construct() {
         global $PAGE;
         if (empty($PAGE->context)) {
-            $PAGE->set_context(get_context_instance(CONTEXT_SYSTEM));
+            $PAGE->set_context(context_system::instance());
         }
     }
 

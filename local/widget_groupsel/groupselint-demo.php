@@ -3,7 +3,7 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 
 require_login();
 
-$PAGE->set_context(get_context_instance(CONTEXT_SYSTEM));
+$PAGE->set_context(context_system::instance());
 $PAGE->set_url('/local/widget_groupsel/groupsel-demo.php');
 $PAGE->set_title('Démo du sélecteur de groupes');
 

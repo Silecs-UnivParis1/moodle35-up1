@@ -11,7 +11,7 @@ require_once('../libaccess.php');
 
 require_login();
 
-$systemcontext   = get_context_instance(CONTEXT_SYSTEM);
+$systemcontext   = context_system::instance();
 
 wizard_require_permission('creator', $USER->id);
 

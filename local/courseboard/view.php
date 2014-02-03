@@ -21,7 +21,7 @@ require_login();
 $crsid = required_param('id', PARAM_INT);  // course id
 
 $course = $DB->get_record('course', array('id' => $crsid), '*', MUST_EXIST);
-$context_sys = get_context_instance(CONTEXT_SYSTEM);
+$context_sys = context_system::instance();
 require_capability('moodle/site:approvecourse', $context_sys); //** @todo trouver une meilleure capacité
 
 $PAGE->set_context($context_sys);

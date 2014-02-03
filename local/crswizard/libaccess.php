@@ -69,7 +69,7 @@ function wizard_membersof_permitted_cohorts($permission) {
  * @return boolean
  */
 function wizard_has_permission($permission, $userid) {
-    $systemcontext = get_context_instance(CONTEXT_SYSTEM);
+    $systemcontext = context_system::instance();
     if ( has_capability('local/crswizard:' . $permission, $systemcontext, $userid) ) {
         return true;
     }
@@ -82,7 +82,7 @@ function wizard_has_permission($permission, $userid) {
  * @return array(userid)
  */
 function wizard_who_has_permission($permission) {
-    $systemcontext = get_context_instance(CONTEXT_SYSTEM);
+    $systemcontext = context_system::instance();
     $users1 = array_map("__get_id", get_users_by_capability($systemcontext, 'local/crswizard:' . $permission, 'u.id'));
     $users2 = wizard_membersof_permitted_cohorts($permission);
     $users = array_unique(array_merge($users1, $users2));

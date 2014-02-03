@@ -3,7 +3,7 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 
 global $OUTPUT, $PAGE;
 
-$PAGE->set_context(get_context_instance(CONTEXT_SYSTEM));
+$PAGE->set_context(context_system::instance());
 $PAGE->set_url('/local/widget_courselist/courselist-demo.php');
 $PAGE->set_title('Démo de la liste de cours par critères');
 

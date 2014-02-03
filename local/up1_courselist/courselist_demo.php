@@ -9,7 +9,7 @@ global $PAGE, $OUTPUT;
 
 require_login();
 
-$PAGE->set_context(get_context_instance(CONTEXT_SYSTEM));
+$PAGE->set_context(context_system::instance());
 $PAGE->set_url('/local/up1_courselist/courselist_demo.php');
 $PAGE->set_title("Démo table et liste des cours");
 $PAGE->set_pagelayout('admin');

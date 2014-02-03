@@ -8,7 +8,7 @@ require_login();
 
 $node = optional_param('node', '/cat0', PARAM_RAW);
 
-$PAGE->set_context(get_context_instance(CONTEXT_SYSTEM));
+$PAGE->set_context(context_system::instance());
 $PAGE->set_url('/local/mwscoursetree/widget-demo.php');
 $PAGE->set_title("Démo de l'arbre des cours");
 $PAGE->requires->js(new moodle_url('/local/mwscoursetree/widget.js'), true);

@@ -10,7 +10,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-if (has_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM))) {
+if (has_capability('moodle/site:config', context_system::instance())) {
     $settings = new admin_settingpage('local_cohortsyncup1', 'Synchronisation des cohortes');
     $ADMIN->add('localplugins', $settings);
 

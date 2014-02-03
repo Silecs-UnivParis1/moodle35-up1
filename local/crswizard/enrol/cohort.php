@@ -23,7 +23,7 @@ if (isset($SESSION->wizard['idcourse'])) {
     $streditcoursesettings = get_string("editcoursesettings");
     $PAGE->navbar->add($streditcoursesettings);
 } else {
-    $systemcontext   = get_context_instance(CONTEXT_SYSTEM);
+    $systemcontext   = context_system::instance();
     $PAGE->set_context($systemcontext);
     wizard_require_permission('creator', $USER->id);
     $PAGE->set_url('/local/crswizard/index.php');

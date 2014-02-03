@@ -10,7 +10,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /* @var $ADMIN admin_root */
 
-if (has_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM))) {
+if (has_capability('moodle/site:config', context_system::instance())) {
 
     $settings = new admin_settingpage('local_roftools', 'Paramètres outils ROF');
     $ADMIN->add('localplugins', $settings);

@@ -5,7 +5,7 @@ require_once('libbrowser.php');
 // limite cette page au compte admin
 require_login();
 
-$systemcontext   = get_context_instance(CONTEXT_SYSTEM);
+$systemcontext   = context_system::instance();
 $PAGE->set_context($systemcontext);
 has_capability('enrol/cohort:unenrol', $systemcontext);
 

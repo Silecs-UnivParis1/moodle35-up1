@@ -41,7 +41,7 @@ global $DB, $CFG, $PAGE, $OUTPUT, $SESSION, $USER;
 
 require_login();
 
-$systemcontext = get_context_instance(CONTEXT_SYSTEM);
+$systemcontext = context_system::instance();
 $PAGE->set_url('/local/crswizard/index.php');
 $PAGE->set_context($systemcontext);
 $PAGE->requires->css(new moodle_url('/local/crswizard/css/crswizard.css'));
