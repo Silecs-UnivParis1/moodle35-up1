@@ -238,12 +238,11 @@ function wizard_get_mydisplaylist() {
  * */
 function wizard_get_catlevel2() {
     $displaylist = array();
-    $parentlist = array();
-    make_categories_list($displaylist, $parentlist); // separator ' / ' is hardcoded into Moodle
+    $displaylist = coursecat::make_categories_list();
     $mydisplaylist = array(' - / - ');
 
     foreach ($displaylist as $id => $label) {
-        if (array_key_exists($id, $parentlist) && count($parentlist[$id]) == 1) {
+        if (count(coursecat::get($id)->get_parents()) == 1) {
             $mydisplaylist[$id] = $label;
         }
     }

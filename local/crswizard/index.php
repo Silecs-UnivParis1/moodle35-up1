@@ -25,6 +25,7 @@
  */
 require_once('../../config.php');
 require_once('../../course/lib.php');
+require_once('../../lib/coursecatlib.php');
 require_once(__DIR__ . '/lib_wizard.php');
 require_once(__DIR__ . '/libaccess.php');
 require_once(__DIR__ . '/step1_form.php');
