@@ -122,8 +122,7 @@ function wizard_get_course_model_list() {
  */
 function wizard_make_categories_model_list() {
     $displaylist = array();
-    $parentlist = array();
-    make_categories_list($displaylist, $parentlist, 'moodle/course:create');
+    $displaylist = coursecat::make_categories_list('moodle/course:create');
     $wizard_make_categories_model_list = array(0 => 'Aucune');
     foreach ($displaylist as $key => $value) {
         $wizard_make_categories_model_list[$key] = $value;
