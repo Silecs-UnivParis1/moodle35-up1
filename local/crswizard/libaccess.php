@@ -138,7 +138,7 @@ function wizard_supervalidator_which_categories($userid) {
  * @return boolean
  */
 function wizard_update_has_permission($courseid, $userid) {
-    $coursecontext = get_context_instance(CONTEXT_COURSE, $courseid);
+    $coursecontext = context_course::instance($courseid);
     if ( has_capability('enrol/manual:manage', $coursecontext, $userid) ) {
         return true;
     }
@@ -165,7 +165,7 @@ function wizard_require_update_permission($courseid, $userid) {
  * @return boolean
  */
 function wizard_has_rofreferenceeditor_permission($courseid, $userid) {
-    $coursecontext = get_context_instance(CONTEXT_COURSE, $courseid);
+    $coursecontext = context_course::instance($courseid);
     if ( has_capability('local/crswizard:rofreferenceeditor', $coursecontext, $userid) ) {
         return true;
     }
@@ -179,7 +179,7 @@ function wizard_has_rofreferenceeditor_permission($courseid, $userid) {
  * @return boolean
  */
 function wizard_has_hybridattachment_permission($courseid, $userid) {
-    $coursecontext = get_context_instance(CONTEXT_COURSE, $courseid);
+    $coursecontext = context_course::instance($courseid);
     if ( has_capability('local/crswizard:hybridattachment', $coursecontext, $userid) ) {
         return true;
     }
@@ -215,7 +215,7 @@ function wizard_update_course($courseid) {
  * @return boolean
  */
 function wizard_has_edit_course($courseid, $userid) {
-    $coursecontext = get_context_instance(CONTEXT_COURSE, $courseid);
+    $coursecontext = context_course::instance($courseid);
     if ( has_capability('moodle/course:update', $coursecontext, $userid) ) {
         return true;
     }

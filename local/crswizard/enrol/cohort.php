@@ -16,7 +16,7 @@ if (isset($SESSION->wizard['idcourse'])) {
     wizard_require_update_permission($idcourse, $USER->id);
     $course = $DB->get_record('course', array('id'=>$idcourse), '*', MUST_EXIST);
     require_login($course);
-    $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+    $coursecontext = context_course::instance($course->id);
     $PAGE->set_context($coursecontext);
     $pageparams = array('id'=>$idcourse);
     $PAGE->set_url('/local/crswizard/update/index.php', $pageparams);

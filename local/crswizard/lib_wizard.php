@@ -77,7 +77,7 @@ function wizard_get_course_list_teacher() {
         $course_list = array(' - / - ');
         $periodes = $DB->get_records('course_categories', array(), 'sortorder ASC');
         foreach ($courses as $course) {
-            $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+            $coursecontext = context_course::instance($course->id);
             if ( has_capability('moodle/course:update', $coursecontext, $USER->id) ) {
                 $path = substr($periodes[$course->category]->path, 1);
 
@@ -1148,7 +1148,6 @@ class core_wizard {
 
         $this->update_session($course->id);
         //! @todo tester si le cours existe bien ?
-        //$context = get_context_instance(CONTEXT_COURSE, $course->id, MUST_EXIST);
         // inscrire des enseignants
         if (isset($this->formdata['form_step4']['user']) && count($this->formdata['form_step4']['user'])) {
             $tabUser = $this->formdata['form_step4']['user'];
@@ -1789,7 +1788,7 @@ class core_wizard {
         // documentation : http://docs.moodle.org/dev/Messaging_2.0#Message_dispatching
 
         // envoi aux supervalidateurs
-        $coursecontext = get_context_instance(CONTEXT_COURSE, $idcourse);
+        $coursecontext = context_course::instance($idcourse);
         $supervalidators = get_users_by_capability($coursecontext, 'local/crswizard:supervalidator');
         foreach ($supervalidators as $userto) {
             $eventdata->userto = $userto;

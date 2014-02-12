@@ -55,7 +55,7 @@ $PAGE->requires->css(new moodle_url('../local/crswizard/css/crswizard.css'));
 
 $course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
 require_login($course);
-$coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+$coursecontext = context_course::instance($course->id);
 $PAGE->set_context($coursecontext);
 
 $stepin = optional_param('stepin', 0, PARAM_INT);
