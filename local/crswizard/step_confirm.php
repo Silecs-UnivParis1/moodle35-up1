@@ -36,8 +36,7 @@ class course_wizard_step_confirm extends moodleform {
         $mform->setDefault('requestdate', time());
 
         $displaylist = array();
-        $parentlist = array();
-        make_categories_list($displaylist, $parentlist);
+        $displaylist = coursecat::make_categories_list();
         if (isset($SESSION->wizard['form_step2']['rattachement1']) ) {
             $idratt1 = $SESSION->wizard['form_step2']['rattachement1'];
             $mform->addElement('text', 'category',  get_string('categoryblockE3', 'local_crswizard') . ' : ', 'size="100"');
