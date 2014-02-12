@@ -1579,8 +1579,7 @@ class core_wizard {
 
         // categorie
         $displaylist = array();
-        $parentlist = array();
-        make_categories_list($displaylist, $parentlist);
+        $displaylist = coursecat::make_categories_list();
 
         $form2 = $this->formdata['form_step2'];
         $form3 = $this->formdata['form_step3'];
