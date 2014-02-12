@@ -64,7 +64,7 @@ function create_rof_categories($verb=0) {
         $newcategory->idnumber = $hlcat['idnumber'];
         $newcategory->parent = $parentid;
 
-        $category = create_course_category($newcategory);
+        $category = coursecat::create($newcategory);
         $parentid = $category->id;
         fix_course_sortorder();
      }
@@ -81,7 +81,7 @@ function create_rof_categories($verb=0) {
         $newcategory->name = $component->name;
         $newcategory->idnumber = '3:' . $component->number;
         $newcategory->parent = $rofRootId;
-        $category = create_course_category($newcategory);
+        $category = coursecat::create($newcategory);
         $compCatId = $category->id;
         fix_course_sortorder();
         list ($inSql, $inParams) = $DB->get_in_or_equal($component->sub);
@@ -109,7 +109,7 @@ function create_rof_categories($verb=0) {
                 if ($verb >= 1) {
                     echo " $classeDiplome";
                 }
-                $category = create_course_category($newcategory);
+                $category = coursecat::create($newcategory);
                 // $progCatId = $category->id;
                 fix_course_sortorder();
             }
