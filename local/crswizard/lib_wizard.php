@@ -203,24 +203,15 @@ function wizard_redirect_creation($url, $message='', $delay=5) {
  * */
 function wizard_get_mydisplaylist() {
     $displaylist = array();
-    $parentlist = array();
-    make_categories_list($displaylist, $parentlist); // separator ' / ' is hardcoded into Moodle
+    $displaylist = coursecat::make_categories_list();
     $mydisplaylist = array(" Sélectionner la période / Sélectionner l'établissement / Sélectionner la composante / Sélectionner le type de diplôme");
 
-    $enfantlist = array();
-    foreach ($parentlist as $id => $tabp) {
-        if (count($tabp)>1) {
-            foreach($tabp as $idp) {
-                $enfantlist[$idp][]=$id;
-            }
-        }
-    }
-
     foreach ($displaylist as $id => $label) {
-        if (array_key_exists($id, $parentlist) &&   count($parentlist[$id]) > 1) {
-            $depth = count($parentlist[$id]);
-            if ($depth == 2) {
-                if(!array_key_exists($id, $enfantlist)) {
+        $parents = coursecat::get($id)->get_parents();
+        $depth = count($parents);
+        if ($depth > 1) {
+            if ( $depth == 2) {
+                if (coursecat::get($id)->get_children_count() == 0) {
                     $mydisplaylist[$id] = $label;
                 }
             } else {
