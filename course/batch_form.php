@@ -25,20 +25,28 @@ class course_batch_search_form extends moodleform {
         }
 
         $mform->addElement('text', 'search', get_string('searchcourses'), 'maxlength="254" size="50"');
+        $mform->setType('search', PARAM_RAW);
         $mform->addElement('text', 'enrolled', get_string('defaultcourseteacher'), 'maxlength="254" size="50"');
+        $mform->setType('enrolled', PARAM_TEXT);
         $mform->addElement('hidden', 'enrolledroles');
+        $mform->setType('enrolledroles', PARAM_RAW);
 
         $mform->addElement('date_selector', 'startdateafter', get_string('startdate') . ' &gt;');
         $mform->setDefault('startdateafter', mktime(12, 0, 0, 1, 1, date('Y') - 1));
+        $mform->setType('startdateafter', PARAM_INT);
         $mform->addElement('date_selector', 'startdatebefore', get_string('startdate') . ' &lt;');
         $mform->setDefault('startdatebefore', time() + 3600 * 24);
+        $mform->setType('startdatebefore', PARAM_INT);
 
         $mform->addElement('date_selector', 'createdafter', get_string('createdon', 'search') . ' &gt;');
         $mform->setDefault('createdafter', mktime(12, 0, 0, 1, 1, date('Y') - 1));
+        $mform->setType('createdafter', PARAM_INT);
         $mform->addElement('date_selector', 'createdbefore', get_string('createdon', 'search') . ' &lt;');
         $mform->setDefault('createdbefore', time() + 3600 * 24);
+        $mform->setType('createdbefore', PARAM_INT);
 
         $mform->addElement('select', 'category', get_string('category'), array('' => '') + coursecat::make_categories_list());
+        $mform->setType('category', PARAM_INT);
 
         // Next the customisable fields
         $this->custominfo = new custominfo_form_extension('course');
@@ -80,10 +88,13 @@ class course_batch_search_form extends moodleform {
         $this->add_action_buttons(false, get_string('go'));
 
         $mform->addElement('hidden', 'topcategory');
+        $mform->setType('topcategory', PARAM_INT);
         $mform->addElement('hidden', 'node');
+        $mform->setType('node', PARAM_RAW);
         if (!empty($this->_customdata['fields'])) {
             $mform->addElement('hidden', 'fieldsjson');
             $mform->setDefault('fieldsjson', json_encode($this->_customdata['fields']));
+            $mform->setType('fieldsjson', PARAM_RAW);
         }
     }
 
