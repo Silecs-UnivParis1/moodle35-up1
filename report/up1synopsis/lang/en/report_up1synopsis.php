@@ -15,17 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version info
+ * Strings
  *
- * @package    coursereport
- * @subpackage synopsis
- * @copyright  2012 Silecs {@link http://www.silecs.info}
+ * @package    report
+ * @subpackage up1synopsis
+ * @copyright  2012-2014 Silecs {@link http://www.silecs.info}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * derived from package report_outline
  */
 
-defined('MOODLE_INTERNAL') || die;
+$string['pluginname'] = 'Course synopsis';
 
-$plugin->version   = 2012072000;       // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2012061700;       // Requires this Moodle version
-$plugin->component = 'report_coursesynopsis'; // Full name of the plugin (used for diagnostics)
+$string['Synopsis'] = 'Synopsis';
+$string['Teachers'] = 'Teachers';
+$string['Outline'] = 'Course outline';
+$string['Cohorts'] = 'Students cohorts';
+$string['Description'] = 'Description';
+$string['Nocohort'] = 'No enrolled cohort.';
+
+$string['synopsis:view'] = 'View course synopsis';
+

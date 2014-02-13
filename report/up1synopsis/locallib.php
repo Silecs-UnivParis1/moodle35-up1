@@ -17,9 +17,9 @@
 /**
  * This file contains functions used by the outline reports
  *
- * @package    coursereport
- * @subpackage synopsis
- * @copyright  2012 Silecs {@link http://www.silecs.info}
+ * @package    report
+ * @subpackage up1synopsis
+ * @copyright  2012-2014 Silecs {@link http://www.silecs.info}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * derived from package report_outline
  */
@@ -109,7 +109,7 @@ function html_rows_cohorts($course) {
         $role = $DB->get_record('role', array('shortname' => $srole));
         $cohorts = get_enrolled_cohorts($course->id, array($role->id));
         if (empty($cohorts)) {
-            $res .= "$title " . get_string('Nocohort', 'coursereport_synopsis') . "<br />\n";
+            $res .= "$title " . get_string('Nocohort', 'report_up1synopsis') . "<br />\n";
         } else {
             $res .= "$title";
             $res .= "<ul>";

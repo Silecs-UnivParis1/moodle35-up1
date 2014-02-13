@@ -15,17 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Display course synopsis page
+ * Display course up1synopsis page
  *
- * @package    coursereport
- * @subpackage synopsis
- * @copyright  2012 Silecs {@link http://www.silecs.info}
+ * @package    report
+ * @subpackage up1synopsis
+ * @copyright  2012-2014 Silecs {@link http://www.silecs.info}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * derived from package report_outline
  */
 
-require('../../../config.php');
-require_once(__DIR__ . 'locallib.php');
+require('../../config.php');
+require_once(__DIR__ . '/locallib.php');
 require_once($CFG->libdir.'/custominfo/lib.php');
 
 global $DB, $PAGE, $OUTPUT;
@@ -40,12 +40,12 @@ if ($layout != 'popup') {
 $course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
 $PAGE->set_course($course);
 
-$PAGE->set_url('/report/coursesynopsis/index.php', array('id'=>$id));
+$PAGE->set_url('/report/up1synopsis/index.php', array('id'=>$id));
 $PAGE->set_pagelayout($layout);
-$PAGE->requires->css(new moodle_url('/report/coursesynopsis/styles.css'));
+$PAGE->requires->css(new moodle_url('/report/up1synopsis/styles.css'));
 
 $site = get_site();
-$strreport = get_string('pluginname', 'report_coursesynopsis');
+$strreport = get_string('pluginname', 'report_up1synopsis');
 $pagename = up1_meta_get_text($course->id, 'up1nomnorme', false);
 if ( ! $pagename ) {
     $pagename = $course->fullname;

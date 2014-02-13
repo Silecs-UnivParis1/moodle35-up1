@@ -15,23 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings
+ * Capabilities
  *
- * @package    coursereport
- * @subpackage synopsis
- * @copyright  2012 Silecs {@link http://www.silecs.info}
+ * @package    report
+ * @subpackage up1synopsis
+ * @copyright  2012-2014 Silecs {@link http://www.silecs.info}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * derived from package report_outline
  */
 
-$string['pluginname'] = 'Course synopsis';
+defined('MOODLE_INTERNAL') || die();
 
-$string['Synopsis'] = 'Synopsis';
-$string['Teachers'] = 'Teachers';
-$string['Outline'] = 'Course outline';
-$string['Cohorts'] = 'Students cohorts';
-$string['Description'] = 'Description';
-$string['Nocohort'] = 'No enrolled cohort.';
-//$string[''] = '';
+// si permission nécessaire, possible d'utiliser report/courseoverview:view
+$capabilities = array(
+);
 
-$string['synopsis:view'] = 'View course synopsis';
 

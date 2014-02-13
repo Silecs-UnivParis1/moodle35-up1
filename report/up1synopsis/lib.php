@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains public API of synopsis report
+ * This file contains public API of up1synopsis report
  *
- * @package    coursereport
- * @subpackage synopsis
- * @copyright  2012 Silecs {@link http://www.silecs.info}
+ * @package    report
+ * @subpackage up1synopsis
+ * @copyright  2012-2014 Silecs {@link http://www.silecs.info}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * derived from package report_outline
  */
@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die;
  * @param stdClass $course
  * @return bool
  */
-function report_coursesynopsis_can_access_synopsis($course) {
+function report_up1synopsis_can_access_synopsis($course) {
     global $USER;
 
     $coursecontext = context_course::instance($course->id);
@@ -55,7 +55,7 @@ function report_coursesynopsis_can_access_synopsis($course) {
  * @param stdClass $currentcontext Current context of block
  * @return array
  */
-function report_coursesynopsis_page_type_list($pagetype, $parentcontext, $currentcontext) {
+function report_up1synopsis_page_type_list($pagetype, $parentcontext, $currentcontext) {
     $array = array(
         '*'                    => get_string('page-x', 'pagetype'),
         'report-*'             => get_string('page-report-x', 'pagetype'),
@@ -65,7 +65,7 @@ function report_coursesynopsis_page_type_list($pagetype, $parentcontext, $curren
     return $array;
 }
 
-function report_coursesynopsis_extend_navigation($reportnav, $course, $context) {
-    $url = new moodle_url('/report/coursesynopsis/index.php', array('id' => $course->id));
-    $reportnav->add(get_string('Synopsis', 'report_coursesynopsis'), $url);
+function report_up1synopsis_extend_navigation($reportnav, $course, $context) {
+    $url = new moodle_url('/report/up1synopsis/index.php', array('id' => $course->id));
+    $reportnav->add(get_string('Synopsis', 'report_up1synopsis'), $url);
 }

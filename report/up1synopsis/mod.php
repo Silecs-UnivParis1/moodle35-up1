@@ -15,19 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Post installation and migration code.
+ * This file contains public API of up1synopsis report
  *
- * @package    coursereport
- * @subpackage synopsis
- * @copyright  2012 Silecs {@link http://www.silecs.info}
+ * @package    report
+ * @subpackage up1synopsis
+ * @copyright  2012-2014 Silecs {@link http://www.silecs.info}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * derived from package report_outline
  */
 
-defined('MOODLE_INTERNAL') || die;
-
-function xmldb_report_coursesynopsis_install() {
-    global $DB;
-
-}
+$url = new moodle_url('/report/up1synopsis/index.php', array('id'=>$id));
+echo '<a href="'. $url .'">' . get_string('Synopsis', 'report_up1synopsis') . '</a>';
 

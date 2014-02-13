@@ -15,14 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains public API of synopsis report
+ * Strings
  *
- * @package    coursereport
- * @subpackage synopsis
- * @copyright  2012 Silecs {@link http://www.silecs.info}
+ * @package    report
+ * @subpackage up1synopsis
+ * @copyright  2012-2014 Silecs {@link http://www.silecs.info}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$url = new moodle_url('/report/coursesynopsis/index.php', array('id'=>$id));
-echo '<a href="'. $url .'">' . get_string('Synopsis', 'report_coursesynopsis') . '</a>';
+$string['pluginname'] = 'Synopsis du cours';
+
+$string['Synopsis'] = 'Synopsis';
+$string['Teachers'] = 'Enseignants';
+$string['Outline'] = 'Plan du cours';
+$string['Cohorts'] = 'Cohortes d\'étudiants';
+$string['Description'] = 'Description';
+$string['Nocohort'] = 'Aucune cohorte inscrite.';
+
+$string['synopsis:view'] = 'Voir le synopsis du cours';
 
