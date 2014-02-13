@@ -7,7 +7,7 @@ require_once('./lib.php');
 $uid = required_param('uid', PARAM_RAW);
 $callback = optional_param('callback', '', PARAM_ALPHANUMEXT); // if set, use jsonp instead of json
 
-$PAGE->set_context(get_system_context());
+$PAGE->set_context(context_system::instance());
 
 $res = mws_userGroupsId($uid);
 

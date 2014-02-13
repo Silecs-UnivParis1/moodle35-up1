@@ -23,7 +23,7 @@ foreach ($maxrowsfor as $type => $max) {
     }
 }
 
-$PAGE->set_context(get_system_context());
+$PAGE->set_context(context_system::instance());
 
 $res = mws_search($token, $maxrowsfor['users'], $maxrowsfor['groups'], $filterstudent, $filtergroupcat);
 
