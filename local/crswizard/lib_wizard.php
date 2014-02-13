@@ -250,23 +250,27 @@ function wizard_get_catlevel2() {
 function wizard_get_myComposantelist($idcat, $fullpath=false) {
     global $DB;
     $displaylist = array();
-    $parentlist = array();
+    $labelpath = '';
     $category = $DB->get_record('course_categories', array('id' => $idcat));
     $tpath = explode('/', $category->path);
     $annee = $DB->get_field('course_categories', 'name', array('id' => $tpath[1]));
     $selected = $DB->get_record('course_categories', array('id' => $tpath[2]));
-    make_categories_list($displaylist, $parentlist, '', 0, $selected); // separator ' / ' is hardcoded into Moodle
 
+    if ($fullpath) {
+        $labelpath = $annee . ' / ';
+    }
+
+    $composantes = coursecat::get($selected->id)->get_children(array('sort' => 'idnumber ASC'));
     $mydisplaylist = array(" Sélectionner la composante / Sélectionner le type de diplôme");
-    foreach ($displaylist as $id => $label) {
-        if ($id != $selected->id) {
-            if ($fullpath) {
-                $mydisplaylist[$id]  = $annee . ' / ' . $label;
-            } else {
-                $pos = strpos($label, '/');
-                $mydisplaylist[$id] = substr($label, $pos+2);
+    foreach ($composantes as $comp) {
+        $mydisplaylist[$comp->id]  = $labelpath . $comp->name;
+        if (coursecat::get($comp->id)->get_children_count() > 0) {
+            $diplomes = coursecat::get($comp->id)->get_children(array('sort' => 'idnumber ASC'));
+            foreach ($diplomes as $dip) {
+                $mydisplaylist[$dip->id]  = $labelpath . $comp->name . ' / ' . $dip->name;
             }
         }
+
     }
     return $mydisplaylist;
 }
