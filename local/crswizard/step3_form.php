@@ -48,6 +48,7 @@ class course_wizard_step3_form extends moodleform {
             //Composante
             $type = strtolower($myconfig->categorie_cours[2]);
             $mform->addElement('text', $type, ucfirst($type), 'maxlength="40" size="20"');
+            $mform->setType($type, PARAM_TEXT);
             $mform->setConstant($type, $tabcategories[2]);
             $tabfreeze[] = $type;
 
@@ -58,6 +59,7 @@ class course_wizard_step3_form extends moodleform {
             if (isset($tabcategories[3])) {
                $valdiplome = $tabcategories[3];
             }
+            $mform->setType($type, PARAM_TEXT);
             $mform->setConstant($type, $valdiplome);
             $tabfreeze[] = $type;
 
@@ -75,12 +77,14 @@ class course_wizard_step3_form extends moodleform {
                 //Période
                 $periode = strtolower($myconfig->categorie_cours[0]);
                 $mform->addElement('text', $periode, ucfirst($periode), 'maxlength="40" size="20"');
+                $mform->setType($periode, PARAM_TEXT);
                 $mform->setConstant($periode, $tabcategories[0]);
                 $tabfreeze[] = $periode;
 
                 //Etablissement
                 $etab = strtolower($myconfig->categorie_cours[1]);
                 $mform->addElement('text', $etab, ucfirst($etab), 'maxlength="40" size="20"');
+                $mform->setType($etab, PARAM_TEXT);
                 $mform->setConstant($etab, $tabcategories[1]);
                 $tabfreeze[] = $etab;
 
@@ -174,10 +178,12 @@ class course_wizard_step3_form extends moodleform {
 
         $mform->addElement('header', 'gestion', get_string('managecourseblock', 'local_crswizard'));
         $mform->addElement('text', 'user_name', get_string('username', 'local_crswizard'), 'maxlength="40" size="20", disabled="disabled"');
+        $mform->setType('user_name', PARAM_TEXT);
         $tabfreeze[] = 'user_name';
 
         $mform->addElement('text', 'user_login', get_string('userlogin', 'local_crswizard'),
 			'maxlength="40" size="20", disabled="disabled"');
+        $mform->setType('user_login', PARAM_TEXT);
         $tabfreeze[] = 'user_login';
 
         $mform->addElement('date_selector', 'requestdate', get_string('courserequestdate', 'local_crswizard'));
