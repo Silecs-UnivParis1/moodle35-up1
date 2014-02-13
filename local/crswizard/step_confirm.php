@@ -31,6 +31,7 @@ class course_wizard_step_confirm extends moodleform {
         $mform->addElement('header', 'resume', get_string('summaryof', 'local_crswizard'));
         $user_name = fullname($USER);
         $mform->addElement('text', 'user_name', get_string('username', 'local_crswizard'), 'maxlength="40" size="30", disabled="disabled"');
+        $mform->setType('user_name', PARAM_TEXT);
         $mform->setConstant('user_name', $user_name);
         $mform->addElement('date_selector', 'requestdate', get_string('courserequestdate', 'local_crswizard'));
         $mform->setDefault('requestdate', time());
@@ -40,6 +41,7 @@ class course_wizard_step_confirm extends moodleform {
         if (isset($SESSION->wizard['form_step2']['rattachement1']) ) {
             $idratt1 = $SESSION->wizard['form_step2']['rattachement1'];
             $mform->addElement('text', 'category',  get_string('categoryblockE3', 'local_crswizard') . ' : ', 'size="100"');
+            $mform->setType('category', PARAM_TEXT);
             $mform->setConstant('category' , $displaylist[$idratt1] . ' / ' . $SESSION->wizard['form_step2']['fullname']);
         } else {
             $mform->addElement('select', 'category', get_string('categoryblockE3', 'local_crswizard') . ' : ', $displaylist);
@@ -51,6 +53,7 @@ class course_wizard_step_confirm extends moodleform {
             foreach ($SESSION->wizard['form_step3']['rattachements'] as $pathid) {
                 $select = $mform->createElement('text', "rattachements$pathid",
                     ($first? get_string('labelE7ratt2', 'local_crswizard') : ''), 'size="100"');
+                $select->setType("rattachements$pathid", PARAM_TEXT);
                 $select->setValue($paths[$pathid]);
                 $mform->addElement($select);
                 $first = false;
@@ -68,6 +71,7 @@ class course_wizard_step_confirm extends moodleform {
                     }
                     $donnees = substr($donnees, 0, -1);
                     $mform->addElement('text', $key, $label, 'maxlength="40" size="30", disabled="disabled"');
+                    $mform->setType($key, PARAM_TEXT);
                     $mform->setConstant($key , $donnees);
                 }
             }
@@ -97,8 +101,10 @@ class course_wizard_step_confirm extends moodleform {
         }
 
         $mform->addElement('text', 'fullname', get_string('fullnamecourse', 'local_crswizard'), 'maxlength="254" size="60"');
+        $mform->setType('fullname', PARAM_TEXT);
 
         $mform->addElement('text', 'shortname', get_string('shortnamecourse', 'local_crswizard'), 'maxlength="100" size="40"');
+        $mform->setType('shortname', PARAM_TEXT);
 
         /** @todo display the summary correctly, with Moodle's conversion functions */
         $htmlsummary = '<div class="fitemtitle"><div class="fstaticlabel"><label>'
@@ -112,12 +118,14 @@ class course_wizard_step_confirm extends moodleform {
 
         if (!empty($SESSION->wizard['form_step1']['coursedmodelid']) && $SESSION->wizard['form_step1']['coursedmodelid'] != '0') {
             $mform->addElement('text', 'coursemodel', get_string('coursemodel', 'local_crswizard'), 'maxlength="300" size="60"');
+            $mform->setType('coursemodel', PARAM_TEXT);
             $mform->setConstant('coursemodel' , '[' . $SESSION->wizard['form_step1']['coursemodelshortname']
                 . ']' . $SESSION->wizard['form_step1']['coursemodelfullname']
             );
         }
 
         $mform->addElement('text', 'profile_field_up1generateur', "Mode de création :", 'maxlength="100" size="40"');
+        $mform->setType('profile_field_up1generateur', PARAM_TEXT);
 
         // validateur pour le cas 2
         if (!empty($SESSION->wizard['form_step3']['all-validators'])) {
@@ -125,6 +133,7 @@ class course_wizard_step_confirm extends moodleform {
             $mform->addElement('header', 'validators', get_string('selectedvalidator', 'local_crswizard'));
             foreach ($allvalidators as $id => $validator) {
                 $mform->addElement('text', 'validator', '');
+                $mform->setType('validator', PARAM_TEXT);
                 $mform->setConstant('validator' , fullname($validator));
             }
         }
@@ -165,6 +174,7 @@ class course_wizard_step_confirm extends moodleform {
                 $first = true;
                 foreach ($groups as $id => $group) {
                     $mform->addElement('text', 'cohort' . $id, ($first ? $label . ' : ' : ''));
+                    $mform->setType('cohort' . $id, PARAM_TEXT);
                     $mform->setConstant('cohort' . $id, $group->name . ' — ' . "{$group->size} inscrits");
                     $first = false;
                 }
@@ -189,6 +199,7 @@ class course_wizard_step_confirm extends moodleform {
                         $mform->addElement('html', $html);
                     } else {
                         $mform->addElement('text', 'valeur' . $c, get_string('enrolkey', 'local_crswizard') . ' : ');
+                        $mform->setType('valeur' . $c, PARAM_TEXT);
                         $mform->setConstant('valeur' . $c, $clef['password']);
                     }
                     if (isset($clef['enrolstartdate']) && $clef['enrolstartdate'] != 0) {

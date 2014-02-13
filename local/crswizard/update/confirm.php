@@ -30,9 +30,11 @@ class course_wizard_confirm extends moodleform {
         if (isset($form2['rattachement1']) ) {
             $idratt1 = $form2['rattachement1'];
             $mform->addElement('text', 'category',  get_string('categoryblockE3', 'local_crswizard') . ' : ', 'size="100"');
+            $mform->setType('category', PARAM_TEXT);
             $mform->setConstant('category' , $displaylist[$idratt1] . ' / ' . $form2['fullname']);
         } else {
             $mform->addElement('select', 'category', get_string('categoryblockE3', 'local_crswizard') . ' : ', $displaylist);
+            $mform->setType('category', PARAM_TEXT);
         }
 
         if (!empty($SESSION->wizard['form_step3']['rattachements'])) {
@@ -41,6 +43,7 @@ class course_wizard_confirm extends moodleform {
             foreach ($SESSION->wizard['form_step3']['rattachements'] as $pathid) {
                 $select = $mform->createElement('text', "rattachements$pathid",
                     ($first? get_string('labelE7ratt2', 'local_crswizard') : ''), 'size="100"');
+                $select->setType("rattachements$pathid", PARAM_TEXT);
                 $select->setValue($paths[$pathid]);
                 $mform->addElement($select);
                 $first = false;
@@ -84,6 +87,7 @@ class course_wizard_confirm extends moodleform {
                     $donnees = substr($donnees, 0, -1);
                     if ($donnees != '' && $donnees != '0') {
                         $mform->addElement('text', $key, $label, 'maxlength="40" size="30", disabled="disabled"');
+                        $mform->setType($key, PARAM_TEXT);
                         $mform->setConstant($key , $donnees);
                     }
                 }
@@ -91,8 +95,10 @@ class course_wizard_confirm extends moodleform {
         }
 
         $mform->addElement('text', 'fullname', get_string('fullnamecourse', 'local_crswizard'), 'maxlength="254" size="100"');
+        $mform->setType('fullname', PARAM_TEXT);
 
         $mform->addElement('text', 'shortname', get_string('shortnamecourse', 'local_crswizard'), 'maxlength="100" size="40"');
+        $mform->setType('shortname', PARAM_TEXT);
 
         /** @todo display the summary correctly, with Moodle's conversion functions */
         $htmlsummary = '<div class="fitemtitle"><div class="fstaticlabel"><label>'
@@ -116,6 +122,7 @@ class course_wizard_confirm extends moodleform {
                 $first = true;
                 foreach ($groups as $id => $group) {
                     $mform->addElement('text', 'cohort' . $id, ($first ? $label . ' : ' : ''));
+                    $mform->setType('cohort' . $id, PARAM_TEXT);
                     $mform->setConstant('cohort' . $id, $group->name . ' — ' . "{$group->size} inscrits");
                     $first = false;
                 }
@@ -140,6 +147,7 @@ class course_wizard_confirm extends moodleform {
                         $mform->addElement('html', $html);
                     } else {
                         $mform->addElement('text', 'valeur' . $c, get_string('enrolkey', 'local_crswizard') . ' : ');
+                        $mform->setType('valeur' . $c, PARAM_TEXT);
                         $mform->setConstant('valeur' . $c, $clef['password']);
                     }
                     if (isset($clef['enrolstartdate']) && $clef['enrolstartdate'] != 0) {
