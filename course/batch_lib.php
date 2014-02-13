@@ -48,7 +48,7 @@ function get_courses_batch_search($criteria, $sort='fullname ASC', $page=0, $rec
     if ($DB->get_dbfamily() == 'oracle') {
         $concat = $DB->sql_concat('c.summary', "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname');
     } else {
-        $concat = $DB->sql_concat("COALESCE(c.summary, '". $DB->sql_empty() ."')", "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname');
+        $concat = $DB->sql_concat("COALESCE(c.summary, '')", "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname');
     }
 
     foreach ($searchterms as $searchterm) {
@@ -215,12 +215,16 @@ function get_courses_batch_search($criteria, $sort='fullname ASC', $page=0, $rec
     $limitfrom = $page * $recordsperpage;
     $limitto   = $limitfrom + $recordsperpage;
 
-    list($ccselect, $ccjoin) = context_instance_preload_sql('c.id', CONTEXT_COURSE, 'ctx');
+    $ccselect = ', ' . context_helper::get_preload_record_columns_sql('ctx');
+    $ccjoin = "LEFT JOIN {context} ctx ON (ctx.instanceid = c.id AND ctx.contextlevel = :contextlevel)";
+    $params['contextlevel'] = CONTEXT_COURSE;
+
     $sql = "SELECT c.* $ccselect
               FROM {course} c
            $ccjoin $searchjoin
              WHERE $searchcond AND c.id <> ".SITEID."
           ORDER BY $sort";
+
     $rs = $DB->get_recordset_sql($sql, $params);
     foreach($rs as $course) {
         context_instance_preload($course);
