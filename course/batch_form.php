@@ -6,7 +6,8 @@ defined('MOODLE_INTERNAL') || die;
 /* @var $DB moodle_database */
 
 require_once($CFG->libdir . '/formslib.php');
-require_once($CFG->libdir.'/custominfo/lib.php');
+require_once($CFG->libdir . '/custominfo/lib.php');
+require_once($CFG->libdir . '/coursecatlib.php');
 
 class course_batch_search_form extends moodleform {
     /**
@@ -37,11 +38,7 @@ class course_batch_search_form extends moodleform {
         $mform->addElement('date_selector', 'createdbefore', get_string('createdon', 'search') . ' &lt;');
         $mform->setDefault('createdbefore', time() + 3600 * 24);
 
-        $displaylist = array();
-        $parentlist = array();
-        make_categories_list($displaylist, $parentlist);
-        $displaylist = array_merge(array('' => ''), $displaylist);
-        $mform->addElement('select', 'category', get_string('category'), $displaylist);
+        $mform->addElement('select', 'category', get_string('category'), array('' => '') + coursecat::make_categories_list());
 
         // Next the customisable fields
         $this->custominfo = new custominfo_form_extension('course');
