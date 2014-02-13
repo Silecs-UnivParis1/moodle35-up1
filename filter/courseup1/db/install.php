@@ -10,12 +10,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once('./upgrade.php');
-
 function xmldb_filter_courseup1_install() {
     global $CFG, $DB;
 
-    echo "Correction des contenus pages :<br />\n";
-    update_coursetree_pages();
     return true;
 }
