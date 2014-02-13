@@ -242,7 +242,6 @@ function wizard_get_catlevel2() {
 
 /**
  * Reconstruit le tableau de chemins (composantes/diplômes) pour le plugin jquery select-into-subselects.js
- * hack de la fonction wizard_get_mydisplaylist()
  * @param $idcat identifiant de la catégorie diplôme sélectionné à l'étape précédente
  * @param bool $fullpath chemin complet des catégories
  * @return array
