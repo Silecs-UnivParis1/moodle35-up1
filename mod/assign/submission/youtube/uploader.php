@@ -39,7 +39,7 @@ $video_title = optional_param('videotitle', 'a youtube assignment',PARAM_TEXT); 
 
 //we need to set the page context
 require_login();
-$PAGE->set_context(get_context_instance(CONTEXT_USER, $USER->id));
+$PAGE->set_context(context_user::instance($USER->id));
 
 //if we are returning from a youtube upload we need to process the returned info in JS
 if($showform==0){
@@ -78,7 +78,7 @@ if($showform==0){
 		die;
 	}
 	//set up the page
-	$PAGE->set_context(get_context_instance(CONTEXT_USER, $USER->id));
+	$PAGE->set_context(context_user::instance($USER->id));
 	$PAGE->set_url($CFG->wwwroot.'/mod/assign/submission/youtube/uploader.php');
 	?>
 
