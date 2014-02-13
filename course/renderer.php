@@ -1752,7 +1752,7 @@ class core_course_renderer extends plugin_renderer_base {
         /** @todo get_string fr/en "coursewizardbutton"
          *  @todo Do not display the button to everyone
          */
-        echo $OUTPUT->single_button(new moodle_url('/local/crswizard/index.php'), 'Assistant création de cours', 'get');
+        echo $this->single_button(new moodle_url('/local/crswizard/index.php'), 'Assistant création de cours', 'get');
 
         ob_start();
         if (coursecat::count_all() == 1) {
