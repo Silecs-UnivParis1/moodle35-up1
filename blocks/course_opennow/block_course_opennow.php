@@ -17,7 +17,7 @@ class block_course_opennow extends block_base {
         }
 
         $this->content = new stdClass();
-        $context = get_context_instance(CONTEXT_COURSE, $this->page->course->id);
+        $context = context_course::instance($this->page->course->id);
 
 		if (has_capability('moodle/course:update', $context)) {
 			$startDate = date('d-m-Y', $this->page->course->startdate);

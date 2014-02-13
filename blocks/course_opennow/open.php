@@ -5,9 +5,9 @@
     $isvisible = required_param('visible', PARAM_INT);
 	$returnurl = $_SERVER['HTTP_REFERER'];
 
-    $context = get_context_instance(CONTEXT_COURSE, $courseid);
+    $context = context_course::instance($courseid);
     if ($data = data_submitted() and confirm_sesskey()) {
-        $context = get_context_instance(CONTEXT_COURSE, $data->courseid);
+        $context = context_course::instance($data->courseid);
         if (has_capability('moodle/course:update', $context)) {
             if (!$course = $DB->get_record('course', array('id' =>$data->courseid))) {
                     error('Course ID was incorrect');
