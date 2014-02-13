@@ -56,7 +56,7 @@ function get_id_courses_to_validate($approbateurid, $validated, $permcheck=false
 
     if ($permcheck) { // on vérifie les permissions de supervalidateur contextuel
         foreach($tabIdCourse as $crsid) {
-            $crscontext = get_context_instance(CONTEXT_COURSE, $crsid);
+            $crscontext = context_course::instance($crsid);
             if (has_capability('local/crswizard:supervalidator', $crscontext)) {
                 $tabchecked[] = $crsid;
             }
@@ -251,7 +251,7 @@ function tooltip_rattachements_hors_rof($catpath, $crsid) {
 function action_icons($crsid, $validated, $visible, $context) {
     global $DB, $OUTPUT;
     $res = '';
-    $coursecontext = get_context_instance(CONTEXT_COURSE, $crsid);
+    $coursecontext = context_course::instance($crsid);
     $baseurl = new moodle_url('/local/course_validated/index.php');
     //$res .= html_writer::start_tag('div', array('class'=>'action'));
 
@@ -343,7 +343,7 @@ function show_or_hide($show, $hide) {
 	}
 
     if ($course) {
-		$coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+		$coursecontext = context_course::instance($course->id);
         require_capability('moodle/course:visibility', $coursecontext);
         // Set the visibility of the course. we set the old flag when user manually changes visibility of course.
         $DB->update_record('course', array('id' => $course->id, 'visible' => $visible, 'visibleold' => $visible, 'timemodified' => time()));

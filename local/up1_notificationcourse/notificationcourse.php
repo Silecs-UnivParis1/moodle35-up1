@@ -67,7 +67,7 @@ $params['lien_activite'] =  $CFG->wwwroot . '/mod/' . $moduletype . '/view.php?i
 
 if ($formdata) {
     $msg = get_notificationcourse_message($formdata, $params);
-    $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+    $coursecontext = context_course::instance($course->id);
     $students = get_users_from_course($course, 'student');
     if (count($students)) {
         $msgresult = send_notificationcourse($students, $msg, $infolog);

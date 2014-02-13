@@ -228,8 +228,8 @@ EOL;
      * @param integer $number number of teachers to display (1 or more)
      * @return string
      */
-    public function format_teachers($dbcourse, $class, $number=1) {
-        $context = get_context_instance(CONTEXT_COURSE, $dbcourse->id);
+    public function format_teachers($dbcourse, $class, $number=1) {        
+        $context = context_course::instance($dbcourse->id);
         $teachers = get_role_users($this->role->id, $context);
 
         $dispteachers = array_slice($teachers, 0, $number);
