@@ -50,10 +50,12 @@ class course_wizard_step2_rof_form extends moodleform {
         } else {
             $tabfreeze = array();
             $mform->addElement('text', 'rofyear', 'Période : ');
+            $mform->addElement('text', 'rofyear', 'Période : ');
             $mform->setConstant('rofyear', $SESSION->wizard['form_step2']['rofyear']);
             $tabfreeze[] = 'rofyear';
 
             $mform->addElement('text', 'rofestablishment', 'Établissement : ');
+            $mform->setType('rofestablishment', PARAM_TEXT);
             $mform->setConstant('rofestablishment', $SESSION->wizard['form_step2']['rofestablishment']);
             $tabfreeze[] = 'rofestablishment';
             $mform->hardFreeze($tabfreeze);
