@@ -36,7 +36,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
-$context = get_context_instance(CONTEXT_SYSTEM);
+$context = context_system::instance();
 require_capability('report/customsql:view', $context);
 
 $manualreports = $DB->get_records('report_customsql_queries', array('runable' => 'manual'),
