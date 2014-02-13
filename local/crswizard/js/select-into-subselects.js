@@ -121,7 +121,7 @@ var createOnchangeHandler = function (theSelect, selectsDiv) {
 };
 
 var transformIntoSubselects = function (theSelect) {
-    theSelect.hide(0);
+    theSelect.hide(0).addClass('hide');
     var root = getTree(theSelect.find('option'));
 
     var selectsDiv = $('<div class="subselects">');
@@ -168,7 +168,7 @@ $.fn.transformIntoSubselects = function (cfg) {
             }
         }
         if (theSelect.attr('id')) {
-            $('label[for="' + theSelect.attr('id') + '"]').hide(0);
+            $('label[for="' + theSelect.attr('id') + '"]').hide(0).addClass('hide');
         }
     });
     return $(this);
