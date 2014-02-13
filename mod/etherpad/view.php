@@ -37,7 +37,7 @@
 
     require_login($course->id);
     
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    $context = context_module::instance($cm->id);
 
 /// Print the page header
 
