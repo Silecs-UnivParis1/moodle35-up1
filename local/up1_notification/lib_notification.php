@@ -78,21 +78,21 @@ function send_notification_incomplete_users($idusers, $msg, $infolog) {
  * @return string : message interface
  */
 function notification_send_all_email($ids, $msg, $infolog) {
-    global $DB;
+    global $DB, $USER;
     $nb = 0;
     if ($ids != '') {
-        $sql = "SELECT id, firstname, lastname, email FROM {user} WHERE id IN ({$ids})";
+        $sql = "SELECT * FROM {user} WHERE id IN ({$ids})";
         $users = $DB->get_records_sql($sql);
 
         foreach ($users as $user) {
-            $res = notification_send_email($user->email, $msg->subject, $msg->body);
+            $res = notification_send_email($user, $msg->subject, $msg->body);
             if ($res) {
                 ++$nb;
             }
         }
         //copie USER
-        if (isset($infolog['copie']) && isset($infolog['useremail'])) {
-            notification_send_email($infolog['useremail'], $msg->subject, $msg->body);
+        if (isset($infolog['copie']) && isset($USER->email)) {
+            notification_send_email($USER, $msg->subject, $msg->body);
         }
     }
     $infolog['nb'] = $nb;
@@ -128,18 +128,16 @@ function get_result_action($infolog) {
 
 /**
  * Envoie un email à l'adresse mail spécifiée
- * @param string $email
+ * @param object $user
  * @param string $subject,
  * @param string $message
  * @return false ou resultat de la fonction email_to_user()
  **/
-function notification_send_email($email, $subject, $message) {
-    if (!isset($email) && empty($email)) {
+function notification_send_email($user, $subject, $message) {
+    if (!isset($user->email) && empty($user->email)) {
         return false;
     }
     $supportuser = core_user::get_support_user();
-    $user = new stdClass();
-    $user->email = $email;
     return email_to_user($user, $supportuser, $subject, $message);
 }
 ?>
