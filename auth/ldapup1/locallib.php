@@ -111,7 +111,7 @@ function insert_user_metadata_fields($initialize=false) {
                 $id = $DB->insert_record('custom_info_field', $record);
                 echo "OK. id=$id <br />\n";
                 if ( ! is_null($cif_fields['init']) ) {
-                    initialize_custom_data('user', $id, $cif_fields['init']);
+                    ldapup1_initialize_custom_data('user', $id, $cif_fields['init']);
                 }
             } // $shortname
         }
@@ -120,7 +120,15 @@ function insert_user_metadata_fields($initialize=false) {
 }
 
 
-function initialize_custom_data($objectname, $fieldid, $data) {
+/**
+ * @todo /!\ doublon de la fonction initialize_custom_data de local/up1_metadata/insertlib.php +178
+ * @todo à dédoublonner
+ * @global type $DB
+ * @param type $objectname
+ * @param type $fieldid
+ * @param type $data
+ */
+function ldapup1_initialize_custom_data($objectname, $fieldid, $data) {
     global $DB;
 
     $cnt=0;
