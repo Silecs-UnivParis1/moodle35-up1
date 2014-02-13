@@ -43,7 +43,7 @@ function count_roles_from_courses($roles, $courses) {
     foreach ($roles as $role => $rolefr) {
         $dbrole = $DB->get_record('role', array('shortname' => $role));
         foreach ($courses as $courseid) {
-            $context = get_context_instance(CONTEXT_COURSE, $courseid);
+            $context = context_course::instance($courseid);
             $teachers = get_role_users($dbrole->id, $context);
             $res += count($teachers);
         }

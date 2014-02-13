@@ -78,7 +78,7 @@ function html_rows_teachers($course) {
     // output based on roles ; only editingteacher + teacher for now
     // for an output based on capabilities, use instead get_users_by_capability(): much heavier
     global $DB;
-    $context = get_context_instance(CONTEXT_COURSE, $course->id);
+    $context = context_course::instance($course->id);
     $troles = array('editingteacher' => 'Enseignants', 'teacher' => 'Autres intervenants' );
     $res = '';
     foreach ($troles as $trole => $rowhead) {
