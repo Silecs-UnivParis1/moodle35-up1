@@ -26,25 +26,29 @@ class course_wizard_step_model extends moodleform {
         $mform->addElement('header', 'general', "Vous souhaitez créer un nouvel espace :");
 
         $course_model = wizard_get_course_model_list();
-        $course_model_list = $course_model['model_name'];
-        $course_summary = $course_model['model_summary'];
-        if (count($course_model_list)) {
-            $m1array = array();
-            $m1array[] = $mform->CreateElement('radio', 'modeletype', '', 'à partir du modèle', 'selm1');
-            $m1array[] = $mform->CreateElement('select', 'selm1', '', $course_model_list);
-            $m1array[] = $mform->CreateElement('select', 'course_summary', '',  $course_summary, array('class' => 'cache'));
+        if (count($course_model)) {
+            $course_model_list = $course_model['model_name'];
+            $course_summary = $course_model['model_summary'];
+            if (count($course_model_list)) {
+                $m1array = array();
+                $m1array[] = $mform->CreateElement('radio', 'modeletype', '', 'à partir du modèle', 'selm1');
+                $m1array[] = $mform->CreateElement('select', 'selm1', '', $course_model_list);
+                $m1array[] = $mform->CreateElement('select', 'course_summary', '',  $course_summary, array('class' => 'cache'));
 
-            $mform->addGroup($m1array, 'm1array', "", array(' : ', ' '), false);
-            $mform->disabledIf('selm1', 'modeletype', 'neq', 'selm1');
+                $mform->addGroup($m1array, 'm1array', "", array(' : ', ' '), false);
+                $mform->disabledIf('selm1', 'modeletype', 'neq', 'selm1');
+            }
         }
 
         $course_list_teacher = wizard_get_course_list_teacher();
         if (count($course_list_teacher)) {
-            $mform->addElement('radio', 'modeletype', '', 'par duplication et réinitialisation de l\'espace', 'selm2');
-            $mform->addElement('select', 'selm2', '', $course_list_teacher,  array(
+            if (count($course_list_teacher)) {
+                $mform->addElement('radio', 'modeletype', '', 'par duplication et réinitialisation de l\'espace', 'selm2');
+                $mform->addElement('select', 'selm2', '', $course_list_teacher,  array(
                     'class' => 'transformIntoSubselects boitex',
                 ));
-            $mform->disabledIf('selm2', 'modeletype', 'neq', 'selm2');
+                $mform->disabledIf('selm2', 'modeletype', 'neq', 'selm2');
+            }
         }
 
         $mform->setDefault('modeletype', 'selm1');
