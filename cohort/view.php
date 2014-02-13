@@ -36,10 +36,10 @@ require_login();
 
 if ($id) {
     $cohort = $DB->get_record('cohort', array('id'=>$id), '*', MUST_EXIST);
-    $context = get_context_instance_by_id($cohort->contextid, MUST_EXIST);
+    $context = context::instance_by_id($cohort->contextid, MUST_EXIST);
 } else if ($name) {
     $cohort = $DB->get_record('cohort', array('name'=>$name), '*', MUST_EXIST);
-    $context = get_context_instance_by_id($cohort->contextid, MUST_EXIST);
+    $context = context::instance_by_id($cohort->contextid, MUST_EXIST);
 } else {
     redirect(new moodle_url('/cohort/index.php'));
 }
@@ -59,7 +59,7 @@ $table = array(
     get_string('idnumber', 'cohort') => $cohort->idnumber,
     get_string('name', 'cohort') => $cohort->name,
     get_string('description', 'cohort') => format_text($cohort->description, $cohort->descriptionformat),
-    get_string('context', 'role') => print_context_name($context),
+    get_string('context', 'role') => $context->get_context_name(),
 );
 $main_table->head = array_keys($table);
 $main_table->data = array(array_values($table));
