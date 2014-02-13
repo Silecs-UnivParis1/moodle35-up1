@@ -371,7 +371,7 @@ function wizard_send_email($email, $subject, $message) {
     if (!isset($email) && empty($email)) {
         return false;
     }
-    $supportuser = generate_email_supportuser();
+    $supportuser = core_user::get_support_user();
     $user = new stdClass();
     $user->email = $email;
     return email_to_user($user, $supportuser, $subject, $message);
