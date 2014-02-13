@@ -413,7 +413,8 @@ function myenrol_cohort($courseid, $tabGroup) {
     }
 
     require_once("$CFG->dirroot/enrol/cohort/locallib.php");
-    enrol_cohort_sync($courseid);
+    $trace = new null_progress_trace();
+    enrol_cohort_sync($trace, $courseid);
     return $error;
 }
 
