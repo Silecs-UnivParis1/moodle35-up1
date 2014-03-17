@@ -13,8 +13,10 @@ require_once($CFG->libdir.'/clilib.php');      // cli only functions
 require('../locallib.php');
 
 // now get cli options
-list($options, $unrecognized) = cli_get_params(array('help'=>false, 'dryrun'=>false, 'cleanall'=>false, 'verb'=>1),
-                                               array('h'=>'help'));
+list($options, $unrecognized) = cli_get_params(
+        array('help'=>false, 'dryrun'=>false, 'testws'=>false, 'cleanall'=>false, 'verb'=>1),
+        array('h'=>'help')
+        );
 
 if ($unrecognized) {
     $unrecognized = implode("\n  ", $unrecognized);
@@ -38,6 +40,9 @@ if ( ! empty($options['help']) ) {
 }
 
 
+if ($options['testws']) {
+    return rofTestWebservice();
+}
 
 if ($options['cleanall']) {
     rofCleanAll();

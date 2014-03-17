@@ -39,16 +39,12 @@ function rofGlobalSync($verb=0, $dryrun=false) {
     setCourseParents($verb, $dryrun);
 }
 
-
 /**
- * fetch "constantes" from webservice and insert them into table rof_constant
+ * fetch "constantes" from SOAP webservice
  *
- * @param bool $dryrun : if set, no modification to database
- * @return lastinsertid
+ * @return $constants
  */
-function fetchConstants($dryrun=0) {
-global $DB;
-
+function fetchConstants() {
     $reqParams = array(
         '_cmd' => 'getAllFormations',
         '_lang' => 'fr-FR',
@@ -58,6 +54,34 @@ global $DB;
     $xmlResp = doSoapRequest($reqParams);
     $xmlTree = new SimpleXMLElement($xmlResp);
     $constants = $xmlTree->properties->infoBlock->extension->uniform->constantes;
+    return $constants;
+}
+
+/**
+ * simple webservice test based on fetchConstants()
+ *
+ * @return $bool
+ */
+function rofTestWebservice() {
+    $xmlTree = fetchConstants();
+    $n = $xmlTree->count();
+    if ($n > 0) {
+        echo "L'arbre des constantes est lisible et a $n fils. OK.\n\n";
+        return true;
+    } else {
+        echo "L'arbre des constantes n'a pas de fils. Erreur probable.\n\n";
+        return false;
+    }
+}
+
+/**
+ * insert "constantes" into table rof_constant
+ *
+ * @param bool $dryrun : if set, no modification to database
+ * @return lastinsertid
+ */
+function setConstants($constants) {
+global $DB;
 
     // step 1 : element domaineDiplome
     foreach ($constants->domaineDiplome as $dd) {
@@ -72,9 +96,7 @@ global $DB;
             $record->dataoai = (string)$singledata->attributes()->oai;
             $record->value = (string)$singledata->value;
             $record->timesync = time();
-            if (! $dryrun ) {
-                $lastinsertid = $DB->insert_record('rof_constant', $record);
-            }
+            $lastinsertid = $DB->insert_record('rof_constant', $record);            
         }
     }
     // step 2 : other elements
@@ -89,10 +111,8 @@ global $DB;
             $record->dataimport = (string)$singledata->attributes()->import;
             $record->dataoai = (string)$singledata->attributes()->oai;
             $record->value = (string)$singledata->value;
-            $record->timesync = time();
-            if (! $dryrun ) {
-            $lastinsertid = $DB->insert_record('rof_constant', $record);
-            }
+            $record->timesync = time();            
+            $lastinsertid = $DB->insert_record('rof_constant', $record);            
         }
     }
     return $lastinsertid;
