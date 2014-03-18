@@ -3,7 +3,7 @@
 /**
  * @package    local
  * @subpackage rof_sync
- * @copyright  2012 Silecs {@link http://www.silecs.info/societe}
+ * @copyright  2012-2014 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -14,7 +14,8 @@ require('../locallib.php');
 
 // now get cli options
 list($options, $unrecognized) = cli_get_params(
-        array('help'=>false, 'dryrun'=>false, 'testws'=>false, 'cleanall'=>false, 'verb'=>1),
+        array('help'=>false, 'dryrun'=>false, 'testws'=>false, 'verb'=>1,
+              'cleanall'=>false, 'sync'=>false),
         array('h'=>'help')
         );
 
@@ -28,10 +29,12 @@ $help =
 
 Options:
 --verb=N              Verbosity (0 to 3), 1 by default
---cleanall            Do not sync, but clean all 5 rof_ tables
+--testws              Test webservice. No database modification
 --dryrun              Simulation mode: do not change anything in the database
 -h, --help            Print out this help
 
+--cleanall            Do not sync, but clean all 5 rof_ tables
+--sync                Run actual sync
 ";
 
 if ( ! empty($options['help']) ) {
@@ -48,8 +51,12 @@ if ($options['cleanall']) {
     rofCleanAll();
     return 0;
 }
-else {
+
+if ($options['sync']) {
     rofGlobalSync($options['verb'], $options['dryrun']);
     echo "\n\n";
+    return 0;
+} else {
+    echo $help;
     return 0;
 }
