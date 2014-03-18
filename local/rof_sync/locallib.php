@@ -25,24 +25,32 @@ function rofGlobalSync($verb=0, $dryrun=false) {
 
     rofCleanAll();
 
-    if ($verb >= 1) echo "Constants... \n";
-    fetchConstants();
-    if ($verb >= 1) echo "\nComponents... \n";
-    echo setComponents();
+    progressBar($verb, 1, "Constants... ");
+    $constants = fetchConstants();
+    $countdiag = setConstants($constants);
+    progressBar($verb, 1, countDisplay($countdiag) . "\n");
 
-    if ($verb >= 1) echo "\nPrograms... \n";
+    progressBar($verb, 1, "\nComponents... ");
+    $countdiag = setComponents();
+    progressBar($verb, 1, countDisplay($countdiag) . "\n");
+
+
+
+    progressBar($verb, 1, "\nPrograms... \n");
     echo fetchPrograms($verb, $dryrun);
-    if ($verb >= 1) echo "\nCourses... \n";
+    
+    progressBar($verb, 1, "\nCourses... \n");
     echo fetchCourses($verb, $dryrun);
 
-    if ($verb >= 1) echo "\nCourse parents... \n";
+    progressBar($verb, 1, "\nCourse parents... \n");
     setCourseParents($verb, $dryrun);
 }
+
 
 /**
  * fetch "constantes" from SOAP webservice
  *
- * @return $constants
+ * @return object (xml node) $constants
  */
 function fetchConstants() {
     $reqParams = array(
@@ -77,26 +85,21 @@ function rofTestWebservice() {
 /**
  * insert "constantes" into table rof_constant
  *
- * @param bool $dryrun : if set, no modification to database
- * @return lastinsertid
+ * @param object (xml node) $constants
+ * @return array $count  array('ok' => int, 'err' => int);
  */
 function setConstants($constants) {
-global $DB;
+    global $DB;
+    $count = array('ok' => 0, 'err' => 0);
 
     // step 1 : element domaineDiplome
     foreach ($constants->domaineDiplome as $dd) {
         $elt='domaineDiplome';
         $elttype = (string)$dd->attributes()->type;
         foreach ($dd->data as $singledata) {
-            $record = new stdClass();
-            $record->element = $elt;
-            $record->elementtype = $elttype;
-            $record->dataid = (string)$singledata->attributes()->id;
-            $record->dataimport = (string)$singledata->attributes()->import;
-            $record->dataoai = (string)$singledata->attributes()->oai;
-            $record->value = (string)$singledata->value;
-            $record->timesync = time();
-            $lastinsertid = $DB->insert_record('rof_constant', $record);            
+            $record = defineConstant($elt, $elttype, $singledata);
+            $lastinsertid = $DB->insert_record('rof_constant', $record);
+            ( $lastinsertid ? $count['ok']++ : $count['err']++ );
         }
     }
     // step 2 : other elements
@@ -104,31 +107,42 @@ global $DB;
         $elt = (string)$element->getName();
         if ($elt == 'domaineDiplome') continue;
         foreach ($element->data as $singledata) {
-            $record = new stdClass();
-            $record->element = $elt;
-            $record->elementtype = '';
-            $record->dataid = (string)$singledata->attributes()->id;
-            $record->dataimport = (string)$singledata->attributes()->import;
-            $record->dataoai = (string)$singledata->attributes()->oai;
-            $record->value = (string)$singledata->value;
-            $record->timesync = time();            
-            $lastinsertid = $DB->insert_record('rof_constant', $record);            
+            $record = defineConstant($elt, '', $singledata);  //** @todo Vérifier si elttype est toujours vide
+            $lastinsertid = $DB->insert_record('rof_constant', $record);
+            ( $lastinsertid ? $count['ok']++ : $count['err']++ );
         }
     }
-    return $lastinsertid;
+    return $count;
+}
+
+/**
+ * define a "Constante" record from an XML node and metadata
+ * @param string $element
+ * @param string $elementtype
+ * @param xml object $singledata
+ * @return \stdClass record to be inserted
+ */
+function defineConstant($element, $elementtype, $singledata) {
+    $record = new stdClass();
+    $record->element = $element;
+    $record->elementtype = $elementtype;
+    $record->dataid = (string)$singledata->attributes()->id;
+    $record->dataimport = (string)$singledata->attributes()->import;
+    $record->dataoai = (string)$singledata->attributes()->oai;
+    $record->value = (string)$singledata->value;
+    $record->timesync = time();
+    return $record;
 }
 
 
 /**
- * fetch "composantes" from webservice/database and insert them into table rof_component
- * @param bool $dryrun : if set, no modification to database
- * @return lastinsertid
- * @todo how to fetch rofid (ex. UP1-OU3282) from component number ??? implement this
+ * fetch "composantes" from table comstants and insert them into table rof_component
+ * @return array $count  array('ok' => int, 'err' => int);
  */
-function setComponents($dryrun=0) {
-global $DB;
-
+function setComponents() {
+    global $DB;
     $components = $DB->get_records('rof_constant', array('element' => 'composante'));
+    $count = array('ok' => 0, 'err' => 0);
 
     foreach ($components as $component) {
         $record = new stdClass();
@@ -140,11 +154,10 @@ global $DB;
         $record->sub = ''; // to be completed later
         $record->subnb = 0;
         $record->timesync = time();
-        if (! $dryrun ) {
-            $lastinsertid = $DB->insert_record('rof_component', $record);
-        }
+        $lastinsertid = $DB->insert_record('rof_component', $record);
+        ( $lastinsertid ? $count['ok']++ : $count['err']++ );
     }
-
+    return $count;
 }
 
 /**
@@ -706,4 +719,26 @@ function displayWsdlInformation($url) {
     print_r($types);
 
     echo "\n\n**************\n\n";
+}
+
+/**
+ * progress bar display
+ * @param int $verb verbosity
+ * @param int $verbmin minimal verbosity
+ * @param string $strig to display
+ */
+function progressBar($verb, $verbmin, $string) {
+    if ($verb >= $verbmin) {
+        echo $string;
+    }
+}
+
+/**
+ * display a count diagnostic (specialt for DB inserts diagnostic)
+ * @param array $count ex. ('OK' => 14, 'err' => 0)
+ */
+function countDisplay($count) {
+    foreach ($count as $label => $nb) {
+        echo " $label=$nb ";
+    }
 }
