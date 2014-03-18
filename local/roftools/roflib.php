@@ -192,16 +192,16 @@ function rof_table_constants($element) {
 function rof_get_constants() {
     global $DB;
 
-    $sql = 'SELECT DISTINCT element FROM {rof_constant} ORDER BY element';
-    return $DB->get_fieldset_sql($sql);
+    $sql = 'SELECT element, COUNT(id) AS nb FROM {rof_constant} GROUP BY element ORDER BY element';
+    return $DB->get_records_sql_menu($sql);
 }
 
 function rof_links_constants($baseurl) {
     $constants = rof_get_constants();
     $links = '';
-    foreach ($constants as $constant) {
+    foreach ($constants as $constant => $nb) {
         $url = new moodle_url($baseurl, array('constant' => $constant));
-        $links .= html_writer::link($url, $constant) . ' &nbsp ';
+        $links .= html_writer::link($url, $constant . ' (' . $nb . ')') . ' &nbsp ';
     }
     return 'Constantes : ' . $links;
 }
