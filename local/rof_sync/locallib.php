@@ -225,15 +225,16 @@ function fetchProgramsByComponent($verb=0, $compNumber) {
             $cnt['prog']++;
 
             // insert subprograms
+            $subprograms = array();
             foreach($element->subProgram as $subp) {
                 $subprogram = clone $program;
                 $subprogram->rofid = (string)$subp->programID;
-                $subProgs[$ProgRofid][] = $program->rofid;
+                $subProgs[$ProgRofid][] = $subprogram->rofid;
                 $subprogram->name  = (string)$subp->programName->text;
                 $subprogram->level = 2;
                 $subprogram->oneparent = $ProgRofid;
                 $subprogram->timesync = time();
-                $records[] = $subprogram;
+                $subprograms[] = $subprogram;
                 $cnt['subp']++;
             } // foreach subprogram
 
@@ -241,6 +242,7 @@ function fetchProgramsByComponent($verb=0, $compNumber) {
             $program->sub = serializeArray($subProgs[$ProgRofid]);
             $program->subnb = count($subProgs[$ProgRofid]);
             $records[] = $program;
+            $records = array_merge($records, $subprograms);
         } //foreach ($element)
 
         progressBar($verb, 1, "$compNumber ");
