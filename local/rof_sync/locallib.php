@@ -188,7 +188,7 @@ global $DB;
         }
 
         $xmlTree = new SimpleXMLElement($xmlResp);
-        $cnt = 0;
+        $cnt = array('prog' => 0, 'subp' => 0);
 
         foreach ($xmlTree->children() as $element) { //only program elements should be better
             $elt = (string)$element->getName();
@@ -229,7 +229,7 @@ global $DB;
             if (! $dryrun ) {
                 $lastinsertid = $DB->insert_record('rof_program', $record);
                 if ( $lastinsertid) {
-                    $cnt++;
+                    $cnt['prog']++;
                 }
             }
             // insert subprograms
@@ -246,7 +246,7 @@ global $DB;
                 if (! $dryrun ) {
                     $slastinsertid = $DB->insert_record('rof_program', $record);
                     if ( $slastinsertid) {
-                        $cnt++;
+                        $cnt['subp']++;
                     }
                 }
             }
@@ -259,28 +259,30 @@ global $DB;
             }
         } //foreach ($element)
 
-        progressBar($verb, 2, " : $compNumber->$cnt");
-        progressBar($verb, 1, '.');
-
-        $total += $cnt;
-    } //foreach($components)
-
-    progressBar($verb, 1, "\n relations composantes <-> programmes\n");
-    foreach ($components as $id => $compNumber) {
         // composante -> programmes
         progressBar($verb, 1, "$compNumber ");
         $dbcomp= $DB->get_record('rof_component', array('number' => $compNumber));
         $dbcomp->sub = serializeArray($subComp[$compNumber]);
         $dbcomp->subnb = count($subComp[$compNumber]);
-        if (! $dryrun ) {
+        if ( $dryrun ) {
             $DB->update_record('rof_component', $dbcomp);
         }
+        progressBar($verb, 2, ": " . $cnt['prog'] .'+'. $cnt['subp'] . ' ' . $dbcomp->subnb . ' ');
+        progressBar($verb, 1, '.');
+
+        $total += $cnt['prog'] + $cnt['subp'];
+    } //foreach($components)
+
+
+    progressBar($verb, 1, "\n relations composantes <-> programmes\n");
+    foreach ($components as $id => $compNumber) {
 
         // programme -> composantes
         foreach ($subComp[$compNumber] as $prog) {
             $parentProg[$prog][] = $compNumber;
         }
     }
+    
     foreach ($parentProg as $prog => $parents) {
         progressBar($verb, 1, ".");
         $dbprog= $DB->get_record('rof_program', array('rofid' => $prog));
