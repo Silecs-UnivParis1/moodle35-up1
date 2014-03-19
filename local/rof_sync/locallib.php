@@ -35,10 +35,9 @@ function rofGlobalSync($verb=0, $dryrun=false) {
     progressBar($verb, 1, countDisplay($countdiag) . "\n");
 
 
-
     progressBar($verb, 1, "\nPrograms... \n");
     echo fetchPrograms($verb, $dryrun);
-    
+
     progressBar($verb, 1, "\nCourses... \n");
     echo fetchCourses($verb, $dryrun);
 
@@ -258,21 +257,16 @@ global $DB;
             }
         } //foreach ($element)
 
-        if ($verb >=2) echo " : $compNumber->$cnt";
-        if ($verb >=1) echo '.';
+        progressBar($verb, 2, " : $compNumber->$cnt");
+        progressBar($verb, 1, '.');
 
         $total += $cnt;
     } //foreach($components)
 
-
-    if ($verb > 0) {
-        echo "\n relations composantes <-> programmes\n";
-    }
+    progressBar($verb, 1, "\n relations composantes <-> programmes\n");
     foreach ($components as $id => $compNumber) {
         // composante -> programmes
-        if ($verb > 0) {
-            echo "$compNumber ";
-        }
+        progressBar($verb, 1, "$compNumber ");
         $dbcomp= $DB->get_record('rof_component', array('number' => $compNumber));
         $dbcomp->sub = serializeArray($subComp[$compNumber]);
         $dbcomp->subnb = count($subComp[$compNumber]);
@@ -286,9 +280,7 @@ global $DB;
         }
     }
     foreach ($parentProg as $prog => $parents) {
-        if ($verb > 0) {
-            echo ".";
-        }
+        progressBar($verb, 1, ".");
         $dbprog= $DB->get_record('rof_program', array('rofid' => $prog));
         $dbprog->parents = serializeArray($parents);
         $dbprog->components = $dbprog->parents;
@@ -298,18 +290,16 @@ global $DB;
         }
     }
 
-    if ($verb > 0) {
-        echo "\n relations programmes <-> sous-programmes\n";
-    }
+    progressBar($verb, 1, "\n relations programmes <-> sous-programmes\n");
     // relations programmes <-> sous-programmes
     foreach ($subProgs as $prog => $listSubs) {
-        if ($verb > 0) { echo '.'; }
+        progressBar($verb, 1, '.');
         foreach ($listSubs as $subprog) {
             $parentSubProg[$subprog][] = $prog;
         }
     }
     foreach ($parentSubProg as $subprog => $listParents) {
-        if ($verb > 0) { echo '*'; }
+        progressBar($verb, 1, '*');
         $dbprog= $DB->get_record('rof_program', array('rofid' => $subprog));
         $dbprog->parents = serializeArray($listParents);
         $dbprog->parentsnb = count($listParents);
@@ -336,23 +326,15 @@ global $DB;
 
     $programs = $DB->get_records_menu('rof_program', array('level' => 1), '', 'id, rofid');
     foreach ($programs as $id => $progRofId) {
-        if ($verb > 0) {
-            echo '.';
-        }
-        if ($verb > 1) {
-            echo "\n". $cnt. "  id=". $id ."  p=". $progRofId ."->";
-        }
+        progressBar($verb, 1, '.');
+        progressBar($verb, 2, $cnt. "  id=". $id ."  p=". $progRofId ."->");
         $count = fetchCoursesByProgram($progRofId, $verb, $dryrun);
         $total += $count[0];
         $dbltotal += $count[1];
-        if ($verb > 1) {
-            echo " cnt=". $count[0] . "   dbl=".$count[1];
-        }
+        progressBar($verb, 2, " cnt=". $count[0] . "   dbl=".$count[1]);
         $cnt++;
     }
-    if ($verb > 0) {
-        echo "\nCourses : total=$total  doublons=$dbltotal \n";
-    }
+    progressBar($verb, 1, "\nCourses : total=$total  doublons=$dbltotal \n");
     return $total;
 }
 
@@ -498,11 +480,11 @@ function setCourseParents($verb, $dryrun=false) {
     // FIRST, children of programs AND subprograms
     $programs = $DB->get_records('rof_program'); // both programs and subprograms
     foreach ($programs as $program) {
-        if ($verb > 0) echo "*";
+        progressBar($verb, 1, '*');
         $childcourses = explode(',', $program->courses);
         if ( ! $childcourses ) continue ;
         foreach ($childcourses as $childcourse) {
-            if ($verb > 1) echo ".";
+            progressBar($verb, 2, '.');
             $parents[$childcourse][] = $program->rofid;
             $alevel[$childcourse] = 1;
         }
@@ -525,15 +507,15 @@ function setCourseParents($verb, $dryrun=false) {
     $maxlevel=10;
     do { // loop on levels
         $finished = true;
-        if ($verb >= 1) echo "\nlooping courses level $level.\n";
+        progressBar($verb, 1, "\nlooping courses level $level.\n");
         $pcourses = $DB->get_records('rof_course', array('level' => $level));
         foreach ($pcourses as $pcourse) {
-            if ($verb >= 2) echo "*";
+            progressBar($verb, 2, '*');
             $childcourses = explode(',', $pcourse->sub);
             if ( ! $childcourses ) continue ;
             $finished = false;
             foreach ($childcourses as $childcourse) {
-                if ($verb >= 3) echo ".";
+                progressBar($verb, 3, '.');
                 $parents[$childcourse][] = $pcourse->rofid;
                 $alevel[$childcourse] = $level+1;
             }
