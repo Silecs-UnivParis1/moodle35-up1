@@ -34,9 +34,11 @@ function rofGlobalSync($verb=0, $dryrun=false) {
     $countdiag = setComponents();
     progressBar($verb, 1, countDisplay($countdiag) . "\n");
 
-
     progressBar($verb, 1, "\nPrograms... \n");
     echo fetchPrograms($verb, $dryrun);
+
+
+die();
 
     progressBar($verb, 1, "\nCourses... \n");
     echo fetchCourses($verb, $dryrun);
@@ -640,6 +642,7 @@ function fetchPerson($xmlPerson) {
  * @return string serialized array
  */
 function serializeArray($array) {
+    sort($array, SORT_STRING);
     return join(',', $array);
 }
 
