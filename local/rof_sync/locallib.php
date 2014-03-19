@@ -35,7 +35,8 @@ function rofGlobalSync($verb=0, $dryrun=false) {
     progressBar($verb, 1, countDisplay($countdiag) . "\n");
 
     progressBar($verb, 1, "\nPrograms... \n");
-    echo fetchPrograms($verb, $dryrun);
+    // echo fetchPrograms($verb, $dryrun);
+    processPrograms($verb, $dryrun);
 
 
 die();
@@ -161,6 +162,117 @@ function setComponents() {
     return $count;
 }
 
+
+/**
+ * return SOAP request parameters to fetch a "composante"
+ * @param string $compNumber '01' to '37'
+ * @return array
+ */
+function getProgramsRequest($compNumber) {
+    $reqParams = array(
+        '_cmd' => 'getAllFormations',
+        '_lang' => 'fr-FR',
+        '__composante' => $compNumber,
+        '__1' => '__composante',  // incompréhensible mais nécessaire
+    );
+    return $reqParams;
+}
+
+
+function fetchProgramsByComponent($verb=0, $compNumber) {
+        $subComp = array(); // liste des programmes fils
+        $records = array(); //liste des objets program et subprogram à retourner
+
+        $reqParams = getProgramsRequest($compNumber);
+        $xmlResp = doSoapRequest($reqParams);
+        progressBar($verb, 3, "\n$compNumber size=". strlen($xmlResp) ."\n");
+        $xmlTree = new SimpleXMLElement($xmlResp);
+        $cnt = array('prog' => 0, 'subp' => 0);
+
+        foreach ($xmlTree->children() as $element) { //only program elements should be better
+            $elt = (string)$element->getName();
+            if ($elt != 'program') continue;
+            $ProgRofid = (string)$element->programID;
+            $subComp[] = $ProgRofid;
+
+            $subProgs[$ProgRofid] = array();
+            $program = new stdClass();
+            $program->compnumber = ''; // potentiellement plusieurs composantes mères
+            $program->rofid = $ProgRofid;
+            $program->name  = (string)$element->programName->text;
+            $program->level = 1;
+            $program->oneparent = $compNumber;
+            $program->timesync = time();
+            $program->sub = '';
+            $program->courses = '';
+            $program->parents = '';
+            $program->refperson = '';
+            // dans la boucle : typedip, domainedip, naturedip, cycledip, rythmedip, languedip
+            foreach($element->programCode as $code) {
+                $codeset = (string)$code->attributes();
+                $val = (string)$code[0];
+                if (preg_match('/Diplome$/', $codeset) && ! strrchr($codeset, '.')) { // ni oai. ni uniform.
+                    $field = str_replace('Diplome', 'dip', $codeset);
+                    $program->$field = $val;
+                }
+            }
+            // on récupère acronyme, mention, specialite sous /CDM/program/infoBlock/extension/cdmUP1/
+            if ( ! empty($element->infoBlock->extension->cdmUP1) ) {
+                $program->acronyme = (string)$element->infoBlock->extension->cdmUP1->acronyme;
+                $program->mention = (string)$element->infoBlock->extension->cdmUP1->mention;
+                $program->specialite = (string)$element->infoBlock->extension->cdmUP1->specialite;
+            }
+            $cnt['prog']++;
+
+            // insert subprograms
+            foreach($element->subProgram as $subp) {
+                $subprogram = clone $program;
+                $subprogram->rofid = (string)$subp->programID;
+                $subProgs[$ProgRofid][] = $program->rofid;
+                $subprogram->name  = (string)$subp->programName->text;
+                $subprogram->level = 2;
+                $subprogram->oneparent = $ProgRofid;
+                $subprogram->timesync = time();
+                $records[] = $subprogram;
+                $cnt['subp']++;
+            } // foreach subprogram
+
+            // update program to store subprograms
+            $program->sub = serializeArray($subProgs[$ProgRofid]);
+            $program->subnb = count($subProgs[$ProgRofid]);
+            $records[] = $program;
+        } //foreach ($element)
+
+        progressBar($verb, 1, "$compNumber ");
+        progressBar($verb, 2, ": " . $cnt['prog'] .'+'. $cnt['subp'] . ' ');
+        return array($subComp, $records);
+}
+
+
+function insertProgramsByComponent($compNumber, $subComp, $records) {
+    global $DB;
+
+    $dbcomp= $DB->get_record('rof_component', array('number' => $compNumber));
+    $dbcomp->sub = serializeArray($subComp);
+    $dbcomp->subnb = count($subComp);
+    $DB->update_record('rof_component', $dbcomp);
+
+    foreach ($records as $record) {
+        $DB->insert_record('rof_program', $record); //TODO OR UPDATE
+    }
+}
+
+
+function processPrograms($verb=0, $dryrun=false) {
+
+    $compNumber = '01';
+    list($subComp, $records) = fetchProgramsByComponent($verb, $compNumber);
+    insertProgramsByComponent($compNumber, $subComp, $records);
+
+    return 0;
+}
+
+
 /**
  * fetch "programs" and "subPrograms" from webservice and insert them into table rof_program
  * @param integer $verb verbosity
@@ -171,106 +283,9 @@ function fetchPrograms($verb=0, $dryrun=false) {
 global $DB;
     $total = 0;
 
-    $reqParams = array(
-        '_cmd' => 'getAllFormations',
-        '_lang' => 'fr-FR',
-        '__composante' => null, // à modifier
-        '__1' => '__composante',  // incompréhensible mais nécessaire
-    );
-
     $components = $DB->get_records_menu('rof_component', array(), '', 'id, number');
     foreach ($components as $id => $compNumber) {
-        $subComp[$compNumber] = array(); // liste des programmes fils
-        $reqParams['__composante'] = $compNumber;
-        $xmlResp = doSoapRequest($reqParams);
-        if ($verb >=3 ) {
-            echo "\n$compNumber size=". strlen($xmlResp) ."\n";
-        }
 
-        $xmlTree = new SimpleXMLElement($xmlResp);
-        $cnt = array('prog' => 0, 'subp' => 0);
-
-        foreach ($xmlTree->children() as $element) { //only program elements should be better
-            $elt = (string)$element->getName();
-            if ($elt != 'program') continue;
-            $ProgRofid = (string)$element->programID;
-            $subComp[$compNumber][] = $ProgRofid;
-            if ( $DB->record_exists('rof_program', array('rofid' => $ProgRofid) ) ) {
-                // already seen, by another component
-                continue;
-            }
-            $subProgs[$ProgRofid] = array();
-            $record = new stdClass();
-            $record->compnumber = ''; // potentiellement plusieurs composantes mères
-            $record->rofid = $ProgRofid;
-            $record->name  = (string)$element->programName->text;
-            $record->level = 1;
-            $record->oneparent = $compNumber;
-            $record->timesync = time();
-            $record->sub = '';
-            $record->courses = '';
-            $record->parents = '';
-            $record->refperson = '';
-            // dans la boucle : typedip, domainedip, naturedip, cycledip, rythmedip, languedip
-            foreach($element->programCode as $code) {
-                $codeset = (string)$code->attributes();
-                $val = (string)$code[0];
-                if (preg_match('/Diplome$/', $codeset) && ! strrchr($codeset, '.')) { // ni oai. ni uniform.
-                    $field = str_replace('Diplome', 'dip', $codeset);
-                    $record->$field = $val;
-                }
-            }
-            // on récupère acronyme, mention, specialite sous /CDM/program/infoBlock/extension/cdmUP1/
-            if ( ! empty($element->infoBlock->extension->cdmUP1) ) {
-                $record->acronyme = (string)$element->infoBlock->extension->cdmUP1->acronyme;
-                $record->mention = (string)$element->infoBlock->extension->cdmUP1->mention;
-                $record->specialite = (string)$element->infoBlock->extension->cdmUP1->specialite;
-            }
-            if (! $dryrun ) {
-                $lastinsertid = $DB->insert_record('rof_program', $record);
-                if ( $lastinsertid) {
-                    $cnt['prog']++;
-                }
-            }
-            // insert subprograms
-            foreach($element->subProgram as $subp) {
-                $record->rofid = (string)$subp->programID;
-                $subProgs[$ProgRofid][] = $record->rofid;
-                if ( $DB->record_exists('rof_program', array('rofid' => $record->rofid) ) ) {
-                    continue;
-                }
-                $record->name  = (string)$subp->programName->text;
-                $record->level = 2;
-                $record->oneparent = $ProgRofid;
-                $record->timesync = time();
-                if (! $dryrun ) {
-                    $slastinsertid = $DB->insert_record('rof_program', $record);
-                    if ( $slastinsertid) {
-                        $cnt['subp']++;
-                    }
-                }
-            }
-            // update program to store subprograms
-            $dbprogram = $DB->get_record('rof_program', array('id' => $lastinsertid));
-            $dbprogram->sub = serializeArray($subProgs[$ProgRofid]);
-            $dbprogram->subnb = count($subProgs[$ProgRofid]);
-            if (! $dryrun ) {
-                $DB->update_record('rof_program', $dbprogram);
-            }
-        } //foreach ($element)
-
-        // composante -> programmes
-        progressBar($verb, 1, "$compNumber ");
-        $dbcomp= $DB->get_record('rof_component', array('number' => $compNumber));
-        $dbcomp->sub = serializeArray($subComp[$compNumber]);
-        $dbcomp->subnb = count($subComp[$compNumber]);
-        if ( $dryrun ) {
-            $DB->update_record('rof_component', $dbcomp);
-        }
-        progressBar($verb, 2, ": " . $cnt['prog'] .'+'. $cnt['subp'] . ' ' . $dbcomp->subnb . ' ');
-        progressBar($verb, 1, '.');
-
-        $total += $cnt['prog'] + $cnt['subp'];
     } //foreach($components)
 
 
