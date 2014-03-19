@@ -180,8 +180,9 @@ function getProgramsRequest($compNumber) {
 
 
 function fetchProgramsByComponent($verb=0, $compNumber) {
-        $subComp = array(); // liste des programmes fils
-        $records = array(); //liste des objets program et subprogram à retourner
+        $subComp = array();  // liste des programmes fils
+        $subProgs = array(); // liste des sous-programmes
+        $records = array();  //liste des objets program et subprogram à retourner
 
         $reqParams = getProgramsRequest($compNumber);
         $xmlResp = doSoapRequest($reqParams);
@@ -247,74 +248,62 @@ function fetchProgramsByComponent($verb=0, $compNumber) {
 
         progressBar($verb, 1, "$compNumber ");
         progressBar($verb, 2, ": " . $cnt['prog'] .'+'. $cnt['subp'] . ' ');
-        return array($subComp, $records);
+        return array($subComp, $subProgs, $records);
 }
 
 
-function insertProgramsByComponent($compNumber, $subComp, $records) {
+function insertProgramsByComponent($verb, $compNumber, $subComp, $records) {
     global $DB;
 
+    $cnt = array('ins' => 0, 'dbl' => 0);
     $dbcomp= $DB->get_record('rof_component', array('number' => $compNumber));
     $dbcomp->sub = serializeArray($subComp);
     $dbcomp->subnb = count($subComp);
     $DB->update_record('rof_component', $dbcomp);
 
     foreach ($records as $record) {
-        $DB->insert_record('rof_program', $record); //TODO OR UPDATE
+        if ($DB->record_exists('rof_program', array('rofid' => $record->rofid))) {
+            $cnt['dbl']++;
+        } else {
+            $DB->insert_record('rof_program', $record); //@todo OR UPDATE
+            $cnt['ins']++;
+        }
     }
+    progressBar($verb, 2, countDisplay($cnt) . "\n");
 }
 
-
-function processPrograms($verb=0, $dryrun=false) {
-
-    $compNumber = '01';
-    list($subComp, $records) = fetchProgramsByComponent($verb, $compNumber);
-    insertProgramsByComponent($compNumber, $subComp, $records);
-
-    return 0;
-}
 
 
 /**
- * fetch "programs" and "subPrograms" from webservice and insert them into table rof_program
- * @param integer $verb verbosity
- * @param bool $dryrun : if set, no modification to database
- * @return number of inserted rows
+ * le post-processing crée les index vers l'amont : subprograms -> programs,  programs -> components
+ * et met à jour la table rof_program
+ * @param int $verb
+ * @param string $compNumber ex. '02'
+ * @param array $subComp array(progRofids))
+ * @param array $subProgs array( $prog => array($subprog) )
  */
-function fetchPrograms($verb=0, $dryrun=false) {
+function postprocessProgramsByComponent($verb, $compNumber, $subComp, $subProgs) {
 global $DB;
-    $total = 0;
 
-    $components = $DB->get_records_menu('rof_component', array(), '', 'id, number');
-    foreach ($components as $id => $compNumber) {
-
-    } //foreach($components)
-
-
-    progressBar($verb, 1, "\n relations composantes <-> programmes\n");
-    foreach ($components as $id => $compNumber) {
-
-        // programme -> composantes
-        foreach ($subComp[$compNumber] as $prog) {
-            $parentProg[$prog][] = $compNumber;
-        }
+    progressBar($verb, 2, "$compNumber  ");
+    // update rof_program programs (level=1) with referring components   (parents, parentsnb, components)
+    $parentProg = array();
+    foreach ($subComp as $prog) {
+        $parentProg[$prog][] = $compNumber;
     }
-    
+
     foreach ($parentProg as $prog => $parents) {
         progressBar($verb, 1, ".");
         $dbprog= $DB->get_record('rof_program', array('rofid' => $prog));
         $dbprog->parents = serializeArray($parents);
         $dbprog->components = $dbprog->parents;
         $dbprog->parentsnb = count($parents);
-        if (! $dryrun ) {
-            $DB->update_record('rof_program', $dbprog);
-        }
+        $DB->update_record('rof_program', $dbprog);
     }
 
-    progressBar($verb, 1, "\n relations programmes <-> sous-programmes\n");
-    // relations programmes <-> sous-programmes
+    // update rof_program SUBprograms (level=2) with referring programs (parents, parentsnb)
+    $parentSubProg = array();
     foreach ($subProgs as $prog => $listSubs) {
-        progressBar($verb, 1, '.');
         foreach ($listSubs as $subprog) {
             $parentSubProg[$subprog][] = $prog;
         }
@@ -324,12 +313,37 @@ global $DB;
         $dbprog= $DB->get_record('rof_program', array('rofid' => $subprog));
         $dbprog->parents = serializeArray($listParents);
         $dbprog->parentsnb = count($listParents);
-        if (! $dryrun ) {
-            $DB->update_record('rof_program', $dbprog);
-        }
+        $DB->update_record('rof_program', $dbprog);
+    }
+}
+
+/**
+ * fetch, insert and indexes all programs
+ * @param type $verb
+ * @param type $dryrun
+ * @return int
+ */
+function processPrograms($verb=0, $dryrun=false) {
+global $DB;
+
+    $subProgs = array();
+    $subComp = array();
+    $components = $DB->get_records_menu('rof_component', array(), '', 'id, number');
+    //$components = array( '01' => '01', '02' => '02' );
+    progressBar($verb, 1, "Programs - ph.1 fetch and insert\n");
+
+    foreach ($components as $id => $compNumber) {
+        list($subComp[$compNumber], $subProgs[$compNumber], $records) = fetchProgramsByComponent($verb, $compNumber);
+        insertProgramsByComponent($verb, $compNumber, $subComp[$compNumber], $records);
     }
 
-    return $total;
+    progressBar($verb, 1, "Programs - ph.2 post-process\n");
+    // Forcément dans un second temps puisque des programs/subprograms peuvent appartenir à plusieurs composantes
+    foreach ($components as $id => $compNumber) {
+        postprocessProgramsByComponent($verb, $compNumber, $subComp[$compNumber], $subProgs[$compNumber]);
+    }
+
+    return 0;
 }
 
 
