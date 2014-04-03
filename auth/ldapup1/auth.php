@@ -694,6 +694,8 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
         $moodleattributes['emailstop'] = 'accountstatus';
         // END addition
 
+	$moodleattributes['emailstop'] = 'accountstatus';
+
         return $moodleattributes;
     }
 
