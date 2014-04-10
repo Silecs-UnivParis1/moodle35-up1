@@ -4,6 +4,7 @@ require_once(dirname(dirname(__FILE__)) . "/config.php");
 require_once($CFG->dirroot . '/course/lib.php');
 require_once(dirname(__FILE__) . '/batch_form.php');
 require_once(dirname(__FILE__) . '/batch_lib.php');
+require_once(dirname(__FILE__) . '/batch_libactions.php');
 
 global $DB, $PAGE;
 
@@ -28,41 +29,21 @@ if ($action) {
     switch ($action) {
         case 'prefix':
             $prefix = optional_param('batchprefix', '', PARAM_RAW);
-            if ($prefix) {
-                foreach ($courses as $course) {
-                    $course->fullname = $prefix . $course->fullname;
-                    // $course->shortname = $prefix . $course->shortname;
-                    $DB->update_record('course', $course);
-                }
-                redirect($CFG->wwwroot . '/course/batch.php');
-                exit();
-            }
+            batchaction_prefix($courses, $prefix, true);
             break;
+
         case 'suffix':
             $suffix = optional_param('batchsuffix', '', PARAM_RAW);
-            if ($suffix) {
-                foreach ($courses as $course) {
-                    $course->fullname = $course->fullname . $suffix;
-                    // $course->shortname = $course->shortname . $suffix;
-                    $DB->update_record('course', $course);
-                }
-                redirect($CFG->wwwroot . '/course/batch.php');
-                exit();
-            }
+            batchaction_suffix($courses, $suffix, true);
             break;
+
         case 'regexp':
             $regexp = optional_param('batchregexp', '', PARAM_RAW);
             $replace = optional_param('batchreplace', '', PARAM_RAW);
             $confirm = optional_param('batchconfirm', '', PARAM_BOOL);
             if ($regexp) {
                 if ($confirm) {
-                    foreach ($courses as $course) {
-                        $course->fullname = preg_replace('/' . $regexp . '/', $replace, $course->fullname);
-                        // $course->shortname = $course->shortname . $suffix;
-                        $DB->update_record('course', $course);
-                    }
-                    redirect($CFG->wwwroot . '/course/batch.php');
-                    exit();
+                    batchaction_regexp($courses, $regexp, $replace, true);
                 } else {
                     foreach ($courses as $course) {
                         $preview[$course->id] = preg_replace('/' . $regexp . '/', $replace, $course->fullname);
