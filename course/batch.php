@@ -51,12 +51,9 @@ if ($action) {
                 }
             }
             break;
+
         case 'close':
-            foreach ($courses as $course) {
-                $course->visible = 0;
-                $DB->update_record('course', $course);
-            }
-            redirect($CFG->wwwroot . '/course/batch.php');
+            batchaction_close($courses, true);
             exit();
     }
 }
