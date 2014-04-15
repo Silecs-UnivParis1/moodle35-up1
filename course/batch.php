@@ -61,6 +61,13 @@ if ($action) {
            $roleto = optional_param('batchsubstto', '', PARAM_INT);
            batchaction_substitute($courses, $rolefrom, $roleto, false);
            break;
+
+        case 'archdate':
+            $isodate = optional_param('batcharchdate', '', PARAM_RAW);
+            $tsdate = isoDateToTs($isodate);
+            //** @todo valider la date **
+            batchaction_archdate($courses, $tsdate, false);
+            break;
     }
 }
 
@@ -150,6 +157,10 @@ if (empty($courses)) {
                         echo "Substituer " . html_select('batchsubstfrom', $roles) . " par " . html_select('batchsubstto', $roles) ;
                         echo '<button name="action" value="substitute">' . 'Substituer' . '</button>';
                         ?>
+                    </li>
+                    <li>
+                        <input type="text" value="<?php echo isoDate(); ?>" name="batcharchdate" />
+                        <button name="action" value="archdate">Date archivage</button>
                     </li>
                 </ul>
             </fieldset>

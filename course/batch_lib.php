@@ -254,6 +254,10 @@ function isoDateToTs($date) {
     return (int) $date;
 }
 
+function isoDate() {
+    return date('Y-m-d');
+}
+
 /*
  * returns a list of roles assignable in a course context, for substitution (dropdown list)
  */

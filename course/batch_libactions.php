@@ -4,6 +4,9 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html  GNU GPL v2
  */
 
+defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot . "/local/up1_metadata/lib.php");
+
 /**
  * prefixes each course with a given string
  * @param array $courses
@@ -109,9 +112,31 @@ global $DB, $CFG, $USER;
         }
     }
     $msg = "$modifiedroles substitutions dans " . count($courses) . " cours." ;
+    /** @todo flash message */
     if ($redirect) {
         redirect($CFG->wwwroot . '/course/batch.php');
         exit();
     }
+}
 
+
+/**
+ * update the custominfo field "datearchivage" for each course
+ * @param array $courses of (DB) objects course
+ * @param int $tsdate
+ * @param bool $redirect
+ */
+function batchaction_archdate($courses, $tsdate, $redirect) {
+global $DB, $CFG;
+
+    foreach ($courses as $course) {
+        $iddate = up1_meta_get_id($course->id, 'datearchivage');
+        $DB->update_record('custom_info_data', array('id' => $iddate, 'data' => $tsdate));
+    }
+    $msg = "Mise à jour de " . count($courses) . " cours." ;
+    /** @todo flash message */
+    if ($redirect) {
+        redirect($CFG->wwwroot . '/course/batch.php');
+        exit();
+    }
 }
