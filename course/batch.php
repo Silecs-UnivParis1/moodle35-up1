@@ -54,7 +54,13 @@ if ($action) {
 
         case 'close':
             batchaction_close($courses, true);
-            exit();
+            break;
+
+       case 'substitute':
+           $rolefrom = optional_param('batchsubstfrom', '', PARAM_INT);
+           $roleto = optional_param('batchsubstto', '', PARAM_INT);
+           batchaction_substitute($courses, $rolefrom, $roleto, false);
+           break;
     }
 }
 
@@ -137,6 +143,13 @@ if (empty($courses)) {
                             <?php echo get_string('confirm'); ?>
                         </label>
                         <?php } ?>
+                    </li>
+                    <li>
+                        <?php
+                        $roles = get_assignableroles();
+                        echo "Substituer " . html_select('batchsubstfrom', $roles) . " par " . html_select('batchsubstto', $roles) ;
+                        echo '<button name="action" value="substitute">' . 'Substituer' . '</button>';
+                        ?>
                     </li>
                 </ul>
             </fieldset>

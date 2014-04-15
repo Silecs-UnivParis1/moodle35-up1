@@ -75,6 +75,8 @@ global $DB, $CFG;
  * @param bool $redirect
  */
 function batchaction_close($courses, $redirect) {
+global $DB, $CFG;
+
     foreach ($courses as $course) {
         $course->visible = 0;
         $DB->update_record('course', $course);
@@ -83,4 +85,33 @@ function batchaction_close($courses, $redirect) {
         redirect($CFG->wwwroot . '/course/batch.php');
         exit();
     }
+}
+
+
+/**
+ * substitute roles for all users of $rolefrom to $roleto in each course
+ * @param array $courses of (DB) objects course
+ * @param int $rolefrom
+ * @param int $roleto
+ * @param bool $redirect
+ */
+function batchaction_substitute($courses, $rolefrom, $roleto, $redirect) {
+global $DB, $CFG, $USER;
+
+    $modifiedroles = 0;
+    foreach ($courses as $course) {
+        $context = context_course::instance($course->id);
+        $cnt = $DB->count_records('role_assignments', array('roleid' => $rolefrom, 'contextid' => $context->id));
+        $sql = "UPDATE {role_assignments} SET roleid=?, timemodified=UNIX_TIMESTAMP(), modifierid=? WHERE roleid=? AND contextid=?";
+        $ret = $DB->execute($sql, array($roleto, $USER->id, $rolefrom, $context->id));
+        if ($ret) {
+            $modifiedroles += $cnt;
+        }
+    }
+    $msg = "$modifiedroles substitutions dans " . count($courses) . " cours." ;
+    if ($redirect) {
+        redirect($CFG->wwwroot . '/course/batch.php');
+        exit();
+    }
+
 }
