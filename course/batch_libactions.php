@@ -142,3 +142,32 @@ global $DB, $CFG;
         exit();
     }
 }
+
+/**
+ * disable each enrolment method of each course
+ * @param array $courses of (DB) objects course
+ * @param bool $redirect
+ */
+function batchaction_disable_enrols($courses, $redirect) {
+global $DB, $CFG;
+
+    $cnt = 0;
+    $plugins = enrol_get_plugins(false);
+    // code dérivé de  moodle/enrol/instances.php l.143  (action=='disable')
+    foreach ($courses as $course) {
+        $instances = enrol_get_instances($course->id, false); // records of table "enrol"
+        foreach ($instances as $instanceid => $instance) {
+            $plugin = $plugins[$instance->enrol];
+            if ($instance->status != ENROL_INSTANCE_DISABLED) {
+                $plugin->update_status($instance, ENROL_INSTANCE_DISABLED);
+                $cnt++;
+            }
+        }
+    }
+    $msg = "Désactivation de $cnt méthodes d'inscription dans " . count($courses) . " cours.";
+    /** @todo flash message */
+    if ($redirect) {
+        redirect($CFG->wwwroot . '/course/batch.php');
+        exit();
+    }
+}

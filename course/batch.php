@@ -72,6 +72,10 @@ if ($action) {
             //** @todo valider la date **
             batchaction_archdate($courses, $tsdate, false);
             break;
+
+        case 'disableenrols':
+            batchaction_disable_enrols($courses, false);
+            break;
     }
 }
 
@@ -168,6 +172,9 @@ if (empty($courses)) {
                     <li>
                         <input type="text" value="<?php echo isoDate(); ?>" name="batcharchdate" />
                         <button name="action" value="archdate">Date archivage</button>
+                    </li>
+                    <li>
+                        <button name="action" value="disableenrols">Désactiver les inscriptions</button>
                     </li>
                 </ul>
             </fieldset>
