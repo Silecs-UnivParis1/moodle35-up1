@@ -73,17 +73,19 @@ global $DB, $CFG;
 }
 
 /**
- * close each course
+ * open (visible:=1) or close (visible:=0) each course
  * @param array $courses
  * @param bool $redirect
  */
-function batchaction_close($courses, $redirect) {
+function batchaction_visibility($courses, $visible, $redirect) {
 global $DB, $CFG;
 
     foreach ($courses as $course) {
-        $course->visible = 0;
+        $course->visible = $visible;
         $DB->update_record('course', $course);
     }
+    $msg = "Mise à jour de " . count($courses) . " cours." ;
+    /** @todo flash message */
     if ($redirect) {
         redirect($CFG->wwwroot . '/course/batch.php');
         exit();

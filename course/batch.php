@@ -53,7 +53,11 @@ if ($action) {
             break;
 
         case 'close':
-            batchaction_close($courses, true);
+            batchaction_visibility($courses, 0, false);
+            break;
+
+        case 'open':
+            batchaction_visibility($courses, 1, false);
             break;
 
        case 'substitute':
@@ -131,6 +135,9 @@ if (empty($courses)) {
                 <ul>
                     <li>
                         <button name="action" value="close"><?php echo get_string('close', 'admin'); ?></button>
+                    </li>
+                    <li>
+                        <button name="action" value="open">Open</button>
                     </li>
                     <li>
                         <input type="text" name="batchprefix" />
