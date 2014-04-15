@@ -16,9 +16,11 @@ function local_crswizard_extends_navigation(global_navigation $navigation) {
     $permcreator = wizard_has_permission('creator', $USER->id);
     $permvalidator = wizard_has_permission('validator', $USER->id);
     $permassistant = false;
+    $permsuppression = false;
     $context = $PAGE->context;
     if ($context->contextlevel == 50 && $context->instanceid != 1) {
         $permassistant = wizard_update_has_permission($context->instanceid, $USER->id);
+        $permsuppression = wizard_has_delete_course($context->instanceid, $USER->id);
         if ($permassistant) {
             $permassistant = wizard_update_course($context->instanceid);
         }
@@ -36,9 +38,17 @@ function local_crswizard_extends_navigation(global_navigation $navigation) {
             $node3 = $node1->add('Paramétrage', new moodle_url('/local/crswizard/update/index.php',
                 array('id' => $context->instanceid)));
         }
+        if ($permsuppression) {
+            $node4 = $node1->add('Suppression', new moodle_url('/local/crswizard/delete/index.php',
+                array('id' => $context->instanceid)));
+        }
     } elseif ($permassistant) {
         $node1 = $navigation->add('Assistant création de cours');
         $node2 = $node1->add('Paramétrage', new moodle_url('/local/crswizard/update/index.php',
                 array('id' => $context->instanceid)));
+        if ($permsuppression) {
+            $node3 = $node1->add('Suppression', new moodle_url('/local/crswizard/delete/index.php',
+                array('id' => $context->instanceid)));
+        }
     }
 }

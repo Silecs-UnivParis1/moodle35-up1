@@ -197,6 +197,12 @@ $string['upstepkeycase2'] = 'Étape 3 - configuration des clés d\'inscription';
 $string['upstepkeycase3'] = 'Étape 4 - configuration des clés d\'inscription';
 $string['upwizardcourse'] = 'Modification des paramètres de l\'espace';
 
+/** delete **/
+$string['deletecourseexplain'] = "texte d'avertissement texte d'avertissement texte d'avertissement texte d'avertissement"
+ . "<br /> répondre par OUI ou par NON";
+$string['deletecoursebutton'] = "Supprimer définitivement l'espace";
+$string['deleteconfirmationmsg'] = 'Répondre OUI / NON';
+
 /** old **/
 $string['up1domaine'] = 'Domaine(s) d\'enseignement : ';
 $string['up1mention'] = 'Mention(s) : ';

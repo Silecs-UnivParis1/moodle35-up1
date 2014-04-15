@@ -221,3 +221,17 @@ function wizard_has_edit_course($courseid, $userid) {
     }
     return false;
 }
+
+/**
+ * vérifie si $userid à la capacité moodle/course:delete sur $courseid
+ * @param int $courseid
+ * @param int $userid
+ * @return boolean
+ */
+function wizard_has_delete_course($courseid, $userid) {
+    $coursecontext = context_course::instance($courseid);
+    if ( has_capability('moodle/course:delete', $coursecontext, $userid) ) {
+        return true;
+    }
+    return false;
+}
