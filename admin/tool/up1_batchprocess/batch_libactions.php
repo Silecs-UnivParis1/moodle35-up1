@@ -1,11 +1,17 @@
 <?php
 
-/*
- * @license http://www.gnu.org/licenses/gpl-2.0.html  GNU GPL v2
+/**
+ * Multi-criteria selection and batch processing for courses
+ *
+ * @package    tool
+ * @subpackage up1_batchprocess
+ * @copyright  2014 Silecs {@link http://www.silecs.info/societe}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . "/local/up1_metadata/lib.php");
+$redirectUrl = $CFG->wwwroot . '/admin/tool/up1_batchprocess/batch.php';
 
 /**
  * prefixes each course with a given string
@@ -14,7 +20,7 @@ require_once($CFG->dirroot . "/local/up1_metadata/lib.php");
  * @param bool $redirect
  */
 function batchaction_prefix($courses, $prefix, $redirect) {
-global $DB, $CFG;
+global $redirectUrl, $DB, $CFG;
 
     if ($prefix) {
         foreach ($courses as $course) {
@@ -23,7 +29,7 @@ global $DB, $CFG;
         $DB->update_record('course', $course);
      }
     if ($redirect) {
-        redirect($CFG->wwwroot . '/course/batch.php');
+        redirect($redirectUrl);
         exit();
         }
     }
@@ -36,7 +42,7 @@ global $DB, $CFG;
  * @param bool $redirect
  */
 function batchaction_suffix($courses, $suffix, $redirect) {
-global $DB, $CFG;
+global $redirectUrl, $DB, $CFG;
 
     if ($suffix) {
         foreach ($courses as $course) {
@@ -45,7 +51,7 @@ global $DB, $CFG;
         $DB->update_record('course', $course);
      }
     if ($redirect) {
-        redirect($CFG->wwwroot . '/course/batch.php');
+        redirect($redirectUrl);
         exit();
         }
     }
@@ -59,7 +65,7 @@ global $DB, $CFG;
  * @param bool $redirect
  */
 function batchaction_regexp($courses, $regexp, $replace, $redirect) {
-global $DB, $CFG;
+global $redirectUrl, $DB, $CFG;
 
     foreach ($courses as $course) {
         $course->fullname = preg_replace('/' . $regexp . '/', $replace, $course->fullname);
@@ -67,7 +73,7 @@ global $DB, $CFG;
         $DB->update_record('course', $course);
     }
     if ($redirect) {
-        redirect($CFG->wwwroot . '/course/batch.php');
+        redirect($redirectUrl);
         exit();
     }
 }
@@ -78,7 +84,7 @@ global $DB, $CFG;
  * @param bool $redirect
  */
 function batchaction_visibility($courses, $visible, $redirect) {
-global $DB, $CFG;
+global $redirectUrl, $DB, $CFG;
 
     foreach ($courses as $course) {
         $course->visible = $visible;
@@ -87,7 +93,7 @@ global $DB, $CFG;
     $msg = "Mise à jour de " . count($courses) . " cours." ;
     /** @todo flash message */
     if ($redirect) {
-        redirect($CFG->wwwroot . '/course/batch.php');
+        redirect($redirectUrl);
         exit();
     }
 }
@@ -101,7 +107,7 @@ global $DB, $CFG;
  * @param bool $redirect
  */
 function batchaction_substitute($courses, $rolefrom, $roleto, $redirect) {
-global $DB, $CFG, $USER;
+global $redirectUrl, $DB, $CFG, $USER;
 
     $modifiedroles = 0;
     foreach ($courses as $course) {
@@ -116,7 +122,7 @@ global $DB, $CFG, $USER;
     $msg = "$modifiedroles substitutions dans " . count($courses) . " cours." ;
     /** @todo flash message */
     if ($redirect) {
-        redirect($CFG->wwwroot . '/course/batch.php');
+        redirect($redirectUrl);
         exit();
     }
 }
@@ -129,7 +135,7 @@ global $DB, $CFG, $USER;
  * @param bool $redirect
  */
 function batchaction_archdate($courses, $tsdate, $redirect) {
-global $DB, $CFG;
+global $redirectUrl, $DB, $CFG;
 
     foreach ($courses as $course) {
         $iddate = up1_meta_get_id($course->id, 'datearchivage');
@@ -138,7 +144,7 @@ global $DB, $CFG;
     $msg = "Mise à jour de " . count($courses) . " cours." ;
     /** @todo flash message */
     if ($redirect) {
-        redirect($CFG->wwwroot . '/course/batch.php');
+        redirect($redirectUrl);
         exit();
     }
 }
@@ -149,7 +155,7 @@ global $DB, $CFG;
  * @param bool $redirect
  */
 function batchaction_disable_enrols($courses, $redirect) {
-global $DB, $CFG;
+global $redirectUrl, $DB, $CFG;
 
     $cnt = 0;
     $plugins = enrol_get_plugins(false);
@@ -167,7 +173,7 @@ global $DB, $CFG;
     $msg = "Désactivation de $cnt méthodes d'inscription dans " . count($courses) . " cours.";
     /** @todo flash message */
     if ($redirect) {
-        redirect($CFG->wwwroot . '/course/batch.php');
+        redirect($redirectUrl);
         exit();
     }
 }

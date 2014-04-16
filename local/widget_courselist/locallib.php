@@ -4,7 +4,7 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.html  GNU GPL v3
  */
 
-require_once($CFG->dirroot . '/course/batch_lib.php');
+require_once($CFG->dirroot . '/admin/tool/up1_batchprocess/batch_lib.php');
 require_once $CFG->dirroot . '/local/up1_courselist/courselist_tools.php';
 
 /**

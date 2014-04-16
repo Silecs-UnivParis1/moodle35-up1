@@ -1,10 +1,19 @@
 <?php
 
-require_once(dirname(dirname(__FILE__)) . "/config.php");
+/**
+ * Multi-criteria selection and batch processing for courses
+ *
+ * @package    tool
+ * @subpackage up1_batchprocess
+ * @copyright  2014 Silecs {@link http://www.silecs.info/societe}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+require_once(dirname(dirname(dirname(__DIR__))) . "/config.php");
 require_once($CFG->dirroot . '/course/lib.php');
-require_once(dirname(__FILE__) . '/batch_form.php');
-require_once(dirname(__FILE__) . '/batch_lib.php');
-require_once(dirname(__FILE__) . '/batch_libactions.php');
+require_once(__DIR__ . '/batch_form.php');
+require_once(__DIR__ . '/batch_lib.php');
+require_once(__DIR__ . '/batch_libactions.php');
 
 global $DB, $PAGE;
 
@@ -15,9 +24,9 @@ $perpage   = optional_param('perpage', 100, PARAM_INT); // how many per page
 
 require_login(get_site());
 $PAGE->set_pagelayout('admin');
-$PAGE->set_url('/course/batch.php');
-$PAGE->set_title(get_string("coursebatchactions", 'admin'));
-$PAGE->set_heading(get_string("coursebatchactions", 'admin'));
+$PAGE->set_url('/admin/tool/batch.php');
+$PAGE->set_title(get_string("coursebatchactions", 'tool_up1_batchprocess'));
+$PAGE->set_heading(get_string("coursebatchactions", 'tool_up1_batchprocess'));
 
 $preview = array();
 $regexp = '';
@@ -90,11 +99,11 @@ if ($data) {
 }
 
 require_once($CFG->libdir . '/adminlib.php');
-admin_externalpage_setup('coursebatchactions', '', array(), $CFG->wwwroot . '/course/batch.php');
+admin_externalpage_setup('coursebatchactions', '', array(), $CFG->wwwroot . '/admin/tool/up1_batchprocess/batch.php');
 
 $settingsnode = $PAGE->settingsnav->find_active_node();
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string("coursebatchactions", 'admin'));
+echo $OUTPUT->heading(get_string("coursebatchactions", 'tool_up1_batchprocess'));
 
 if (empty($courses)) {
     if (is_array($courses)) {
@@ -138,18 +147,18 @@ if (empty($courses)) {
             <fieldset><legend><?php echo get_string('actions'); ?></legend>
                 <ul>
                     <li>
-                        <button name="action" value="close"><?php echo get_string('close', 'admin'); ?></button>
+                        <button name="action" value="close"><?php echo get_string('close', 'tool_up1_batchprocess'); ?></button>
                     </li>
                     <li>
                         <button name="action" value="open">Open</button>
                     </li>
                     <li>
                         <input type="text" name="batchprefix" />
-                        <button name="action" value="prefix"><?php echo get_string('prefix', 'admin'); ?></button>
+                        <button name="action" value="prefix"><?php echo get_string('prefix', 'tool_up1_batchprocess'); ?></button>
                     </li>
                     <li>
                         <input type="text" name="batchsuffix" />
-                        <button name="action" value="suffix"><?php echo get_string('suffix', 'admin'); ?></button>
+                        <button name="action" value="suffix"><?php echo get_string('suffix', 'tool_up1_batchprocess'); ?></button>
                     </li>
                     <li>
                         s/<input type="text" name="batchregexp" value="<?php echo htmlspecialchars($regexp); ?>" />/

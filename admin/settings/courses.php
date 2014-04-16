@@ -59,7 +59,7 @@ if ($hassiteconfig or has_any_capability($capabilities, $systemcontext)) {
     $ADMIN->add('courses', new admin_externalpage('coursestovalidate', new lang_string('coursestovalidate', 'local_course_validated'), $CFG->wwwroot . '/local/course_validated/index.php',
             array('moodle/site:config', 'moodle/course:create')));
 
-    $ADMIN->add('courses', new admin_externalpage('coursebatchactions', new lang_string('coursebatchactions', 'admin'), $CFG->wwwroot . '/course/batch.php',
+    $ADMIN->add('courses', new admin_externalpage('coursebatchactions', new lang_string('coursebatchactions', 'tool_up1_batchprocess'), $CFG->wwwroot . '/admin/tool/up1_batchprocess/batch.php',
             array('moodle/site:config', 'moodle/course:create')));
 
     ///main course settings
