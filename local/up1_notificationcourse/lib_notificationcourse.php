@@ -83,7 +83,7 @@ function get_users_from_course($course, $rolename) {
         $ids .= $sc->userid . ',';
     }
     $ids = substr($ids, 0, -1);
-    $sql = "SELECT id, firstname, lastname, email, mailformat FROM {user} WHERE id IN ({$ids})";
+    $sql = "SELECT * FROM {user} WHERE id IN ({$ids})";
     $students = $DB->get_records_sql($sql);
 
     return $students;
