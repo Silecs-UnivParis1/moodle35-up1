@@ -11,7 +11,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . "/local/up1_metadata/lib.php");
-$redirectUrl = $CFG->wwwroot . '/admin/tool/up1_batchprocess/batch.php';
+$redirectUrl = $CFG->wwwroot . '/admin/tool/up1_batchprocess/index.php';
 
 /**
  * prefixes each course with a given string

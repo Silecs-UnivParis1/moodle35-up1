@@ -12,6 +12,7 @@
 $string['pluginname'] = 'UP1 Courses batch processing';
 
 $string['close'] = 'Close';
+$string['open'] = 'Open';
 $string['prefix'] = 'Prefix';
 $string['suffix'] = 'Suffix';
 $string['coursebatchactions'] = 'Courses batch actions';

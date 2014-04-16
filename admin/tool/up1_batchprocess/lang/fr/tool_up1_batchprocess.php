@@ -12,6 +12,7 @@
 $string['pluginname'] = 'UP1 Traitement par lot des cours';
 
 $string['close'] = 'Fermer';
+$string['open'] = 'Ouvrir';
 $string['prefix'] = 'Préfixe';
 $string['suffix'] = 'Suffixe';
 $string['coursebatchactions'] = 'Actions par lot';

@@ -24,7 +24,7 @@ $perpage   = optional_param('perpage', 100, PARAM_INT); // how many per page
 
 require_login(get_site());
 $PAGE->set_pagelayout('admin');
-$PAGE->set_url('/admin/tool/batch.php');
+$PAGE->set_url('/admin/tool/index.php');
 $PAGE->set_title(get_string("coursebatchactions", 'tool_up1_batchprocess'));
 $PAGE->set_heading(get_string("coursebatchactions", 'tool_up1_batchprocess'));
 
@@ -99,7 +99,7 @@ if ($data) {
 }
 
 require_once($CFG->libdir . '/adminlib.php');
-admin_externalpage_setup('coursebatchactions', '', array(), $CFG->wwwroot . '/admin/tool/up1_batchprocess/batch.php');
+admin_externalpage_setup('coursebatchactions', '', array(), $CFG->wwwroot . '/admin/tool/up1_batchprocess/index.php');
 
 $settingsnode = $PAGE->settingsnav->find_active_node();
 echo $OUTPUT->header();
@@ -111,7 +111,7 @@ if (empty($courses)) {
     }
 } else {
 ?>
-    <form id="movecourses" action="batch.php" method="post">
+    <form id="movecourses" action="index.php" method="post">
         <div class="generalbox boxaligncenter">
             <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
             <table border="0" cellspacing="2" cellpadding="4" class="course-selection">
@@ -150,7 +150,7 @@ if (empty($courses)) {
                         <button name="action" value="close"><?php echo get_string('close', 'tool_up1_batchprocess'); ?></button>
                     </li>
                     <li>
-                        <button name="action" value="open">Open</button>
+                        <button name="action" value="open"><?php echo get_string('open', 'tool_up1_batchprocess'); ?></button>
                     </li>
                     <li>
                         <input type="text" name="batchprefix" />
