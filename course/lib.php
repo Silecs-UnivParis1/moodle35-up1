@@ -2188,9 +2188,6 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
         $str->groupsnone     = get_string('clicktochangeinbrackets', 'moodle', get_string("groupsnone"));
         $str->groupsseparate = get_string('clicktochangeinbrackets', 'moodle', get_string("groupsseparate"));
         $str->groupsvisible  = get_string('clicktochangeinbrackets', 'moodle', get_string("groupsvisible"));
-        //debut ajout SILECS
-        $str->notification = get_string("notifications");
-        //fin ajout SILECS
     }
 
     $baseurl = new moodle_url('/course/mod.php', array('sesskey' => sesskey()));
@@ -2321,12 +2318,12 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
     }
 
     //debut ajout SILECS
-    $actions[] = new action_link(
-            new moodle_url('/local/up1_notificationcourse/notificationcourse.php', array('mod' => $mod->modname, 'id' => $mod->id)),
-            new pix_icon('t/email', $str->notification, 'moodle', array('class' => 'iconsmall', 'title' => '')),
-            null,
-            array('class' => 'editing_assign', 'title' => $str->notification)
-        );
+    $actions[] = new action_menu_link_secondary(
+        new moodle_url('/local/up1_notificationcourse/notificationcourse.php', array('mod' => $mod->modname, 'id' => $mod->id)),
+        new pix_icon('t/email', get_string("notifications"), 'moodle', array('class' => 'iconsmall', 'title' => '')),
+        get_string("notifications"),
+        array('class' => 'editing_assign', 'title' => get_string("notifications"))
+    );
     //fin ajout SILECS
 
     // Delete.
