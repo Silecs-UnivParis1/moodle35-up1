@@ -168,8 +168,8 @@ function get_email_body($msgbodyinfo, $type) {
     $a->linkactivity = $msgbodyinfo['nomactivite'];
     $a->linkcourse = $msgbodyinfo['shortnamecourse'] . ' - ' . $msgbodyinfo['fullnamecourse'];
     if ($type == 'html') {
-        $a->linkactivity = html_Writer::link($msgbodyinfo['urlactivite'], $msgbodyinfo['nomactivite']);
-        $a->linkcourse = html_Writer::link($msgbodyinfo['urlcourse'], $coursename);
+        $a->linkactivity = html_writer::link($msgbodyinfo['urlactivite'], $msgbodyinfo['nomactivite']);
+        $a->linkcourse = html_writer::link($msgbodyinfo['urlcourse'], $coursename);
     }
     $res .= get_string('msgsender', 'local_up1_notificationcourse', $a);
     return $res;

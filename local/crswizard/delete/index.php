@@ -64,7 +64,7 @@ $site = get_site();
 $PAGE->set_title("$site->shortname: $deletecourse");
 $PAGE->set_heading($site->fullname);
 
-$title = html_Writer::tag('h2', "Supprimer l'espace de cours $courseshortname");
+$title = html_writer::tag('h2', "Supprimer l'espace de cours $courseshortname");
 
 $mform = new wizard_delete_form(null, array('shortname' => $courseshortname));
 $newformdata = array('id'=>$id);

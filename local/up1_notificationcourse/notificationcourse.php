@@ -102,21 +102,21 @@ echo $OUTPUT->heading(get_string('sendnotification', 'local_up1_notificationcour
 if ($msgresult != '') {
     echo $OUTPUT->box_start('info');
     echo $msgresult;
-    echo html_Writer::tag('p', html_Writer::link($urlcourse, get_string('returncourse', 'local_up1_notificationcourse')));
+    echo html_writer::tag('p', html_Writer::link($urlcourse, get_string('returncourse', 'local_up1_notificationcourse')));
     echo $OUTPUT->box_end();
 } else {
-    echo html_Writer::tag('p', $recipicents, array('class' => 'notificationlabel'));
+    echo html_writer::tag('p', $recipicents, array('class' => 'notificationlabel'));
 
-    $senderlabel = html_Writer::tag('span', get_string('sender', 'local_up1_notificationcourse'), array('class' => 'notificationgras'));
+    $senderlabel = html_writer::tag('span', get_string('sender', 'local_up1_notificationcourse'), array('class' => 'notificationgras'));
     $sender = $site->shortname . ' &#60;'. $CFG->noreplyaddress . '&#62;';
-    echo html_Writer::tag('p', $senderlabel . $sender, array('class' => 'notificationlabel'));
+    echo html_writer::tag('p', $senderlabel . $sender, array('class' => 'notificationlabel'));
 
-    echo html_Writer::tag('p', get_string('subject', 'local_up1_notificationcourse') . $mailsubject, array('class' => 'notificationlabel'));
+    echo html_writer::tag('p', get_string('subject', 'local_up1_notificationcourse') . $mailsubject, array('class' => 'notificationlabel'));
 
     $msgbody = get_email_body($msgbodyinfo, 'html');
-    echo html_Writer::tag('p', get_string('body', 'local_up1_notificationcourse'), array('class' => 'notificationlabel notificationgras'));
-    echo html_Writer::tag('p', $msgbody, array('class' => 'notificationlabel'));
-    echo html_Writer::tag('div', get_string('complement', 'local_up1_notificationcourse'), array('class' => 'notificationlabel'));
+    echo html_writer::tag('p', get_string('body', 'local_up1_notificationcourse'), array('class' => 'notificationlabel notificationgras'));
+    echo html_writer::tag('p', $msgbody, array('class' => 'notificationlabel'));
+    echo html_writer::tag('div', get_string('complement', 'local_up1_notificationcourse'), array('class' => 'notificationlabel'));
 
     $mform->display();
 }
