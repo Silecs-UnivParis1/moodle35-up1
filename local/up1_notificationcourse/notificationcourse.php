@@ -22,10 +22,6 @@ if (! $course = $DB->get_record("course", array("id"=>$cm->course))) {
 if (! $module = $DB->get_record($moduletype, array("id"=>$cm->instance))) {
     print_error('invalidcoursemodule');
 }
-//check whether the feedback is located and! started from the mainsite
-if ($course->id == SITEID AND !$courseid) {
-    $courseid = SITEID;
-}
 
 require_login($course, true, $cm);
 

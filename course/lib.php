@@ -2318,12 +2318,14 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
     }
 
     //debut ajout SILECS
-    $actions[] = new action_menu_link_secondary(
-        new moodle_url('/local/up1_notificationcourse/notificationcourse.php', array('mod' => $mod->modname, 'id' => $mod->id)),
-        new pix_icon('t/email', get_string("notifications"), 'moodle', array('class' => 'iconsmall', 'title' => '')),
-        get_string("notifications"),
-        array('class' => 'editing_assign', 'title' => get_string("notifications"))
-    );
+    if ($mod->course != SITEID && $hasmanageactivities) {
+        $actions[] = new action_menu_link_secondary(
+            new moodle_url('/local/up1_notificationcourse/notificationcourse.php', array('mod' => $mod->modname, 'id' => $mod->id)),
+            new pix_icon('t/email', get_string("notifications"), 'moodle', array('class' => 'iconsmall', 'title' => '')),
+            get_string("notifications"),
+            array('class' => 'editing_assign', 'title' => get_string("notifications"))
+        );
+    }
     //fin ajout SILECS
 
     // Delete.
