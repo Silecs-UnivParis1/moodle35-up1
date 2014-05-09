@@ -9,10 +9,10 @@
 global $CFG;
 
 require_once($CFG->dirroot . "/course/lib.php");
+require_once($CFG->dirroot . "/lib/coursecatlib.php");
 // for listpages...
 require_once($CFG->dirroot . "/lib/resourcelib.php");
 require_once($CFG->dirroot . "/mod/page/lib.php");
-require_once($CFG->dirroot . "/course/lib.php");
 
 /* @var $DB moodle_database */
 
