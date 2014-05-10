@@ -38,6 +38,8 @@ class course_wizard_step_model extends moodleform {
                 $mform->addGroup($m1array, 'm1array', "", array(' : ', ' '), false);
                 $mform->disabledIf('selm1', 'modeletype', 'neq', 'selm1');
             }
+        } else {
+            throw new moodle_exception('La catégorie des cours modèles est vide. L\'assistant ne peut pas fonctionner.');
         }
 
         $course_list_teacher = wizard_get_course_list_teacher();
