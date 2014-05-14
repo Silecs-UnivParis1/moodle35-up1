@@ -113,7 +113,8 @@ global $redirectUrl, $DB, $CFG, $USER;
     foreach ($courses as $course) {
         $context = context_course::instance($course->id);
         $cnt = $DB->count_records('role_assignments', array('roleid' => $rolefrom, 'contextid' => $context->id));
-        $sql = "UPDATE {role_assignments} SET roleid=?, timemodified=UNIX_TIMESTAMP(), modifierid=? WHERE roleid=? AND contextid=?";
+        $sql = "UPDATE {role_assignments} SET roleid=?, timemodified=UNIX_TIMESTAMP(), modifierid=? "
+             . "WHERE roleid=? AND contextid=?";
         $ret = $DB->execute($sql, array($roleto, $USER->id, $rolefrom, $context->id));
         if ($ret) {
             $modifiedroles += $cnt;
@@ -150,7 +151,7 @@ global $redirectUrl, $DB, $CFG;
 }
 
 /**
- * disable each enrolment method of each course
+ * disable each enrolment method (except 'manual') of each course
  * @param array $courses of (DB) objects course
  * @param bool $redirect
  */
@@ -158,13 +159,14 @@ function batchaction_disable_enrols($courses, $redirect) {
 global $redirectUrl, $DB, $CFG;
 
     $cnt = 0;
+    $excepts = array('manual');
     $plugins = enrol_get_plugins(false);
     // code dérivé de  moodle/enrol/instances.php l.143  (action=='disable')
     foreach ($courses as $course) {
         $instances = enrol_get_instances($course->id, false); // records of table "enrol"
         foreach ($instances as $instanceid => $instance) {
             $plugin = $plugins[$instance->enrol];
-            if ($instance->status != ENROL_INSTANCE_DISABLED) {
+            if ( $instance->status != ENROL_INSTANCE_DISABLED && ! in_array($instance->enrol, $excepts) ) {
                 $plugin->update_status($instance, ENROL_INSTANCE_DISABLED);
                 $cnt++;
             }
