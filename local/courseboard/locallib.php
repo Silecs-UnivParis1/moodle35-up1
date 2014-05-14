@@ -94,8 +94,9 @@ function get_table_course_header($rofcols) {
  * print html table of administration logs for a course (creation, validation...)
  * @global type $DB
  * @param int $crsid
+ * @param bool $brief
  */
-function print_admin_log($crsid) {
+function print_admin_log($crsid, $brief=true) {
     global $DB;
 
     $table = new html_table();
@@ -109,12 +110,17 @@ function print_admin_log($crsid) {
     );
     $table->data = array();
 
-    $sql = "SELECT l.id, time, userid, ip, module, action, l.url, info, u.firstname, u.lastname "
+    $sqllong = "SELECT l.id, time, userid, ip, module, action, l.url, info, u.firstname, u.lastname "
             . "FROM {log} l JOIN {user} u  ON (l.userid = u.id)"
             . "WHERE ( ( module = 'course' AND action = 'new' AND info LIKE '%ID " . $crsid . "%' ) "
-            . " OR ( module = 'course' AND action != 'view' AND action != 'login' AND course = ? ) "
-            . " OR (module IN ('course_validate', 'crswizard', 'courseboard') AND course = ?)  ) "
-            . " ORDER BY time ASC ";
+            . "     OR ( module = 'course' AND action != 'view' AND action != 'login' AND course = ? ) "
+            . "     OR (module IN ('course_validate', 'crswizard', 'courseboard') AND course = ?)  ) "
+            . "ORDER BY time DESC ";
+    $sqlbrief = "SELECT l.id, time, userid, ip, module, action, l.url, info, u.firstname, u.lastname "
+            . "FROM {log} l JOIN {user} u  ON (l.userid = u.id) "
+            . "WHERE ( (module='crswizard' OR (module='courseboard' AND action='memo')) AND course = ?) "
+            . "ORDER BY time DESC LIMIT 10";
+    $sql = ($brief ? $sqlbrief : $sqllong);
     $logs = $DB->get_recordset_sql($sql, array($crsid, $crsid));
 
     foreach ($logs as $log) {

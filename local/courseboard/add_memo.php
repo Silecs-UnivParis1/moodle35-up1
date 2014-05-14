@@ -16,7 +16,7 @@ $memo = $_POST['memo'];
 $crsid = $_POST['crsid'];
 add_to_log($crsid, 'courseboard', 'memo', '', addslashes($memo));
 
-$url = new moodle_url('/local/courseboard/view.php', array('id' => $crsid, 'anchor' => 'course-log'));
+$url = new moodle_url('/local/courseboard/view.php', array('id' => $crsid));
 $url->set_anchor('course-log');
 redirect($url);
 

@@ -19,6 +19,7 @@ require_once('locallib.php');
 
 require_login();
 $crsid = required_param('id', PARAM_INT);  // course id
+$brief = optional_param('brief', true, PARAM_BOOL);
 
 $course = $DB->get_record('course', array('id' => $crsid), '*', MUST_EXIST);
 $context_sys = context_system::instance();
@@ -94,9 +95,11 @@ if ($rattachements) {
 }
 // echo '<p><a href="' . $browserurl . '">Navigateur ROF</a></p>';
 
-echo '<h2 id="course-log">Journal du cours</h2>' . "\n";
+$url = new moodle_url('/local/courseboard/view.php', array('id' => $crsid, 'brief' => 'false'));
+$url->set_anchor('course-log');
+echo '<h2 id="course-log">Journal du cours ' . html_writer::link($url, "(Complet)") . "</h2>\n";
 
-print_admin_log($crsid);
+print_admin_log($crsid, $brief);
 
 echo '<form action="add_memo.php" method="POST">';
 echo '<label for="memo">Nouveau mémo </label>';
