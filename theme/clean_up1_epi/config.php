@@ -38,7 +38,7 @@ $THEME->name = 'clean_up1_epi';
 //
 $THEME->doctype = 'html5';
 $THEME->parents = array('bootstrapbase');
-$THEME->sheets = array('custom');
+$THEME->sheets = array('custom', 'up1');
 $THEME->supportscssoptimisation = false;
 $THEME->yuicssmodules = array();
 
