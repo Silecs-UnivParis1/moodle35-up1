@@ -2839,6 +2839,8 @@ class assign {
 
         $this->require_view_grades();
 
+	$markerfilter = get_user_preferences('assign_markerfilter', '');
+
         // Load all users with submit.
         $students = get_enrolled_users($this->context, "mod/assign:submit", null, 'u.*', null, null, null,
                         $this->show_only_active_users());
@@ -2869,6 +2871,13 @@ class assign {
                 continue;
             }
 
+	    if ($markerfilter) {
+		$allocatedmarker = 
+		    $DB->get_field('assign_user_flags', 'allocatedmarker',
+		    		array('userid' => $userid, 'assignment' => $this->get_instance()->id));
+	        error_log("download_submissions: user $userid has marker $allocatedmarker, wanted marker $markerfilter");
+		if ($allocatedmarker !== $markerfilter) continue;
+	    }
             if ((groups_is_member($groupid, $userid) or !$groupmode or !$groupid)) {
                 // Get the plugins to add their own files to the zip.
 
