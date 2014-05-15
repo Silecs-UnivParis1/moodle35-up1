@@ -145,7 +145,7 @@ function up1_meta_get_id($courseid, $field) {
     $sql = "SELECT cd.id FROM {custom_info_data} cd "
          . " JOIN {custom_info_field} cf ON (cd.fieldid = cf.id AND cd.objectname='course' AND cf.objectname='course') "
          . " WHERE cf.shortname=? AND cd.objectid=?";
-	$id = $DB->get_field_sql($sql, array($field, $courseid), MUST_EXIST);
+	$id = $DB->get_field_sql($sql, array($field, $courseid), IGNORE_MISSING);
 
     //echo $sql ."\n -> $id\n";
     return $id;
@@ -174,4 +174,34 @@ function up1_meta_gen_sql_query($object, $fields) {
    }
    $sql = $select . $from;
    return $sql;
+}
+
+/**
+ * update or initializes a course metadata for a given course and fieldname
+ * @param int $courseid
+ * @param string $fieldname ex. 'rofid', 'datearchiv' ...
+ * @param string $data field value
+ * @return bool (on update) or int (inserted id, on insert)
+ */
+function up1_meta_set_data($courseid, $fieldname, $data) {
+    global $DB;
+
+    $idfield = up1_meta_get_id($courseid, $fieldname);
+    if ( $idfield ) { // records exists
+        $ret = $DB->update_record('custom_info_data', array('id' => $idfield, 'data' => $data));
+        return $ret;
+    } else {
+        $fieldid = $DB->get_field('custom_info_field',
+                'id',
+                array('objectname'=>'course', 'shortname'=>'up1'.$fieldname),
+                MUST_EXIST);
+        $datarecord = new StdClass;
+        $datarecord->objectname = 'course';
+        $datarecord->objectid = $courseid;
+        $datarecord->fieldid = $fieldid;
+        $datarecord->data = $data;
+        $datarecord->dataformat = 0;
+        $dataid = $DB->insert_record('custom_info_data', $datarecord);
+        return $dataid;
+    }
 }

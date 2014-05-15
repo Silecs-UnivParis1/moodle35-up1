@@ -139,8 +139,7 @@ function batchaction_archdate($courses, $tsdate, $redirect) {
 global $redirectUrl, $DB, $CFG;
 
     foreach ($courses as $course) {
-        $iddate = up1_meta_get_id($course->id, 'datearchivage');
-        $DB->update_record('custom_info_data', array('id' => $iddate, 'data' => $tsdate));
+        up1_meta_set_data($course->id, 'datearchivage', $tsdate);
     }
     $msg = "Mise à jour de " . count($courses) . " cours." ;
     /** @todo flash message */
