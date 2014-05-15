@@ -128,9 +128,10 @@ if (empty($courses)) {
                     echo '<td align="center">';
                     echo '<input type="checkbox" name="c[]" value="' . $course->id . '" class="course-select" />';
                     echo '</td>';
-                    $linkcss = $course->visible ? '' : ' class="dimmed" ';
+                    $courseurl = new moodle_url('/course/view.php', array('id' => $course->id));
                     $coursename = get_course_display_name_for_list($course);
-                    echo '<td><a '.$linkcss.' href="view.php?id='.$course->id.'">'. format_string($coursename) .'</a></td>';
+                    $linkcss = ( ($course->visible === 1) ? '' : ' class="dimmed" ');
+                    echo '<td><a '.$linkcss.' href="' . $courseurl . '">'. format_string($coursename) .'</a></td>';
                     if ($preview && isset($preview[$course->id])) {
                         echo "<td>";
                         if ($course->fullname !== $preview[$course->id]) {
