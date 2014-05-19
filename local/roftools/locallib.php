@@ -58,14 +58,18 @@ function create_rof_categories($verb=0) {
     $parentid=0;
 
     // Crée les deux niveaux supérieurs
+    $level = 0;
+    $catpath = '';
     foreach ($hlCategories as $hlcat) {
+        $level++;
         $newcategory = new stdClass();
         $newcategory->name = $hlcat['name'];
-        $newcategory->idnumber = $hlcat['idnumber'];
+        $newcategory->idnumber = $level .':'. $catpath . $hlcat['idnumber'];
         $newcategory->parent = $parentid;
-
         $category = coursecat::create($newcategory);
+
         $parentid = $category->id;
+        $catpath = $newcategory->idnumber . '/';
         fix_course_sortorder();
      }
 
@@ -77,7 +81,7 @@ function create_rof_categories($verb=0) {
         progressBar($verb, 0, "\n$component->number $component->name \n");
         $newcategory = new stdClass();
         $newcategory->name = $component->name;
-        $newcategory->idnumber = '3:' . $component->number;
+        $newcategory->idnumber = '3:' . $hlCategories[0] . '/' . $hlCategories[1] . '/' . $component->number;
         $newcategory->parent = $rofRootId;
         $category = coursecat::create($newcategory);
         $compCatId = $category->id;
@@ -98,7 +102,7 @@ function create_rof_categories($verb=0) {
             if ( isset($diplomeCat[$classeDiplome]) ) {
                 $newcategory = new stdClass();
                 $newcategory->name = $classeDiplome;
-                $newcategory->idnumber = '4:' . $component->number .'/'. $classeDiplome;
+                $newcategory->idnumber = '4:' . $hlCategories[0] . '/' . $hlCategories[1] . '/' . $component->number .'/'. $classeDiplome;
                 $newcategory->parent = $compCatId;
                 progressBar($verb, 1, " $classeDiplome");
                 $category = coursecat::create($newcategory);
