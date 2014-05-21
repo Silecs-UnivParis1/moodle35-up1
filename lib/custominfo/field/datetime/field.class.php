@@ -81,8 +81,8 @@ class profile_field_datetime extends custominfo_field_base {
         if (empty($isstring)) {
             $datetime = userdate($datetime, '%Y-%m-%d-%H-%M-%S');
         }
-
         $datetime = explode('-', $datetime);
+
         // Bound year with start and end year.
         $datetime[0] = min(max($datetime[0], $this->field->param1), $this->field->param2);
         if (!empty($this->field->param3) && count($datetime) == 6) {
