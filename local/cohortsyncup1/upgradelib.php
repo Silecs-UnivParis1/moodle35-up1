@@ -22,7 +22,9 @@ function upgrade_cohort_set_period($verb) {
     $count = array ('old' => 0, 'current' => 0, 'none' => 0);
 
     foreach ($records as $cohort) {
-        progressBar($verb, 1, '.');
+        if ($verb > 1) {
+            echo '.';
+        }
         $groupcategory = groupKeyToCategory($cohort->idnumber);
 
         if ( preg_match('/-(201[0-9])$/', $cohort->idnumber, $matches) ) {

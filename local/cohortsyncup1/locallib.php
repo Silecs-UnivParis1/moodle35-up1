@@ -452,15 +452,3 @@ function fix_user_sync($dryrun=false) {
     }
     return $diag;
 }
-
-/**
- * progress bar display
- * @param int $verb verbosity
- * @param int $verbmin minimal verbosity
- * @param string $strig to display
- */
-function progressBar($verb, $verbmin, $string) {
-    if ($verb >= $verbmin) {
-        echo $string;
-    }
-}
