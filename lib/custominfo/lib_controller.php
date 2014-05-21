@@ -200,8 +200,9 @@ class custominfo_controller {
 
         foreach ($categories as $category) {
             $table = new html_table();
-            $table->head  = array(get_string('profilefield', 'admin'), get_string('edit'));
-            $table->align = array('left', 'right');
+            $table->head  = array(get_string('profilefield', 'admin'), get_string('type_profilefield', 'plugin'), get_string('edit'));
+            $table->align = array('left', 'left', 'right');
+            $table->size = array(null, '22ex', '13ex');
             $table->width = '95%';
             $table->attributes['class'] = 'generaltable profilefield';
             $table->data = array();
@@ -209,7 +210,7 @@ class custominfo_controller {
             $fields = $DB->get_records('custom_info_field', array('categoryid' => $category->id), 'sortorder ASC');
             if ($fields) {
                 foreach ($fields as $field) {
-                    $table->data[] = array(format_string($field->name), $this->field_icons($field));
+                    $table->data[] = array(format_string($field->name), get_string('pluginname', 'profilefield_' . $field->datatype), $this->field_icons($field));
                 }
             }
 
