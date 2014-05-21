@@ -34,7 +34,7 @@ class custominfo_controller {
 
     /**
      * Dispatch the action name and eventually redirects the browser
-     * @global object $DB
+     * @global moodle_database $DB
      * @global object $OUTPUT
      * @param string $action   Name of the action requested
      */
@@ -107,7 +107,7 @@ class custominfo_controller {
 
     /**
      * Check that we have at least one category defined
-     * @global object $DB
+     * @global moodle_database $DB
      */
     public function check_category_defined() {
         global $DB;

@@ -223,7 +223,7 @@ class custominfo_category extends custominfo_record {
 
     /**
      * Insert or update a category with the data submitted from a form.
-     * @global object $DB
+     * @global moodle_database $DB
      * @param object $data (opt, null by default)
      * @return integer A constant among self::EDIT_*
      */
