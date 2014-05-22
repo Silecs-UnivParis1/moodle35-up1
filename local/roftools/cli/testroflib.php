@@ -20,9 +20,16 @@ $cpath = array(
     'UP1-PROG25375' => 'Semestre 5 L3'
 );
 
+
+$catid = rof_rofpath_to_category($path); // implicit year/etab
+echo "$catid \n";
+$catid = rof_rofpath_to_category($path, 2053); // explicit year/etab (OLD)
+echo "$catid \n";
+$catid = rof_rofpath_to_category($path, 2332); // explicit year/etab (current)
+echo "$catid \n";
+die('fini');
+
 /*
-$catid = rof_rofpath_to_category($path);
-echo "$catid";
 $categorie = $DB->get_record('course_categories', array('id' => $catid));
 print_r ($categorie);
 */
