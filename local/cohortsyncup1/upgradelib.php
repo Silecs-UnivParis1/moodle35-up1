@@ -56,12 +56,3 @@ function upgrade_cohort_set_period($verb) {
     echo "Comptages : ";
     print_r($count);
 }
-
-
-function cohort_raw_idnumber($idnumber) {
-    if ( preg_match('/^(.+)-(201[0-9])$/', $idnumber, $matches) ) {
-        return $matches[1];
-    } else {
-        return $idnumber;
-    }
-}

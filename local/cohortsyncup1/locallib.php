@@ -539,3 +539,16 @@ function progressBar($verb, $verbmin, $text) {
         echo $text;
     }
 }
+
+/**
+ * find the raw idnumber for a yearly cohort (unchanged if not yearly)
+ * @param type $idnumber
+ * @return string
+ */
+function cohort_raw_idnumber($idnumber) {
+    if ( preg_match('/^(.+)-(201[0-9])$/', $idnumber, $matches) ) {
+        return $matches[1];
+    } else {
+        return $idnumber;
+    }
+}
