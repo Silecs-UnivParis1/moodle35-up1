@@ -2,6 +2,7 @@
 /* @var $DB moodle_database */
 
 require_once("$CFG->dirroot/local/roftools/roflib.php");
+require_once("$CFG->dirroot/local/cohortsyncup1/locallib.php");
 
 /**
  * Vérifie, lors de la mise à jour d'un cours Hors Rof si l'établissement à été modifié.
@@ -78,6 +79,29 @@ function get_selected_etablissement_id() {
 }
 
 /**
+ * Cherche les cohortes de l'année courante equivalent aux anciennes du cours modèle
+ * @param int $courseid : identifiant du cours modèle
+ * @return array $resultat
+ */
+function wizard_get_equivalent_cohorts($courseid) {
+    global $DB;
+    $resultat = array();
+    $oldcohorts = wizard_get_cohorts($courseid);
+    foreach ($oldcohorts as $role => $cohorts) {
+        if (count($cohorts)) {
+            $res = get_equivalent_cohorts($cohorts);
+            $resultat['msg'][$role] = $res;
+            foreach ($res as $co) {
+                foreach ($co as $c) {
+                    $resultat['group'][$role][] = $c;
+                }
+            }
+        }
+    }
+    return $resultat;
+}
+
+/**
  * récupère des métadonnées du modèle si même cas
 */
 function wizard_get_metadonnees() {
@@ -97,6 +121,14 @@ function wizard_get_metadonnees() {
         if ($course) {
             $custominfo_data = custominfo_data::type('course');
             $custominfo_data->load_data($course);
+
+            // cohortes
+            $newcohorts = wizard_get_equivalent_cohorts($course->id);
+            if (count($newcohorts)) {
+                $SESSION->wizard['form_step5']['group'] = $newcohorts['group'];
+                $SESSION->wizard['form_step5']['groupmsg'] = $newcohorts['msg'];
+                $SESSION->wizard['form_step5']['all-cohorts'] = wizard_get_enrolement_cohorts();
+            }
 
             $case = wizard_get_generateur($course);
             if ($case == $SESSION->wizard['wizardcase']) {
@@ -138,6 +170,31 @@ function wizard_get_metadonnees() {
         $SESSION->wizard['form_step1']['coursedmodelid'] = '0';
         wizard_clear_metadonnees();
     }
+}
+
+/**
+ * Récupère les idnumber des cohortes inscrites a cours d'idnetifiant $courseid
+ * @param int $courseid : identifiant du cours
+ * @return array - un tableau de tableau array('role' => array())
+ */
+function wizard_get_cohorts($courseid) {
+    global $DB;
+    $list = array();
+    $myconfig = new my_elements_config();
+    $labels = $myconfig->role_cohort;
+    $roles = wizard_role($labels);
+    $roleint = array();
+    foreach ($roles as $role) {
+        $roleint[$role['id']] = $role['shortname'];
+    }
+    $enrols = $DB->get_records('enrol', array('courseid' => $courseid, 'enrol' => 'cohort'));
+    foreach ($enrols as $enrol) {
+        $cohortname = $DB->get_field('cohort', 'idnumber', array('id' => $enrol->customint1));
+        if ($cohortname) {
+            $list[$roleint[$enrol->roleid]][] = $cohortname;
+        }
+    }
+    return $list;
 }
 
 /**

@@ -75,18 +75,26 @@ function get_equivalent_cohorts($old_idnumbers) {
  * @param array $equivs as computed by the previous function
  */
 function explain_equivalent_cohorts($equivs) {
-    echo "Les cohortes annualisées suivantes ont été reconnues et leurs équivalentes actuelles préselectionnées :\n<ul>\n";
-    foreach ($equivs['new'] as $idnumber) {
-        echo '<li>' . $idnumber . "</li>\n";
+    if (count($equivs['new'])) {
+        echo "Les cohortes annualisées suivantes ont été reconnues et leurs équivalentes actuelles préselectionnées :\n<ul>\n";
+        foreach ($equivs['new'] as $idnumber) {
+            echo '<li>' . $idnumber . "</li>\n";
+        }
+        echo "</ul>\n";
     }
-    echo "</ul>\nLes cohortes annualisées suivantes n'ont apparemment pas d'équivalentes actuelles :\n<ul>\n";
-    foreach ($equivs['notfound'] as $idnumber) {
-        echo '<li>' . $idnumber . "</li>\n";
+    if (count($equivs['notfound'])) {
+        echo "Les cohortes annualisées suivantes n'ont apparemment pas d'équivalentes actuelles :\n<ul>\n";
+        foreach ($equivs['notfound'] as $idnumber) {
+            echo '<li>' . $idnumber . "</li>\n";
+        }
+        echo "</ul>\n";
     }
-    echo "</ul>\nLes cohortes suivantes sont toujours valables : <br />\n<ul>\n";
-     foreach ($equivs['unchanged'] as $idnumber) {
-        echo '<li>' . $idnumber . "</li>\n";
+    if (count($equivs['unchanged'])) {
+        echo "Les cohortes suivantes sont toujours valables : <br />\n<ul>\n";
+        foreach ($equivs['unchanged'] as $idnumber) {
+            echo '<li>' . $idnumber . "</li>\n";
+        }
+        echo "</ul>\n";
     }
-    echo "</ul>\n";
     return true;
 }

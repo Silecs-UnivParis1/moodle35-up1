@@ -181,26 +181,6 @@ function wizard_get_wizard_get_categoryname($id) {
     return $name;
 }
 
-function wizard_get_cohorts($courseid) {
-    global $DB;
-    $list = array();
-    $myconfig = new my_elements_config();
-    $labels = $myconfig->role_cohort;
-    $roles = wizard_role($labels);
-    $roleint = array();
-    foreach ($roles as $role) {
-        $roleint[$role['id']] = $role['shortname'];
-    }
-    $enrols = $DB->get_records('enrol', array('courseid' => $courseid, 'enrol' => 'cohort'));
-    foreach ($enrols as $enrol) {
-        $cohortname = $DB->get_field('cohort', 'idnumber', array('id' => $enrol->customint1));
-        if ($cohortname) {
-            $list[$roleint[$enrol->roleid]][] = $cohortname;
-        }
-    }
-    return $list;
-}
-
 function wizard_get_keys($courseid, $coursetimecreated) {
     global $DB;
     $list = array();

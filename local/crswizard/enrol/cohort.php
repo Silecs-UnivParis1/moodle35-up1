@@ -55,15 +55,25 @@ echo $OUTPUT->box($titlepage, 'titlecrswizard');
 echo $OUTPUT->heading(get_string('blocktitleE5', 'local_crswizard'), 4, '');
 echo $OUTPUT->box(get_string('bockhelpE5', 'local_crswizard'), '');
 
+$myconfig = new my_elements_config();
+$labels = $myconfig->role_cohort;
+$roles = wizard_role($labels);
+
+if (isset($SESSION->wizard['form_step5']['groupmsg'])) {
+    $msgcohorts = $SESSION->wizard['form_step5']['groupmsg'];
+   foreach ($msgcohorts as $role => $msg) {
+       echo '<p><b>' . get_string('role', 'local_crswizard') . ' "'
+        . format_string(get_string($role, 'local_crswizard')) . '" : </b></p>';
+       explain_equivalent_cohorts($SESSION->wizard['form_step5']['groupmsg'][$role]);
+    }
+}
+
 echo '<form action="' . $CFG->wwwroot . $SESSION->wizard['wizardurl'] . '" method="post">';
 ?>
 <div class="role">
     <h3><?php echo get_string('role', 'local_crswizard');?></h3>
     <select name="role" size="1" id="group-role">
         <?php
-        $myconfig = new my_elements_config();
-        $labels = $myconfig->role_cohort;
-        $roles = wizard_role($labels);
         foreach ($roles as $r) {
             $label = $r['name'];
             if (array_key_exists($r['shortname'], $labels)) {
