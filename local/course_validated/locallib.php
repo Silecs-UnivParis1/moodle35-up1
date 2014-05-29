@@ -290,7 +290,7 @@ function action_icons($crsid, $validated, $visible, $context) {
         $res .= $OUTPUT->action_icon($url, new pix_icon('i/settings', 'Afficher le tableau de bord'));
     } else { // approbateur lambda
         // Synopsis
-        $url = new moodle_url('/course/report/synopsis/index.php', array('id' => $crsid));
+        $url = new moodle_url('/report/up1synopsis/index.php', array('id' => $crsid));
         $res .= $OUTPUT->action_icon($url, new pix_icon('i/info', 'Afficher le synopsis du cours'));
         // Demande d'assistance
         $helpuser = get_config('local_crswizard', 'helpdesk_user');

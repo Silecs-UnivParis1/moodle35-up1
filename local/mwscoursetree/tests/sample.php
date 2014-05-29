@@ -8,7 +8,7 @@ $sample = array(
         'courses' => 12,
         'load_on_demand' => true,               //has children to unfold
         'teachers' => array('Maxime Dupuis', 'Patricia Cavallo', 'Benoit Roques'),
-        'synopsis' => 'http://localhost/moodle-paris1/course/report/synopsis/index.php?id=20',
+        'synopsis' => 'http://localhost/moodle-paris1/report/up1synopsis/index.php?id=20',
         'access' => array('self-enrolment'),
         'label' => '... Tutorat Méthodologie ...'
     ),

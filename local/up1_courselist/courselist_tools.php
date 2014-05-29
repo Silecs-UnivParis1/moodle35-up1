@@ -246,7 +246,7 @@ EOL;
     public function format_icons($dbcourse, $class) {
         global $OUTPUT;
 
-        $urlsynopsis = new moodle_url('/course/report/synopsis/index.php', array('id' => $dbcourse->id));
+        $urlsynopsis = new moodle_url('/report/up1synopsis/index.php', array('id' => $dbcourse->id));
         $icons = '<' .$this->cellelem. ' class="' . $class. '">';
         $myicons = enrol_get_course_info_icons($dbcourse);
         if ($myicons) { // enrolment access icons
