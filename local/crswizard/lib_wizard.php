@@ -79,6 +79,39 @@ function get_selected_etablissement_id() {
 }
 
 /**
+ * Récupère les utilisateurs ayant des rôles de type teachers dans le cours d'identifiant $courseid
+ * @param int $courseid : identifiant du cours
+ * @return array $users (utilisateurs non suspendus)
+ */
+function wizard_get_teachers($courseid) {
+    global $DB, $USER;
+    $users = array();
+    $myconfig = new my_elements_config();
+    $labels = $myconfig->role_teachers;
+    $roles = wizard_role($labels);
+    if (count($roles)) {
+        $context = context_course::instance($courseid);
+        foreach ($roles as $role) {
+            $ra = $DB->get_records('role_assignments', array('roleid' => $role['id'], 'contextid' => $context->id));
+            if (count($ra)) {
+                foreach ($ra as $r) {
+                   $user = $DB->get_record('user', array('id'=>$r->userid), '*', MUST_EXIST);
+                    if ($user && $user->deleted ==0 && $user->suspended == 0) {
+                        $users[$role['shortname']][$user->username] = $user;
+                    }
+                }
+            }
+        }
+    }
+    if (count($users)) {
+        $code = 'editingteacher';
+        $user = $DB->get_record('user', array('username' => $USER->username));
+        $users[$code][$user->username] = $user;
+    }
+    return $users;
+}
+
+/**
  * Cherche les cohortes de l'année courante equivalent aux anciennes du cours modèle
  * @param int $courseid : identifiant du cours modèle
  * @return array $resultat
@@ -121,6 +154,12 @@ function wizard_get_metadonnees() {
         if ($course) {
             $custominfo_data = custominfo_data::type('course');
             $custominfo_data->load_data($course);
+
+            //inscriptions teachers
+            $teachers = wizard_get_teachers($course->id);
+            if (count($teachers)) {
+                $SESSION->wizard['form_step4']['all-users'] = $teachers;
+            }
 
             // cohortes
             $newcohorts = wizard_get_equivalent_cohorts($course->id);
