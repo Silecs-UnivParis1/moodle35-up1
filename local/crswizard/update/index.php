@@ -28,6 +28,8 @@ require_once('../../../config.php');
 require_once('../../../course/lib.php');
 require_once('../../../lib/coursecatlib.php');
 require_once(__DIR__ . '/../lib_wizard.php');
+require_once(__DIR__ . '/../wizard_modele_duplicate.class.php');
+require_once(__DIR__ . '/../wizard_core.class.php');
 require_once(__DIR__ . '/../libaccess.php');
 require_once(__DIR__ . '/../step2_form.php');
 require_once(__DIR__ . '/../step2_rof_form.php');
@@ -199,7 +201,7 @@ switch ($stepin) {
         } else {
             $steptitle = get_string('updatetitlecase3', 'local_crswizard');
         }
-        $corewizard = new core_wizard($SESSION->wizard, $USER);
+        $corewizard = new wizard_core($SESSION->wizard, $USER);
         $formdata = $corewizard->prepare_update_course();
         $editform = new course_wizard_confirm();
         $editform->set_data($formdata);
@@ -211,7 +213,7 @@ switch ($stepin) {
         }
         break;
     case 8:
-        $corewizard = new core_wizard($SESSION->wizard, $USER);
+        $corewizard = new wizard_core($SESSION->wizard, $USER);
         $errorMsg = $corewizard->update_course();
         $urlcourse = new moodle_url('/course/view.php',array('id' => $id));
         unset($SESSION->wizard);

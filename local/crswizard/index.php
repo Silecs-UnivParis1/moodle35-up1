@@ -27,6 +27,8 @@ require_once('../../config.php');
 require_once('../../course/lib.php');
 require_once('../../lib/coursecatlib.php');
 require_once(__DIR__ . '/lib_wizard.php');
+require_once(__DIR__ . '/wizard_modele_duplicate.class.php');
+require_once(__DIR__ . '/wizard_core.class.php');
 require_once(__DIR__ . '/libaccess.php');
 require_once(__DIR__ . '/step1_form.php');
 require_once(__DIR__ . '/step_model.php');
@@ -218,7 +220,7 @@ switch ($stepin) {
         get_selected_model();
         //fin vérifier si modele de cours
 
-        $corewizard = new core_wizard($SESSION->wizard, $USER);
+        $corewizard = new wizard_core($SESSION->wizard, $USER);
         $formdata = $corewizard->prepare_course_to_validate();
         $editform = new course_wizard_step_confirm();
         $editform->set_data($formdata);
@@ -233,7 +235,7 @@ switch ($stepin) {
         $PAGE->requires->js_init_code(file_get_contents(__DIR__ . '/js/include-for-confirm.js'));
         break;
     case 8:
-        $corewizard = new core_wizard($SESSION->wizard, $USER);
+        $corewizard = new wizard_core($SESSION->wizard, $USER);
         $errorMsg = $corewizard->create_course_to_validate();
         // envoi message
         $messages = $corewizard->get_messages();
