@@ -59,6 +59,34 @@ function teacherstats_resources_top($crsid, $limit) {
 
 
 /**
+ * lists the assignments with statistics, as 2 variants : global an groups
+ * @param type $crsid
+ * @return array(array(array))
+ */
+function teacherstats_assignments($crsid) {
+    global $DB;
+    $res = array('global' => null, 'groups' => null);
+    
+    $sql = "SELECT a.id, a.name, FROM_UNIXTIME(a.duedate) AS due, SUM(IF(ass.status = 'submitted', 1, 0)) AS cntas, COUNT(DISTINCT ag.id) AS cntag "
+         . "FROM {assign} a "
+         . "LEFT JOIN {assign_submission} ass ON (ass.assignment = a.id) "
+         . "LEFT JOIN {assign_grades} ag ON (ag.assignment = a.id) "
+         . "WHERE a.course = ? GROUP BY a.id";
+
+    $assigns = $DB->get_records_sql($sql, array($crsid));
+    foreach($assigns as $assign) {
+        $res['global'][] = array(
+            $assign->name,
+            $assign->due,
+            (integer)$assign->cntas,
+            (integer)$assign->cntag,
+        );
+    }
+    return $res;
+}
+
+
+/**
  * returns an associative array of ($id => $name) for the modules (table module)
  * @global type $DB
  * @param array(string) $resourcenames

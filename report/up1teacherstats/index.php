@@ -76,7 +76,6 @@ echo "<h4>Depuis l’ouverture</h4>\n";
 
 
 echo "<h3>Ressources les plus consultées</h3>\n";
-//html_table_stats_resources_top($course);
 $table = new html_table();
 $table->head = array('Rang', 'Titre', 'Type', 'Nombre d’affichages');
 $table->data = teacherstats_resources_top($course->id, 10);
@@ -86,7 +85,17 @@ echo html_writer::table($table);
 echo "<h3>Activités en cours</h3>\n";
 
 echo "<h4>Devoirs</h4>\n";
-//html_table_assignments($course);
+$stats = teacherstats_assignments($course->id);
+$table = new html_table();
+$table->head = array('Nom', 'Date limite', 'Rendus', 'Évalués');
+$table->data = $stats['global'];
+echo html_writer::table($table);
+
+$table = new html_table();
+$table->head = array('Nom', 'Groupes', 'Date limite', 'Rendus', 'Évalués');
+$table->data = $stats['groups'];
+echo html_writer::table($table);
+
 
 echo "<h4>Glossaire, base de données, forum, wiki, chat</h4>\n";
 //html_table_activities($course);
