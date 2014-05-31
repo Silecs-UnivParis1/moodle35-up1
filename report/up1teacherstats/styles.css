@@ -1,0 +1,37 @@
+#page-report-teacherstats-index td.numviews {text-align:right;}
+#page-report-teacherstats-index tr.section {text-align: center;}
+#page-report-teacherstats-index td.lastaccess {font-size: 0.8em;}
+
+
+table.generaltable {
+    width: 100%;
+}
+
+table.generaltable tr.r0 {
+    background-color: Azure;
+}
+
+table.generaltable tr.r1 {
+    background-color: white;
+}
+
+div#teacherstats-bigbutton div.prep input
+{
+    background-color: #FFDB4D;
+}
+
+div#teacherstats-bigbutton div.join input
+{
+    background-color: PaleGreen;
+}
+
+
+div#teacherstats-informations {
+    clear: both;
+    padding-top: 1ex;
+}
+
+div#teacherstats-rattachements {
+    clear: both;
+    padding-top: 1ex;
+}
