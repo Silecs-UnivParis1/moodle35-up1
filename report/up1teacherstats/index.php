@@ -25,6 +25,8 @@
  */
 
 require('../../config.php');
+require_once($CFG->libdir.'/custominfo/lib.php');
+require_once($CFG->dirroot.'/local/up1_metadata/lib.php');
 require_once(__DIR__ . '/locallib.php');
 
 global $DB, $PAGE, $OUTPUT;
@@ -56,15 +58,7 @@ echo $OUTPUT->header();
 
 echo "<h2>" . $pagename . "</h2>\n";
 
-echo '<div id="teacherstats-bigbutton">' . "\n";
-html_button_join($course);
-if ( has_capability('local/crswizard:supervalidator', context_system::instance()) )
-{
-    $urlboard = new moodle_url('/local/courseboard/view.php', array('id' => $course->id));
-    $icon = $OUTPUT->action_icon($urlboard, new pix_icon('i/settings', 'Afficher le tableau de bord'));
-    echo $icon;
-}
-echo '</div>' . "\n";
+
 
 echo "<h3>Utilisateurs inscrits dans l’EPI</h3>\n";
 //html_table_stats_enrolments($course);

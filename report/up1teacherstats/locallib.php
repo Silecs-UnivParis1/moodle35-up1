@@ -28,10 +28,59 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once(dirname(__FILE__).'/lib.php');
 
-
+/**
+ * computes the TOP $limit viewed resources for the target course
+ * @param int $crsid course id
+ * @param int $limit
+ * @return array(array) for the table to display
+ */
 function teacherstats_resources_top($crsid, $limit) {
     global $DB;
     $res = array();
 
+    $resourcenames = array('book', 'folder', 'label', 'page', 'resource', 'url');
+    $resources = get_assoc_resources($resourcenames);
+    $sql = "SELECT CONCAT(module, cmid), COUNT(id) AS cnt, module, cmid FROM log "
+         . "WHERE course=? AND action like 'view%' AND module IN ('" . implode("','", $resourcenames) . "') "
+         . "GROUP BY module, cmid ORDER BY cnt DESC LIMIT " . $limit;
+    $logtop = $DB->get_records_sql($sql, array($crsid));
+    $cnt = 0;
+    foreach ($logtop as $log) {
+        $cnt++;
+        $res[] = array(
+            $cnt,
+            get_module_title($log->module, $log->cmid),
+            $log->module,
+            $log->cnt,
+        );
+    }
     return $res;
+}
+
+
+/**
+ * returns an associative array of ($id => $name) for the modules (table module)
+ * @global type $DB
+ * @param array(string) $resourcenames
+ * @return array
+ */
+function get_assoc_resources($resourcenames) {
+    global $DB;
+    $sql = "SELECT id, name from {modules} WHERE name IN ('" . implode("','", $resourcenames) .  "')";
+    $resources = $DB->get_records_sql_menu($sql);
+    return $resources;
+}
+
+/**
+ * get the module instance name/label for a course_modules id (and modulename)
+ * @param string $modulename, which is also the name of the target table
+ * @param int $cmid course_modules id
+ * @return string
+ */
+function get_module_title($modulename, $cmid) {
+    global $DB;
+    $sql = "SELECT name FROM {" . $modulename . "} m "
+         . "JOIN {course_modules} cm ON (cm.instance = m.id) "
+         . "WHERE cm.id = ?";
+    return $DB->get_field_sql($sql, array($cmid), MUST_EXIST);
 }
