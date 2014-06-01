@@ -63,6 +63,15 @@ echo "<h2>" . $pagename . "</h2>\n";
 echo "<h3>Utilisateurs inscrits dans l’EPI</h3>\n";
 //html_table_stats_enrolments($course);
 
+$table = new html_table();
+$table->head = array('Rôle', 'Actifs', 'Actifs %', 'Jamais', 'Jamais %');
+$table->data = teacherstats_enrolments_roles($course->id);
+echo html_writer::table($table);
+
+$table = new html_table();
+$table->head = array('Groupe', 'Actifs', 'Actifs %', 'Jamais', 'Jamais %');
+$table->data = teacherstats_enrolments_groups($course->id);
+echo html_writer::table($table);
 
 
 echo "<h3>Fréquentation</h3>\n";

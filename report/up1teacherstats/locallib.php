@@ -28,6 +28,64 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once(dirname(__FILE__).'/lib.php');
 
+
+function teacherstats_enrolments_roles($crsid) {
+    global $DB;
+    $rolenames = array('editingteacher', 'teacher', 'student');
+    //$roles = get_assoc_roles($rolenames);  // inutile ?
+
+    $sql = "SELECT ra.roleid, r.name AS name, COUNT(DISTINCT ra.userid) AS cnt "
+         . "FROM {role_assignments} ra JOIN {context} cx ON (cx.id = ra.contextid AND contextlevel = ?) "
+         . "JOIN {role} r ON (ra.roleid = r.id) "
+         . "WHERE cx.instanceid = ? GROUP BY ra.roleid";
+    $cntall = $DB->get_records_sql($sql, array(CONTEXT_COURSE, $crsid));
+
+    $sql = "SELECT ra.roleid, r.name AS name, COUNT(DISTINCT ra.userid) AS cnt "
+         . "FROM {role_assignments} ra JOIN {context} cx ON (cx.id = ra.contextid AND contextlevel = ?) "
+         . "JOIN {role} r ON (ra.roleid = r.id) "
+         . "JOIN {log} l ON (l.userid = ra.userid AND l.course = cx.instanceid) "
+         . "WHERE cx.instanceid = ? GROUP BY ra.roleid";
+    $cntactive = $DB->get_records_sql($sql, array(CONTEXT_COURSE, $crsid));
+
+    $res = teacherstats_active_table($cntall, $cntactive);
+    return $res;
+}
+
+function  teacherstats_active_table($cntall, $cntactive){
+    $res = array();
+
+    foreach ($cntall as $index => $row) {
+        $active = ( isset($cntactive[$index]) ? $cntactive[$index]->cnt : 0 );
+        $res[] = array(
+            $row->name,
+            $active,
+            round(100 * $active / $row->cnt),
+            $row->cnt - $active,
+            round(100 * ($row->cnt - $active) / $row->cnt),
+        );
+    }
+    return $res;
+}
+
+function teacherstats_enrolments_groups($crsid) {
+    global $DB;
+
+    $sql = "SELECT g.id, g.name, COUNT(DISTINCT gm.id) AS cnt "
+         . "FROM {groups_members} gm JOIN {groups} g on (gm.groupid = g.id) "
+         . "WHERE g.courseid = ? GROUP BY g.id";
+    $cntall = $DB->get_records_sql($sql, array($crsid));
+    
+    $sql = "SELECT g.id, g.name, COUNT(DISTINCT gm.id) AS cnt "
+         . "FROM {groups_members} gm JOIN {groups} g on (gm.groupid = g.id) "
+         . "JOIN {log} l ON (l.userid = gm.userid AND l.course = g.courseid) "
+         . "WHERE l.module = 'course' AND l.action = 'view' AND g.courseid = ? GROUP BY g.id";
+    $cntactive = $DB->get_records_sql($sql, array($crsid));
+    
+    $res = teacherstats_active_table($cntall, $cntactive);
+    return $res;
+}
+
+
 /**
  * computes the TOP $limit viewed resources for the target course
  * @param int $crsid course id
@@ -40,7 +98,7 @@ function teacherstats_resources_top($crsid, $limit) {
 
     $resourcenames = array('book', 'folder', 'label', 'page', 'resource', 'url');
     $resources = get_assoc_resources($resourcenames);
-    $sql = "SELECT CONCAT(module, cmid), COUNT(id) AS cnt, module, cmid FROM log "
+    $sql = "SELECT CONCAT(module, cmid), COUNT(id) AS cnt, module, cmid FROM {log} "
          . "WHERE course=? AND action like 'view%' AND module IN ('" . implode("','", $resourcenames) . "') "
          . "GROUP BY module, cmid ORDER BY cnt DESC LIMIT " . $limit;
     $logtop = $DB->get_records_sql($sql, array($crsid));
@@ -184,6 +242,13 @@ function get_assoc_resources($resourcenames) {
     $sql = "SELECT id, name from {modules} WHERE name IN ('" . implode("','", $resourcenames) .  "')";
     $resources = $DB->get_records_sql_menu($sql);
     return $resources;
+}
+
+function get_assoc_roles($rolenames) {
+    global $DB;
+    $sql = "SELECT id, shortname from {role} WHERE shortname IN ('" . implode("','", $rolenames) .  "')";
+    $records = $DB->get_records_sql_menu($sql);
+    return $records;
 }
 
 /**
