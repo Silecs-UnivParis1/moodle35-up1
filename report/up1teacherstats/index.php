@@ -96,9 +96,12 @@ $table->head = array('Nom', 'Groupes', 'Date limite', 'Rendus', 'Évalués');
 $table->data = $stats['groups'];
 echo html_writer::table($table);
 
-
 echo "<h4>Glossaire, base de données, forum, wiki, chat</h4>\n";
-//html_table_activities($course);
+$table = new html_table();
+$table->head = array('Titre', 'Type', 'Contributions', 'Contributeurs uniques');
+$table->data = teacherstats_activities($course->id);
+echo html_writer::table($table);
+
 
 echo "<h4>Quizz, Sondage, Feedback</h4>\n";
 //html_table_quizzes($course);

@@ -107,6 +107,39 @@ function teacherstats_assignments($crsid) {
 
 
 /**
+ * Computes the statistics for selected activities (see $modulenames)
+ * WARNING the computing uses the log table only, not the per-module specific tables
+ * @param int $crsid
+ * @return array(array('string')) table rows and cells
+ */
+function teacherstats_activities($crsid) {
+    global $DB;
+    $res = array();
+    $modulenames = array('chat', 'data', 'forum', 'glossary', 'wiki');
+
+    foreach ($modulenames as $modulename) {
+        $moduletitle[$modulename] = $DB->get_records_menu($modulename, array('course' => $crsid), null, 'id, name');
+    }
+
+    $sql = "SELECT l.cmid, l.module, cm.instance, COUNT(DISTINCT l.id) AS edits, COUNT(DISTINCT l.userid) AS users "
+         . "FROM {log} l JOIN {course_modules} cm ON  (cm.id = l.cmid) "
+         . "WHERE l.module IN ('" . implode("','", $modulenames) . "') "
+         . "  AND l.course=? AND ( action like 'add%' OR action IN ('edit', 'talk') ) "
+         . "GROUP BY cmid ORDER BY module, cmid";
+    $activities = $DB->get_records_sql($sql, array($crsid));
+    foreach ($activities as $activity) {
+        $res[] = array(
+            $moduletitle[$activity->module][$activity->instance],
+            $activity->module,
+            $activity->edits - 1, // sinon la création est comptée comme contribution
+            $activity->users - 1, // idem
+        );
+    }
+    return $res;
+}
+
+
+/**
  * returns an associative array of ($id => $name) for the modules (table module)
  * @global type $DB
  * @param array(string) $resourcenames
