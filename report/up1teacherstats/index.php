@@ -96,15 +96,17 @@ $table->head = array('Nom', 'Groupes', 'Date limite', 'Rendus', 'Évalués');
 $table->data = $stats['groups'];
 echo html_writer::table($table);
 
+
 echo "<h4>Glossaire, base de données, forum, wiki, chat</h4>\n";
 $table = new html_table();
 $table->head = array('Titre', 'Type', 'Contributions', 'Contributeurs uniques');
 $table->data = teacherstats_activities($course->id);
 echo html_writer::table($table);
 
-
-echo "<h4>Quizz, Sondage, Feedback</h4>\n";
-//html_table_quizzes($course);
-
+echo "<h4>Tests, Sondage, Feedback, Consultation</h4>\n";
+$table = new html_table();
+$table->head = array('Titre', 'Type', 'Réponses', 'Fermeture');
+$table->data = teacherstats_questionnaires($course->id);
+echo html_writer::table($table);
 
 echo $OUTPUT->footer();

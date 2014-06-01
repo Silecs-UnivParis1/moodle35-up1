@@ -50,7 +50,7 @@ function teacherstats_resources_top($crsid, $limit) {
         $res[] = array(
             $cnt,
             get_module_title($log->module, $log->cmid),
-            $log->module,
+            get_string('modulename', $log->module),
             $log->cnt,
         );
     }
@@ -130,9 +130,43 @@ function teacherstats_activities($crsid) {
     foreach ($activities as $activity) {
         $res[] = array(
             $moduletitle[$activity->module][$activity->instance],
-            $activity->module,
+            get_string('modulename', $activity->module),
             $activity->edits - 1, // sinon la création est comptée comme contribution
             $activity->users - 1, // idem
+        );
+    }
+    return $res;
+}
+
+/**
+ * Computes the statistics for selected questionnaires (see $modulenames)
+ * WARNING the computing uses the log table only, not the per-module specific tables
+ * @todo THIS HAS PROBABLY TO BE REWRITTEN WHEN survey, feedback, questionnaire and choice will be unified
+ * @todo see http://docs.moodle.org/27/en/Questionnaire -> Moodle 2.8
+ * @param int $crsid
+ * @return array(array('string')) table rows and cells
+ */
+function teacherstats_questionnaires($crsid) {
+    global $DB;
+    $res = array();
+    $modulenames = array('quiz', 'survey', 'feedback', 'choice');
+
+    foreach ($modulenames as $modulename) {
+        $moduletitle[$modulename] = $DB->get_records_menu($modulename, array('course' => $crsid), null, 'id, name');
+    }
+
+    $sql = "SELECT l.cmid, l.module, cm.instance, COUNT(DISTINCT l.userid) AS users, FROM_UNIXTIME(availableuntil) AS until "
+         . "FROM {log} l JOIN {course_modules} cm ON  (cm.id = l.cmid) "
+         . "WHERE l.module IN ('" . implode("','", $modulenames) . "') "
+         . "  AND l.course=? AND ( action IN ('close attempt', 'submit', 'choose') ) "
+         . "GROUP BY cmid ORDER BY module, cmid";
+    $activities = $DB->get_records_sql($sql, array($crsid));
+    foreach ($activities as $activity) {
+        $res[] = array(
+            $moduletitle[$activity->module][$activity->instance],
+            get_string('modulename', $activity->module),
+            $activity->users,
+            $activity->until,
         );
     }
     return $res;
