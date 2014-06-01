@@ -67,16 +67,36 @@ function teacherstats_assignments($crsid) {
     global $DB;
     $res = array('global' => null, 'groups' => null);
     
-    $sql = "SELECT a.id, a.name, FROM_UNIXTIME(a.duedate) AS due, SUM(IF(ass.status = 'submitted', 1, 0)) AS cntas, COUNT(DISTINCT ag.id) AS cntag "
+    // $sql = "SELECT a.id, a.name, FROM_UNIXTIME(a.duedate) AS due, SUM(IF(ass.status = 'submitted', 1, 0)) AS cntas, COUNT(DISTINCT ag.id) AS cntag "
+    $sql = "SELECT a.id, a.name, FROM_UNIXTIME(a.duedate) AS due, "
+           . "COUNT(DISTINCT ass.id) AS cntas, COUNT(DISTINCT ag.id) AS cntag "
          . "FROM {assign} a "
-         . "LEFT JOIN {assign_submission} ass ON (ass.assignment = a.id) "
+         . "LEFT JOIN {assign_submission} ass ON (ass.assignment = a.id AND ass.status = 'submitted') "
          . "LEFT JOIN {assign_grades} ag ON (ag.assignment = a.id) "
          . "WHERE a.course = ? GROUP BY a.id";
-
     $assigns = $DB->get_records_sql($sql, array($crsid));
     foreach($assigns as $assign) {
         $res['global'][] = array(
             $assign->name,
+            $assign->due,
+            (integer)$assign->cntas,
+            (integer)$assign->cntag,
+        );
+    }
+
+    $sql = "SELECT a.id, a.name, FROM_UNIXTIME(a.duedate) AS due, GROUP_CONCAT(g.name) AS grp, "
+           . "COUNT(DISTINCT ass.id) AS cntas, COUNT(DISTINCT ag.id) AS cntag "
+         . "FROM {assign} a "
+         . "LEFT JOIN {assign_submission} ass ON (ass.assignment = a.id AND ass.status = 'submitted') "
+         . "LEFT JOIN {groups} g ON (g.id = ass.groupid)"
+         . "LEFT JOIN {assign_grades} ag ON (ag.assignment = a.id) "
+         . "WHERE a.course = ? AND ass.groupid > 0  GROUP BY a.id";
+
+    $assigns = $DB->get_records_sql($sql, array($crsid));
+    foreach($assigns as $assign) {
+        $res['groups'][] = array(
+            $assign->name,
+            $assign->grp,
             $assign->due,
             (integer)$assign->cntas,
             (integer)$assign->cntag,
