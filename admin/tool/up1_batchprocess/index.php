@@ -85,6 +85,10 @@ if ($action) {
         case 'disableenrols':
             batchaction_disable_enrols($courses, false);
             break;
+      
+        case 'backup':
+            $msg = batchaction_backup($courses, false);            
+            break;
     }
 }
 
@@ -186,6 +190,10 @@ if (empty($courses)) {
                     <li>
                         <button name="action" value="disableenrols">Désactiver les inscriptions</button>
                     </li>
+                    <li>
+                        <button name="action" value="backup">Archiver</button>
+                        <?php echo " dans " . get_config('backup', 'backup_auto_destination'); ?>
+                    </li>                    
                 </ul>
             </fieldset>
         </div>

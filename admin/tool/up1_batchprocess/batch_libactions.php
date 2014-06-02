@@ -11,6 +11,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . "/local/up1_metadata/lib.php");
+require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 $redirectUrl = $CFG->wwwroot . '/admin/tool/up1_batchprocess/index.php';
 
 /**
@@ -177,4 +178,52 @@ global $redirectUrl, $DB, $CFG;
         redirect($redirectUrl);
         exit();
     }
+}
+
+/**
+ * backup all courses in predefined directory (backup_auto_destination)
+ * @param array $courses of (DB) objects course
+ * @param bool $redirect
+ */
+function batchaction_backup($courses, $redirect) {
+global $redirectUrl, $CFG, $USER;
+
+    $dir = get_config('backup', 'backup_auto_destination');
+    $cnt = 0;
+    foreach ($courses as $course) {
+        // code from /admin/tool/backup.php (excerp from Moodle 2.7)
+        $bc = new backup_controller(backup::TYPE_1COURSE, $course->id, backup::FORMAT_MOODLE,
+                            backup::INTERACTIVE_YES, backup::MODE_GENERAL, $USER->id);
+        // Set the default filename.
+        $format = $bc->get_format();
+        $type = $bc->get_type();
+        $id = $bc->get_id();
+        $users = $bc->get_plan()->get_setting('users')->get_value();
+        $anonymised = $bc->get_plan()->get_setting('anonymize')->get_value();
+        $filename = backup_plan_dbops::get_default_backup_filename($format, $type, $id, $users, $anonymised);
+        $bc->get_plan()->get_setting('filename')->set_value($filename);
+        // Execution.
+        $bc->finish_ui();
+        $bc->execute_plan();
+        $results = $bc->get_results();
+        $file = $results['backup_destination']; // May be empty if file already moved to target location.
+
+        // If OK, store backup in $dir
+        if ($file) {
+            if ($file->copy_content_to($dir.'/'.$filename)) {
+                $file->delete();
+            } else {
+                echo "Destination directory does not exist or is not writable. Leaving the backup in the course backup file area.";
+            }
+            $cnt++;
+        }
+        $bc->destroy();
+    }
+    $msg = "Création de $cnt archives de cours (mbz) dans $dir.";
+    /** @todo flash message */
+    if ($redirect) {
+        redirect($redirectUrl);
+        exit();
+    }
+    return $msg;
 }
