@@ -1,4 +1,12 @@
 <?php
+/**
+ * @package    block
+ * @subpackage course_opennow
+ * @copyright  2012-2014 Silecs {@link http://www.silecs.info/societe}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+require_once($CFG->dirroot . '/local/up1_metadata/lib.php');
 
 class block_course_opennow extends block_base {
     function init() {
@@ -18,7 +26,12 @@ class block_course_opennow extends block_base {
 
         $this->content = new stdClass();
         $context = context_course::instance($this->page->course->id);
-
+        $dates = up1_meta_get_date($this->page->course->id, 'datearchivage');
+        if ($dates['datefr']) {
+            $this->content->text = '<div class="">Cours archivé depuis le ' . $dates['datefr'] .'</div>';
+            $this->content->footer = '';
+            return $this->content;
+        }
 		if (has_capability('moodle/course:update', $context)) {
 			$startDate = date('d-m-Y', $this->page->course->startdate);
 			$open = $this->page->course->visible;

@@ -1,4 +1,11 @@
 <?php
+/**
+ * @package    block
+ * @subpackage course_opennow
+ * @copyright  2012-2014 Silecs {@link http://www.silecs.info/societe}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
     require_once('../../config.php');
 	global $CFG, $DB;
 	$courseid = required_param('courseid',PARAM_INT);
