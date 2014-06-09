@@ -83,7 +83,7 @@ function report_up1stats_cohorts_prefix() {
 function report_up1stats_cohorts_category() {
     global $DB;
 
-    $sql = "SELECT up1category, COUNT(id) AS cnt FROM cohort "
+    $sql = "SELECT up1category, COUNT(id) AS cnt FROM {cohort} "
     . "WHERE component LIKE 'local_cohortsyncup1%' GROUP BY up1category ORDER BY cnt DESC";
     $rows = $DB->get_records_sql($sql);
     $res = (array) $rows;
@@ -94,7 +94,7 @@ function report_up1stats_cohorts_category() {
 function report_up1stats_cohorts_period() {
     global $DB;
 
-    $sql = "SELECT IF(up1period<>'', up1period, '(none)') AS period, COUNT(id) AS cnt FROM cohort "
+    $sql = "SELECT IF(up1period<>'', up1period, '(none)') AS period, COUNT(id) AS cnt FROM {cohort} "
     . "WHERE component LIKE 'local_cohortsyncup1%' GROUP BY up1period ORDER BY up1period ASC";
     $rows = $DB->get_records_sql($sql);
     $res = (array) $rows;
@@ -156,7 +156,7 @@ function report_up1stats_syncs($plugin, $howmany) {
     global $DB;
 
     $res = array();
-    $sql = "SELECT * FROM log WHERE action LIKE ? AND module LIKE ? ORDER BY id DESC LIMIT ". (2*$howmany);
+    $sql = "SELECT * FROM {log} WHERE action LIKE ? AND module LIKE ? ORDER BY id DESC LIMIT ". (2*$howmany);
     $logs = $DB->get_records_sql($sql, array('sync%', $plugin));
     $datebegin = '?';
 
