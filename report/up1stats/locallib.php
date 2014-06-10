@@ -12,9 +12,13 @@
 require_once($CFG->dirroot . '/auth/ldapup1/auth.php');
 require_once($CFG->dirroot . '/local/cohortsyncup1/lib.php');
 
-$cohortPrefixes = array('structures-', 'diploma-', 'groups-', 'affiliation-');
+$cohortPrefixes = array('structures', 'diploma-', 'groups-', 'affiliation-');
 
 defined('MOODLE_INTERNAL') || die;
+
+/*
+ * Users and Authentication statistics
+ */
 
 function report_up1stats_users() {
     global $DB;
@@ -50,57 +54,52 @@ function report_up1stats_users_by_affiliation() {
 }
 
 
+/*
+ * Cohorts statistics
+ */
+
 function report_up1stats_cohorts_generic() {
     global $DB;
     $res = array();
 
-    $count = $DB->count_records('cohort', array('component' => 'local_cohortsyncup1'));
-    $res[] = array('Cohortes UP1', $count);
+    $counttot = $DB->count_records('cohort', array('component' => 'local_cohortsyncup1'));
+    $res[] = array('Cohortes UP1', $counttot);
+    $count = $DB->count_records('cohort', array('component' => 'local_cohortsyncup1', 'up1key' => ''));
+    $res[] = array('Non synchronisées', $count);
+    $res[] = array('Synchronisées', $counttot - $count);
+    
     $sql = "SELECT COUNT(*) FROM {cohort_members} cm "
-        . "JOIN {cohort} c ON (cm.cohortid = c.id) WHERE c.component = 'local_cohortsyncup1'";
+        . "JOIN {cohort} c ON (cm.cohortid = c.id) WHERE c.component = 'local_cohortsyncup1' ";
     $count = $DB->count_records_sql($sql);
     $res[] = array('Appartenances UP1', $count);
     return $res;
 }
 
-function report_up1stats_cohorts_prefix() {
-    global $DB, $cohortPrefixes;
-    $res = array();
-
-    $wherediff = '';
-    foreach ($cohortPrefixes as $prefix) {
-        $sql = "SELECT COUNT(*) FROM {cohort} c WHERE idnumber LIKE '".$prefix."%' ";
-        $count = $DB->count_records_sql($sql);
-        $res[] = array($prefix, $count);
-        $wherediff .= " AND idnumber NOT LIKE '" . $prefix."%' ";
-    }
-    $sql = "SELECT COUNT(*) FROM {cohort} c WHERE TRUE" . $wherediff;
-    $count = $DB->count_records_sql($sql);
-    $res[] = array('Autres', $count);
-    return $res;
-}
-
 function report_up1stats_cohorts_category() {
-    global $DB;
-
-    $sql = "SELECT up1category, COUNT(id) AS cnt FROM {cohort} "
-    . "WHERE component LIKE 'local_cohortsyncup1%' GROUP BY up1category ORDER BY cnt DESC";
-    $rows = $DB->get_records_sql($sql);
-    $res = (array) $rows;
-    return $res;
+    return report_up1stats_cohorts_criterium('up1category');
 }
-
 
 function report_up1stats_cohorts_period() {
-    global $DB;
+    return report_up1stats_cohorts_criterium('up1period');
+}
 
-    $sql = "SELECT IF(up1period<>'', up1period, '(none)') AS period, COUNT(id) AS cnt FROM {cohort} "
-    . "WHERE component LIKE 'local_cohortsyncup1%' GROUP BY up1period ORDER BY up1period ASC";
+/**
+ * compute cohorts nb and enrolled cohorts nb by (criterium $crit)
+ * @param string $crit "up1category" or "up1period"
+ * @return array(array) to be displayed by html_writer::table
+ */
+function report_up1stats_cohorts_criterium($crit) {
+    global $DB;
+// NOTA: you have to define an index on enrol.customint1 to get a reasonable response time
+    $sql = "SELECT IF(" .$crit. " <> '', " .$crit. ", '(none)') AS " .$crit
+         . ", COUNT(DISTINCT c.id) AS cnt , COUNT(DISTINCT e.id) AS cntenrol "
+         . "FROM {cohort} c LEFT JOIN {enrol} e ON (e.enrol = 'cohort' AND e.customint1 = c.id) "
+         . "WHERE component LIKE 'local_cohortsyncup1%' GROUP BY " .$crit." ORDER BY " .$crit. " ASC";
+    echo $sql;
     $rows = $DB->get_records_sql($sql);
     $res = (array) $rows;
     return $res;
 }
-
 
 
 function report_up1stats_cohorts_top($limit, $prefix=false) {
@@ -137,6 +136,9 @@ function report_up1stats_cohorts_top_by_prefix($limit) {
     return $res;
 }
 
+/*
+ * Sync and log statistics
+ */
 
 function report_up1stats_last_sync() {
     // $ldap = auth_plugin_ldapup1::get_last_sync(); // because non-static method
@@ -170,5 +172,28 @@ function report_up1stats_syncs($plugin, $howmany) {
             $datebegin = '?';
         }
     }
+    return $res;
+}
+
+
+
+/*
+ * Obsolete functions since up1* fields have been added
+ */
+
+function report_up1stats_cohorts_prefix() {
+    global $DB, $cohortPrefixes;
+    $res = array();
+
+    $wherediff = '';
+    foreach ($cohortPrefixes as $prefix) {
+        $sql = "SELECT COUNT(*) FROM {cohort} c WHERE idnumber LIKE '".$prefix."%' ";
+        $count = $DB->count_records_sql($sql);
+        $res[] = array($prefix, $count);
+        $wherediff .= " AND idnumber NOT LIKE '" . $prefix."%' ";
+    }
+    $sql = "SELECT COUNT(*) FROM {cohort} c WHERE TRUE" . $wherediff;
+    $count = $DB->count_records_sql($sql);
+    $res[] = array('Autres', $count);
     return $res;
 }
