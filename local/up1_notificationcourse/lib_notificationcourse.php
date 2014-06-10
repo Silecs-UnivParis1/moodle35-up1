@@ -196,4 +196,3 @@ function get_pathcategories_course($categories, $course) {
     $path .= $course->shortname;
     return $path;
 }
-?>

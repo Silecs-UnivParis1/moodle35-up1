@@ -124,4 +124,3 @@ if ($msgresult != '') {
 }
 
 echo $OUTPUT->footer();
-?>
