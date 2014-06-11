@@ -25,7 +25,7 @@ echo $OUTPUT->heading(get_string('pluginname', 'report_up1stats'));
 $url = "$CFG->wwwroot/report/up1stats/index.php";
 
 
-echo "<h2>Connecteurs Annuaire / utilisateurs</h2>\n";
+echo "<h2>Utilisateurs - authentification et statuts</h2>\n";
 $table = new html_table();
 $table->head = array('Items', 'Nb');
 $table->data = report_up1stats_users();
@@ -47,7 +47,7 @@ $table->data = report_up1stats_cohorts_generic();
 echo html_writer::table($table);
 
 $table = new html_table();
-$table->head = array('Période', 'Nb');
+$table->head = array('Catégorie', 'Cohortes', 'Inscriptions', 'C. inscrites');
 $table->data = report_up1stats_cohorts_period();
 echo html_writer::table($table);
 

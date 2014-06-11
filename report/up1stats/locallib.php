@@ -75,6 +75,10 @@ function report_up1stats_cohorts_generic() {
     return $res;
 }
 
+
+/**
+ * see report_up1stats_cohorts_criterium() below
+ */
 function report_up1stats_cohorts_category() {
     return report_up1stats_cohorts_criterium('up1category');
 }
@@ -95,12 +99,17 @@ function report_up1stats_cohorts_criterium($crit) {
          . ", COUNT(DISTINCT c.id) AS cnt , COUNT(DISTINCT e.id) AS cntenrol, COUNT(DISTINCT e.customint1) AS cntec "
          . "FROM {cohort} c LEFT JOIN {enrol} e ON (e.enrol = 'cohort' AND e.customint1 = c.id) "
          . "WHERE component LIKE 'local_cohortsyncup1%' GROUP BY " .$crit." ORDER BY " .$crit. " ASC";
-    echo $sql;
     $rows = $DB->get_records_sql($sql);
     $res = (array) $rows;
     return $res;
 }
 
+/**
+ * compute top cohorts by members (optionally for a specific idnumber prefix)
+ * @param int $limit SQL limit
+ * @param string $prefix cohort.idnumber prefix
+ * @return array(array) table partial content (N rows x 3 cols)
+ */
 
 function report_up1stats_cohorts_top($limit, $prefix=false) {
     global $DB;
@@ -121,6 +130,11 @@ function report_up1stats_cohorts_top($limit, $prefix=false) {
     return $res;
 }
 
+/**
+ * iterates the previous functions for all official prefixes
+ * @param int $limit SQL limit
+ * @return array(array)  table content (N rows x 3 cols)
+ */
 function report_up1stats_cohorts_top_by_prefix($limit) {
     global $cohortPrefixes;
     $res = array();
@@ -129,12 +143,13 @@ function report_up1stats_cohorts_top_by_prefix($limit) {
         $linkdetails = html_writer::link(
             new moodle_url('/report/up1stats/topcohorts.php', array('number'=>50, 'prefix'=>$prefix)),
             'Détails');
-        $res[] = array('', $prefix, $linkdetails);
+        $res[] = array('', $prefix, $linkdetails); // Separator header row for a given prefix
         $tres = report_up1stats_cohorts_top($limit, $prefix);
         $res = array_merge($res, $tres);
     }
     return $res;
 }
+
 
 /*
  * Sync and log statistics
