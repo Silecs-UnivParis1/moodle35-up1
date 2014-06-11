@@ -858,7 +858,7 @@ table.dataTable tr.odd td.sorting_1 {
 }
 
 table.dataTable tr td {
-  	border-left:#ececec 1px solid; border-bottom: 2px solid #ccc;
+  	border-left:#c3c3c3 1px dotted; border-bottom: 2px solid #ccc;
 	line-height:1.4em; padding-top:5px; padding-bottom:3px;
 }
 
@@ -891,23 +891,24 @@ table.dataTable tr td {
 
 .tabtree .tabrow0 li{margin-right:-4px}
 
-.tabtree .tabrow0 li.here{font-weight:bold; font-size:13px;}
+.tabtree .tabrow0 li.here{}
 
 .tabtree .tabrow0 li.here a 
 {
 	position:relative;
 	z-index:102; 	
+	font-weight:bold; font-size:13px;
 }
 
 .tabtree .tabrow0 li a
 {
-	background:#f7f7f7;background:#f4f4f4;
+	background:#f7f7f7; background:#f3f3f3;
 	padding:8px 30px 5px;
 	border-width:2px 2px 0;
 	border-style:solid;
 	border-color:#ddd;
-	border-top-right-radius: 8px;
-	border-top-left-radius: 8px;
+	border-top-right-radius: 7px;
+	border-top-left-radius: 7px;
 
 	margin:0 2px;
 	text-transform: uppercase;
@@ -975,13 +976,13 @@ table.dataTable tr td {
 .coursetree-name img.smallicon {  } /* yassi juin - image Rattachement multiple n'est pas en background*/ 
 
 .coursetree-dir  { 	padding-left: 6px; 
-			border-left: 0.05em solid #999; 
-			border-top-left-radius: 3px; 
-			border-bottom-left-radius:4px;
-			line-height: 5px !important; }  
+			border-left: 0.1em dotted #999; 
+			border-top-left-radius: 0px; 
+			border-bottom-left-radius:0px;
+			}  
 
 #page-mod-page-view .coursetree ul.jqtree-tree a { padding-left:3px; }
-#page-mod-page-view .coursetree ul.jqtree-tree a.img { padding-left:0px !important; }
+#page-mod-page-view .coursetree ul.jqtree-tree a.img { } 
 
 
 #page-mod-page-view ul.jqtree-tree li.jqtree-folder img { 
@@ -1019,7 +1020,7 @@ table.dataTable tr td {
 
 #page-mod-page-view .coursetree ul.jqtree-tree li.jqtree-folder:hover 
 {
- 	background-color: #f3f3f3;  
+ 	background-color: #f3f3f3;   
 }
 
 
@@ -1052,20 +1053,20 @@ table.dataTable tr td {
 /*  #page-report-up1synopsis-index */
 
 div#synopsis-informations h3 {
-  	font-size:21px; border-left: #2e5693 30px solid; padding-left:10px; line-height:0.50em;
+  	font-size:19px; border-left: #2e5693 30px solid; padding-left:10px; line-height:0.50em;
 }
 
 div#synopsis-rattachements h3 {
-  	font-size:17px;  border-left: #2e5693 30px solid; padding-left:10px; line-height:0.50em; 
+  	font-size:19px;  border-left: #2e5693 30px solid; padding-left:10px; line-height:0.50em; 
 }
 
 
+div#synopsis-informations td { border : 1px #999 dotted; padding-top:3px; padding-bottom:2px;}  
 
-div#synopsis-informations table { 	border : 1px solid #c3c3c3;  border-top : 3px solid #ccc; } 
-div#synopsis-informations td { border-right: 1px #999 dotted; padding-top: 4px; padding-bottom:5px;}  
+div#synopsis-informations table { 	border : 1px solid #c3c3c3;  border-top : 2px solid #c3c3c3; } 
 
 /* ligne 1 du tableau , le nom de l'espace de cours dans la tableau information*/ 
-div#synopsis-informations tr:nth-child(99n+1) > td { background-color:#D5EAEC; font-weight:bold; color:#003366;   }
+div#synopsis-informations tr:nth-child(99n+1) > td { background-color:#D5EAEC; font-weight:bold; color:#003366; padding-top:10px;  }
 
 /* colonne 1 du tableau */ 
 div#synopsis-informations td:nth-child(2n-1) { width: 11em; background-color: #fff; color: #555; /* text-transform : uppercase; */} 
@@ -1346,6 +1347,95 @@ background:linear-gradient( #2c93ae, #35adcd);
 
 
 
+/***************** CREATION *******************/  /* yassi 22 */
+
+
+#region-main.span12 {
+			border:1px solid #003366; border-top:3px solid #003366; 
+			padding:20px; padding-bottom:0px; 
+			background-color:#fff;
+			
+
+background-image : url("/theme/clean_up1_epi/pixYassi/colorize.png");   background-position: right 30px top 40px;
+ background-image : url("/theme/clean_up1_epi/pixYassi/tools-wizard-3.png");   background-position: right 20px top 30px; background-size:90px 90px;
+ background-image: url("/theme/clean_up1_epi/pixYassi/epi-Edit.png");  background-position:right top; background-position: right 10px top 20px; background-size:95px 95px;   
+
+background-repeat: no-repeat;
+			
+}
+
+#region-main.span12  p{ margin-right:120px; }
+#region-main.span12  ul li{ margin-right: 120px; }
+
+/* bouton TOUT DEVELOPPER */ 
+.jsenabled .collapsible-actions  { margin-bottom: 20px; margin-top :20px;}
+
+.collapsible-actions .collapseexpand
+{
+			margin-right:120px;   
+			padding-right:10px; padding-top:3px; padding-bottom : 4px;
+			font-size:13px; font-family:verdana,arial,sans-serfi;
+			border-radius: 4px;
+			border-bottom: 1px dotted #003399;
+			border :1px solid #E9681d;   
+			border-top:0;border-bottom:0;
+}
+
+.box.titlecrswizard {padding-bottom:4px; padding-top:4px; 
+			font-size:18px; text-transform : uppercase; font-weight:bold;
+			color:#003366;
+			margin-bottom: 10px;}
+
+
+/***** titre 2 de la page *****/ 
+.box.titlecrswizard:nth-child(2n+1) 
+{  
+			margin-right: 120px; margin-bottom:20px;
+			background-color: #eee; padding-left: 20px; 
+			font-size:18px; text-transform : none; font-weight:normal;
+
+			 
+			border :1px solid #E9681d;  
+			border-top :2px solid #E9681d; 
+			background-color: #E9681d; color: #fff;
+}
+
+
+
+/* espace des formulaire orange */ 
+
+#region-main.span12 fieldset.clearfix.collapsible {
+		padding-left:10px; padding-bottom:0px; padding-top:0px;
+		margin-right:20px; 
+		border : 1px dotted #E9681d ;
+		border-left : 1px solid #E9681d ; border-right:0;
+ 		background-color: #F7EDD8;
+		margin-bottom: 20px !important; 
+}
+
+
+
+
+
+#region-main.span12 legend {padding-left:9px; margin-top: 0px; padding-bottom:0; }
+
+#region-main.span12 legend  a:link 
+{  			padding-right:30px; 
+			
+			font-size: 15px !important; font-weight:bold;
+			 
+			color: #003399; 
+			border-bottom: 0px dotted #E9681d ;
+			border-top : 2px solid #E9681d; 
+
+			border-left: 1px solid #E9681d ; border-right: 1px dotted #E9681d ;
+			border-radius: 6px; border-bottom-left-radius :0;border-bottom-right-radius :0;
+
+			border-top-left-radius :0;
+	 		background-color: #F7EDD8;
+			
+
+}
 
 
 
@@ -1354,16 +1444,76 @@ background:linear-gradient( #2c93ae, #35adcd);
 
 
 
+button, input.form-submit, input[type="button"], input[type="submit"], input[type="reset"]
+{
+ /*****
+
+ display: inline-block;
+  padding-top: 4px;
+  padding-right: 12px;
+  padding-bottom: 4px;
+  padding-left: 12px;
+  margin-bottom: 0px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+  text-align: center;
+  text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.75);
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  background-image: #ffffff;
+  background-repeat: repeat-x;
+  border-top-width: 1px;
+  border-right-width-value: 1px;
+  border-bottom-width: 1px;
+  border-left-width-value: 1px;
+  border-top-style: solid;
+  border-right-style-value: solid;
+  border-bottom-style: solid;
+  border-left-style-value: solid;
+  border-image-source: none;
+  border-image-slice: 100% 100% 100% 100%;
+  border-image-width: 1 1 1 1;
+  border-image-outset: 0 0 0 0;
+  border-image-repeat: stretch stretch;
+  border-top-color: rgba(0, 0, 0, 0.1);
+  border-right-color-value: rgba(0, 0, 0, 0.1);
+  border-left-color-value: rgba(0, 0, 0, 0.1);
+  border-bottom-color: #b3b3b3;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.2) inset, 0px 1px 2px rgba(0, 0, 0, 0.05);
+****/ 
+}
+
+previousstage a, a.previousstage
+{
+ display: inline-block;
+  padding : 3px 12px 2px 12px !important;
+  
+  margin-bottom: 7px !important; margin-right: 30px; 
+  font-size: 13px !important;
+  line-height: 20px !important;
+  color: #333333;
+  text-align: center;
+   border-color-value: rgba(0, 0, 0, 0.1) !important;
+
+  vertical-align: middle !important;
+  cursor: pointer;
+
+  background-color: #f5f5f5 !important;
+  border : 1px solid #b3b3b3 !important;
+  
+  border-radius: 4px ;
+
+font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
+  box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.2) inset, 0px 1px 2px rgba(0, 0, 0, 0.05);
 
 
-
-
-
-
-
-
-
-
+}
 
 
 
