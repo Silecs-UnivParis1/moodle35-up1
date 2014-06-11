@@ -29,15 +29,17 @@ $table->data = report_up1stats_cohorts_generic();
 echo html_writer::table($table);
 
 $table = new html_table();
-$table->head = array('Catégorie', 'Nombre', 'Inscrites');
+$table->head = array('Catégorie', 'Cohortes', 'Inscriptions', 'C. inscrites');
 $table->data = report_up1stats_cohorts_category();
 echo html_writer::table($table);
 
 $table = new html_table();
-$table->head = array('Période', 'Nombre', 'Inscrites');
+$table->head = array('Période', 'Cohortes', 'Inscriptions', 'C. inscrites');
 $table->data = report_up1stats_cohorts_period();
 echo html_writer::table($table);
 
+
+echo "<h2>Effectifs</h2>\n";
 
 //***** TOP NN cohorts
 $linkdetails = html_writer::link(

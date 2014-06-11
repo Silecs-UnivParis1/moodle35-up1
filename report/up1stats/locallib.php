@@ -92,7 +92,7 @@ function report_up1stats_cohorts_criterium($crit) {
     global $DB;
 // NOTA: you have to define an index on enrol.customint1 to get a reasonable response time
     $sql = "SELECT IF(" .$crit. " <> '', " .$crit. ", '(none)') AS " .$crit
-         . ", COUNT(DISTINCT c.id) AS cnt , COUNT(DISTINCT e.id) AS cntenrol "
+         . ", COUNT(DISTINCT c.id) AS cnt , COUNT(DISTINCT e.id) AS cntenrol, COUNT(DISTINCT e.customint1) AS cntec "
          . "FROM {cohort} c LEFT JOIN {enrol} e ON (e.enrol = 'cohort' AND e.customint1 = c.id) "
          . "WHERE component LIKE 'local_cohortsyncup1%' GROUP BY " .$crit." ORDER BY " .$crit. " ASC";
     echo $sql;
