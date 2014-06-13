@@ -10,6 +10,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->dirroot . "/local/crswizard/updatelib.php");
 
 function xmldb_local_crswizard_upgrade($oldversion) {
     global $CFG, $DB;
@@ -33,6 +34,9 @@ function xmldb_local_crswizard_upgrade($oldversion) {
         $status = $dbman->create_table($table);
     }
 
+    if ($oldversion < 2014061300) {
+        update_course_idnumber();
+    }
 
     return true;
 }
