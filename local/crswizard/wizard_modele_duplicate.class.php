@@ -138,6 +138,9 @@ class wizard_modele_duplicate {
 
         $course->fullname = $this->mydata->fullname;
         $course->shortname = $this->mydata->shortname;
+        if (isset($this->mydata->idnumber)) {
+            $course->idnumber = $this->mydata->idnumber;
+        }
         $course->visible = $this->mydata->visible;
         $course->startdate = $this->mydata->startdate;
         $course->summary       = $this->mydata->summary_editor['text'];
