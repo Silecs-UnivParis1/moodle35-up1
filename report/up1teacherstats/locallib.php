@@ -58,6 +58,7 @@ function  teacherstats_active_table($cntall, $cntactive){
         $active = ( isset($cntactive[$index]) ? $cntactive[$index]->cnt : 0 );
         $res[] = array(
             $row->name,
+            $row->cnt,
             $active,
             round(100 * $active / $row->cnt),
             $row->cnt - $active,

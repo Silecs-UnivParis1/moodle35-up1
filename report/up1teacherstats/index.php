@@ -64,12 +64,12 @@ echo "<h3>Utilisateurs inscrits dans l’EPI</h3>\n";
 //html_table_stats_enrolments($course);
 
 $table = new html_table();
-$table->head = array('Rôle', 'Actifs', 'Actifs %', 'Jamais', 'Jamais %');
+$table->head = array('Rôle', 'Total', 'Actifs', 'Actifs %', 'Jamais', 'Jamais %');
 $table->data = teacherstats_enrolments_roles($course->id);
 echo html_writer::table($table);
 
 $table = new html_table();
-$table->head = array('Groupe', 'Actifs', 'Actifs %', 'Jamais', 'Jamais %');
+$table->head = array('Groupe', 'Total', 'Actifs', 'Actifs %', 'Jamais', 'Jamais %');
 $table->data = teacherstats_enrolments_groups($course->id);
 echo html_writer::table($table);
 
