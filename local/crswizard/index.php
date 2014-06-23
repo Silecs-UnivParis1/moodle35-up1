@@ -247,6 +247,11 @@ switch ($stepin) {
             $remarques  .= "\n\n---------------\n\n";
         }
 
+        $nbsum = $DB->count_records('crswizard_summary', array('courseid' => $corewizard->course->id));
+        if ($nbsum > 0) {
+            $DB->delete_records('crswizard_summary', array('courseid' => $corewizard->course->id));
+        }
+
         $recap = $corewizard->get_recapitulatif_demande();
         $record = new stdClass;
         $record->courseid = $corewizard->course->id;

@@ -81,6 +81,11 @@ if ($formdata) {
         echo $OUTPUT->heading($strdeletingcourse);
         $res = delete_course($course);
         if ($res) {
+            //si cours non validé
+            $nbsum = $DB->count_records('crswizard_summary', array('courseid' => $course->id));
+            if ($nbsum > 0) {
+                $DB->delete_records('crswizard_summary', array('courseid' => $course->id));
+            }
             echo $OUTPUT->heading( get_string("deletedcourse", "", $courseshortname) );
         } else {
             echo '<p>Un problème a eu lieu.</p>';
