@@ -173,7 +173,9 @@ if (!empty($CFG->customfrontpageinclude)) {
         }
 
         $courserenderer = $PAGE->get_renderer('core', 'course');
-        echo $courserenderer->course_section_cm_list($SITE, $section);
+	if ($editing) {
+            echo $courserenderer->course_section_cm_list($SITE, $section);
+        }
 
         echo $courserenderer->course_section_add_cm_control($SITE, $section->section);
         echo $OUTPUT->box_end();
