@@ -60,9 +60,9 @@ function  teacherstats_active_table($cntall, $cntactive){
             $row->name,
             $row->cnt,
             $active,
-            round(100 * $active / $row->cnt),
+            round(100 * $active / $row->cnt) . ' %',
             $row->cnt - $active,
-            round(100 * ($row->cnt - $active) / $row->cnt),
+            round(100 * ($row->cnt - $active) / $row->cnt) . ' %',
         );
     }
     return $res;
