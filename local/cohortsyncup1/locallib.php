@@ -467,14 +467,14 @@ function fix_user_sync($dryrun=false) {
 function update_period($verb=1) {
     global $DB;
 
-    $dbyear = $DB->get_field_sql(" SELECT MAX(up1period) FROM cohort", null, MUST_EXIST);
+    $dbyear = $DB->get_field_sql(" SELECT MAX(up1period) FROM {cohort}", null, MUST_EXIST);
     $curyear = get_config('local_cohortsyncup1', 'cohort_period');
     if ($dbyear == $curyear) {
         progressBar($verb, 2, "Period = $dbyear ; does not change.\n\n");
         return 0;
     } else {
         progressBar($verb, 2, "/!\ Period change, from $dbyear to $curyear.\n\n");
-        $sql = "SELECT COUNT(id) FROM cohort WHERE up1period=? AND up1key != '' ";
+        $sql = "SELECT COUNT(id) FROM {cohort} WHERE up1period=? AND up1key != '' ";
         $cnterased = $DB->get_field_sql($sql, array($dbyear), MUST_EXIST);
         $DB->execute("UPDATE {cohort} SET up1key='' WHERE up1period=? AND up1key != ''", array($dbyear));
         return $cnterased;
