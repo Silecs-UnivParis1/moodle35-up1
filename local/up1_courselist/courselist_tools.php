@@ -211,7 +211,7 @@ EOL;
         $crsname = get_course_display_name_for_list($dbcourse); // could be completed with ROF $name ?
         $rmicon = '';
         if ($this->format == 'tree'  &&  courselist_common::has_multiple_rattachements($dbcourse->id)) {
-            $rmicon .= $OUTPUT->render(new pix_icon('t/add', 'Rattachement multiple'));
+            $rmicon .= $OUTPUT->render(new pix_icon('t/multi-rattach', 'Rattachement multiple'));
         }
         $crslink = '<' . $this->cellelem. ' class="' . $class . '">'
                 . html_writer::link($urlCourse, $crsname) . '&nbsp;' . $rmicon
