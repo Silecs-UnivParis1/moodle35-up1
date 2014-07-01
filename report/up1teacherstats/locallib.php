@@ -27,6 +27,8 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once(dirname(__FILE__).'/lib.php');
+require_once($CFG->dirroot.'/lib/statslib.php');
+require_once($CFG->dirroot.'/report/stats/locallib.php'); // WARNING include locallib of another plugin
 
 
 function teacherstats_enrolments_roles($crsid) {
@@ -264,4 +266,200 @@ function get_module_title($modulename, $cmid) {
          . "JOIN {course_modules} cm ON (cm.instance = m.id) "
          . "WHERE cm.id = ?";
     return $DB->get_field_sql($sql, array($cmid), MUST_EXIST);
+}
+
+
+// Les 2 fonctions suivantes sont inspirées/adaptées de  report_stats_report() du plugin report_stats
+// FIXME à adapter si elle est réécrite : GROSSE horreur, monolithique, illisible
+// time = (codage crétin) : 4 = 4 semaines, par jour ; 12 = 2 mois, par semaine ; année passée = 32, par mois
+// cf function stats_get_parameters() dans lib/statslib.php
+
+// Pour afficher les graphiques calculés par report_stats
+function teacherstats_graph_connections($courseid, $time, $alt) {
+    global $CFG, $DB, $OUTPUT;
+    $mode = STATS_MODE_GENERAL; // =1
+    $report = 2; // affichages ;  1=connexions, seulement pour le cours 1
+    $roleid = 0; // tous les roles
+    echo '<div class="graph">';
+    echo '<img src="'.$CFG->wwwroot.'/report/stats/graph.php?mode='.$mode.'&amp;course='.$courseid.'&amp;time='.$time.'&amp;report='.$report.'&amp;roleid='.$roleid.'" alt="'.$alt.'" />';
+    echo '</div>';
+}
+
+
+// Fonction inutilisée mais potentiellement utile pour débogage
+function teacherstats_report_connections($course, $time) {
+    global $CFG, $DB, $OUTPUT;
+
+    $user = null;
+    $userid = 0;
+    $mode = STATS_MODE_GENERAL;
+    $roleid = 0;
+    $report = 2; // affichages ;  1=connexions, seulement pour le cours 1
+
+    $courses = get_courses('all','c.shortname','c.id,c.shortname,c.fullname');
+    $courseoptions = array();
+
+    foreach ($courses as $c) {
+        $context = context_course::instance($c->id);
+
+        if (has_capability('report/stats:view', $context)) {
+            $courseoptions[$c->id] = format_string($c->shortname, true, array('context' => $context));
+        }
+    }
+
+    $reportoptions = stats_get_report_options($course->id, $mode);
+    $timeoptions = report_stats_timeoptions($mode);
+    if (empty($timeoptions)) {
+        print_error('nostatstodisplay', '', $CFG->wwwroot.'/course/view.php?id='.$course->id);
+    }
+
+    $users = array();
+    $table = new html_table();
+    $table->width = 'auto';
+
+    if (!empty($report) && !empty($time)) {
+        if ($report == STATS_REPORT_LOGINS && $course->id != SITEID) {
+            print_error('reportnotavailable');
+        }
+
+        $param = stats_get_parameters($time,$report,$course->id,$mode);
+
+        if (!empty($param->sql)) {
+            $sql = $param->sql;
+        } else {
+            //TODO: lceanup this ugly mess
+            $sql = 'SELECT '.((empty($param->fieldscomplete)) ? 'id,roleid,timeend,' : '').$param->fields
+                .' FROM {stats_'.$param->table.'} WHERE '
+                .(($course->id == SITEID) ? '' : ' courseid = '.$course->id.' AND ')
+                .((!empty($userid)) ? ' userid = '.$userid.' AND ' : '')
+                .((!empty($roleid)) ? ' roleid = '.$roleid.' AND ' : '')
+                . ((!empty($param->stattype)) ? ' stattype = \''.$param->stattype.'\' AND ' : '')
+                .' timeend >= '.$param->timeafter
+                .' '.$param->extras
+                .' ORDER BY timeend DESC';
+        }
+
+// echo $sql;
+// $sql = "SELECT CONCAT(timeend, roleid) AS uniqueid, timeend, roleid, sum(stat1) as line1 FROM {stats_daily}"
+// . " WHERE stattype = 'activity' AND timeend >= 1401746400 GROUP BY timeend,roleid ORDER BY timeend DESC";
+
+        $stats = $DB->get_records_sql($sql);
+
+        if (empty($stats)) {
+            echo $OUTPUT->notification(get_string('statsnodata'));
+
+        } else {
+
+            $stats = stats_fix_zeros($stats,$param->timeafter,$param->table,(!empty($param->line2)));
+
+            echo $OUTPUT->heading(format_string($course->shortname).' - '.get_string('statsreport'.$report)
+                    .((!empty($user)) ? ' '.get_string('statsreportforuser').' ' .fullname($user,true) : '')
+                    .((!empty($roleid)) ? ' '.$DB->get_field('role','name', array('id'=>$roleid)) : ''));
+
+            if ($mode == STATS_MODE_DETAILED) {
+                echo '<div class="graph"><img src="'.$CFG->wwwroot.'/report/stats/graph.php?mode='.$mode.'&amp;course='.$course->id.'&amp;time='.$time.'&amp;report='.$report.'&amp;userid='.$userid.'" alt="'.get_string('statisticsgraph').'" /></div>';
+            } else {
+                echo '<div class="graph"><img src="'.$CFG->wwwroot.'/report/stats/graph.php?mode='.$mode.'&amp;course='.$course->id.'&amp;time='.$time.'&amp;report='.$report.'&amp;roleid='.$roleid.'" alt="'.get_string('statisticsgraph').'" /></div>';
+            }
+
+            $table = new html_table();
+            $table->align = array('left','center','center','center');
+            $param->table = str_replace('user_','',$param->table);
+            switch ($param->table) {
+                case 'daily'  : $period = get_string('day'); break;
+                case 'weekly' : $period = get_string('week'); break;
+                case 'monthly': $period = get_string('month', 'form'); break;
+                default : $period = '';
+            }
+            $table->head = array(get_string('periodending','moodle',$period));
+            if (empty($param->crosstab)) {
+                $table->head[] = $param->line1;
+                if (!empty($param->line2)) {
+                    $table->head[] = $param->line2;
+                }
+            }
+
+            if (empty($param->crosstab)) {
+                foreach  ($stats as $stat) {
+                    $a = array(userdate($stat->timeend-(60*60*24),get_string('strftimedate'),$CFG->timezone),$stat->line1);
+                    if (isset($stat->line2)) {
+                        $a[] = $stat->line2;
+                    }
+                    if (empty($CFG->loglifetime) || ($stat->timeend-(60*60*24)) >= (time()-60*60*24*$CFG->loglifetime)) {
+                        if (has_capability('report/log:view', context_course::instance($course->id))) {
+                            $a[] = '<a href="'.$CFG->wwwroot.'/report/log/index.php?id='.
+                                $course->id.'&amp;chooselog=1&amp;showusers=1&amp;showcourses=1&amp;user='
+                                .$userid.'&amp;date='.usergetmidnight($stat->timeend-(60*60*24)).'">'
+                                .get_string('course').' ' .get_string('logs').'</a>&nbsp;';
+                        } else {
+                            $a[] = '';
+                        }
+                    }
+                    $table->data[] = $a;
+                }
+            } else {
+                $data = array();
+                $roles = array();
+                $times = array();
+                $missedlines = array();
+                $coursecontext = context_course::instance($course->id);
+                $rolenames = role_fix_names(get_all_roles($coursecontext), $coursecontext, ROLENAME_ALIAS, true);
+                foreach ($stats as $stat) {
+                    if (!empty($stat->zerofixed)) {
+                        $missedlines[] = $stat->timeend;
+                    }
+                    $data[$stat->timeend][$stat->roleid] = $stat->line1;
+                    if ($stat->roleid != 0) {
+                        if (!array_key_exists($stat->roleid,$roles)) {
+                            $roles[$stat->roleid] = $rolenames[$stat->roleid];
+                        }
+                    } else {
+                        if (!array_key_exists($stat->roleid,$roles)) {
+                            $roles[$stat->roleid] = get_string('all');
+                        }
+                    }
+                    if (!array_key_exists($stat->timeend,$times)) {
+                        $times[$stat->timeend] = userdate($stat->timeend,get_string('strftimedate'),$CFG->timezone);
+                    }
+                }
+
+                foreach ($data as $time => $rolesdata) {
+                    if (in_array($time,$missedlines)) {
+                        $rolesdata = array();
+                        foreach ($roles as $roleid => $guff) {
+                            $rolesdata[$roleid] = 0;
+                        }
+                    }
+                    else {
+                        foreach (array_keys($roles) as $r) {
+                            if (!array_key_exists($r, $rolesdata)) {
+                                $rolesdata[$r] = 0;
+                            }
+                        }
+                    }
+                    krsort($rolesdata);
+                    $row = array_merge(array($times[$time]),$rolesdata);
+                    if (empty($CFG->loglifetime) || ($stat->timeend-(60*60*24)) >= (time()-60*60*24*$CFG->loglifetime)) {
+                        if (has_capability('report/log:view', context_course::instance($course->id))) {
+                            $row[] = '<a href="'.$CFG->wwwroot.'/report/log/index.php?id='
+                                .$course->id.'&amp;chooselog=1&amp;showusers=1&amp;showcourses=1&amp;user='.$userid
+                                .'&amp;date='.usergetmidnight($time-(60*60*24)).'">'
+                                .get_string('course').' ' .get_string('logs').'</a>&nbsp;';
+                        } else {
+                            $row[] = '';
+                        }
+                    }
+                    $table->data[] = $row;
+                }
+                krsort($roles);
+                $table->head = array_merge($table->head,$roles);
+            }
+            $table->head[] = get_string('logs');
+            //if (!empty($lastrecord)) {
+                //$lastrecord[] = $lastlink;
+                //$table->data[] = $lastrecord;
+            //}
+            echo html_writer::table($table);
+        }
+    }
 }

@@ -83,8 +83,12 @@ echo "<h3>Fréquentation</h3>\n";
 
 echo "<h4>Pour le mois écoulé</h4>\n";
 //html_table_stats_daily_month($course);
+teacherstats_graph_connections($course->id, 5, "Graphe de connexions sur 5 semaines");
+//teacherstats_graph_connections(1, 5, "Graphe de connexions sur 5 semaines");
 
 echo "<h4>Depuis l’ouverture</h4>\n";
+teacherstats_graph_connections($course->id, 19, "Graphe de connexions sur 9 mois");
+// teacherstats_graph_connections(1, 19, "Graphe de connexions sur 9 mois");
 //html_table_stats_weekly_opening($course);
 
 
