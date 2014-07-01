@@ -95,8 +95,10 @@ $table->head = array('Rang', 'Titre', 'Type', 'Nombre d’affichages');
 $table->data = teacherstats_resources_top($course->id, 10);
 echo html_writer::table($table);
 
-
-echo "<h3>Activités en cours</h3>\n";
+$linkdetails = html_writer::link(
+        new moodle_url('/report/log/index.php', array('id' => $course->id)),
+        'Détails');
+echo "<h3>Activités en cours " . $linkdetails . "</h3>\n";
 
 echo "<h4>Devoirs</h4>\n";
 $stats = teacherstats_assignments($course->id);
