@@ -1,16 +1,23 @@
  
-/*** feuille de style Paris 1, adaptation du thème CLEAN, Moodle 2.6 - 18 Avril 2014 - Yassamine Amiri ***/ 
-
-/***** 
 
 
-body  id="page-mod-page-view"   (index des espaces, FAq, tableau des cours ...)   / #page-content / #region-bs-main-and-pre  / #region-main 
+/*** feuille de style Paris 1, adaptation du thème CLEAN, Moodle 2.6 - 1 juillet 2014 - Yassamine Amiri ***/ 
 
-body id="page-course-view-topics"  (espace cours)   /  .course-content .main  
 
- 
+/*-----  COULEURS -------
+#2c93ae 	vert des titres de tableau 
+#D5EAEC  	vert claire     
+#f7edd8 	sable P1
+-------------------*/ 
 
-*********/
+
+/* Franklin Gothic Medium Cond */
+
+@font-face {  font-family: 'Franklin3'; 	src: url("/theme/clean_up1_epi/fonts/FRAMDCN.TTF") format('truetype');  }
+
+@font-face { 	font-family: 'Univers 57 Condensed';  	src: url("/theme/clean_up1_epi/fonts/PS_32.TTF") format('truetype'); }
+
+@font-face {  font-family: 'impact4';  	src: url("/theme/clean_up1_epi/fonts/IMPACT.TTF"); }
 
 
 
@@ -20,45 +27,48 @@ body {
 	font-size: 12px;
 }
 
-#section #region-main p { font-size:13px; /*CL-CH */ }
+
+
+a:link, a:active { color:#003399; }
+a:visited { color: #5476BB ; }
+a:hover {color: #0000ff !important; text-decoration:underline !important;} 
+
+
+
+#section #region-main p { font-size:13px;  /*CL-CH */ }
 
 
 p {line-height:1.25em; }
 
-body,h1,h2,h3,h4,h5,h6,p,ul,ol,dl,input,textarea {
-	font-family: "Helvetica Neue",Arial, Verdana, Helvetica,sans-serif;   
-}
+body,h1,h2,h3,h4,h5,h6,p,ul,ol,dl,input,textarea { font-family: "Helvetica Neue",Arial, Verdana, Helvetica,sans-serif; }  
 
 
-h1,h2,h3,h4,h5,h6 { /* color:#0a4280;  color:#263f82; */  color:#003366;  }
+h1,h2,h3,h4,h5,h6 { 	color:#003366;  }
 
-		h1 { font-size: 24px; 
+		h1 { 	font-size: 24px; 
 			font-family: 'Franklin3',Arial,verdana,sans-serif;   font-weight:normal; line-height:1.2em;  }
 
-		h2 { font-size: 18px; line-height:1.2em; }
+		h2 { 	font-size: 20px; line-height:1.2em;  }
  
 		 
-		h3 { font-size: 17px; line-height:1.2em;  }
-		h4 { font-size: 15px;   }
+		h3 { 	font-size: 17px; line-height:1.2em;  }
+		h4 { 	font-size: 15px; }
 
-		h5 { font-size: 13px; font-family: Arial,"Helvetica Neue",verdana, Helvetica,sans-serif; border-bottom :1px dotted #666;  
-			margin-bottom:12px; margin-top:22px; text-transform: uppercase; padding-bottom:0px;
- }
-
-
-
-h6 { font-size: 12px; font-weight:normal; font-weight:bold; font-family:Arial, 'Franklin3',verdana,sans-serif;  text-transform: uppercase;}
+		h5 { 	font-size: 13px; font-family: Arial,"Helvetica Neue",verdana, Helvetica,sans-serif; border-bottom :1px dotted #666;  
+			margin-bottom:12px; margin-top:22px; text-transform: uppercase; padding-bottom:0px; 
+		   }
 
 
-h6 {   /*border-radius: 0px;  display:inline; clear:both;  */
-	border-top :0px solid #663300;
-							color: #c66042;   color: #ea681d;  color: #e64a00;color: #d14b0c; 
-	  
-	 background-color: #f7edd8; padding:0px; padding-left:6px;   padding-right:6px; 
-	 background-color : #fff;  border-left:10px solid #c66042;   
 
-  	line-height:10px; margin-bottom:12px; margin-top:22px;
-}
+		h6 { 	font-size: 12px; font-weight:normal; font-weight:bold; font-family:Arial, 'Franklin3',verdana,sans-serif;  text-transform: uppercase;}
+
+
+		h6 {   border-top :0px solid #663300;
+			color: #d14b0c; 
+			padding:0px; padding-left:6px;   padding-right:6px; 
+			/* background-color: #f7edd8; background-color : #fff; */  border-left:10px solid #c66042;   
+  			line-height:10px; margin-bottom:12px; margin-top:22px;
+		   }
 
 
 
@@ -76,17 +86,10 @@ h6 {   /*border-radius: 0px;  display:inline; clear:both;  */
 
 
 
-/* yassi 22 */
+/* Pour distinguer le nom de la page toujours en h2 !!! */
 
-#region-bs-main-and-pre #region-main  
-{
-	border-top : 2px dotted #c9c9c9; border-top-right-radius:25px; 
-}
-
-#region-bs-main-and-pre #region-main h2 
-{
-	/* border-left: 5px solid #ddd;  padding-left:12px; margin-top:0; padding-top:7px; */
-}
+#region-bs-main-and-pre #region-main  { border-top : 2px dotted #c9c9c9; border-top-right-radius:25px; }
+#region-bs-main-and-pre #region-main h2 {  }
 
 
 
@@ -94,17 +97,21 @@ code, pre
 {
 	/* font-family: Monaco,Menlo,Consolas,"Courier New",monospace; */
 	font-family: Arial,verdana,arial,sans-serif;
-	font-size : 13px;
+	font-size : 13px;  line-height: 15px; 
+	padding-top:8px; padding-left:20px; padding-right:20px;
+	margin-top:15px; 
 
+	/**** debug : couper un mot correctement svp ***/ 
+	 	word-wrap:break-word !important; 
+ 		word-break: keep-all
+	/**********************************************/
 }
 
 address
 {
-  /*display: block; margin-bottom: 20px;   */ 
-	 /*font-style: italic;  color: #663300; */
-	line-height: 15px;
+   	line-height: 15px;
 	font-family:Courier New, Courier, monospace;; 
-  	font-size : 1em;
+  	font-size : 0.85em;
 
 }
 
@@ -113,9 +120,7 @@ address
 
 /*********** FOOTER / bas de page *********/
 
-
-/* 
-#page-footer .validators, #page-footer .purgecaches, #page-footer .performanceinfo     */
+ 
 
 #page-footer  
 {
@@ -150,16 +155,18 @@ address
 }
 
  
-
  
-#page-footer .text-center {    border :0; border-top:1px solid #ccc;clear:both; padding:0px;  padding-top:15px !important; min-height:100px;} 
+#page-footer .text-center { border :0; border-top:1px solid #ccc;clear:both; padding:0px;  padding-top:15px !important; min-height:100px;} 
  
-#page-footer  #col-a  {     width:24%;  display:  inline-block; float: left; margin:0 !important; text-align:center; margin-top:20px; padding-top:10px; padding-bottom:30px;padding-left:0; }
+#page-footer  #col-a  {     width:25%;  display:  inline-block; float: left; margin:0 !important; 
+				text-align:left; margin-top:20px; padding-top:10px; padding-bottom:30px;padding-left:30px; }
 
-#page-footer  #col-bc  { width:71%;  display:  inline-block;  float: left; clear:right;  }
+#page-footer  #col-bc  { 	width:70%;  display:  inline-block;  float: left; clear:right;    }
 
-#page-footer   #col-b   {  padding-bottom:10px; padding-top:10px; width:40%; display: inline-block; float: left; margin:0 !important; text-align:left; font-size: 11px;border-left:1px dotted #ccc;}
-#page-footer   #col-c  {  padding-bottom:10px; padding-top:10px;width:58%; display: inline-block; margin:0 !important; text-align:left; font-size:8pt; border-left:1px dotted #ccc;  }
+#page-footer   #col-b   {  	padding-bottom:10px; padding-top:10px; width:40%; display: inline-block; float: left; margin:0 !important; text-align:left; font-size: 11px;
+				bo rder-left:1px dotted #ccc;}
+#page-footer   #col-c  {  	padding-bottom:10px; padding-top:10px;width:58%; display: inline-block; margin:0 !important; text-align:left; font-size:8pt; 
+				bo rder-left:1px dotted #ccc;  }
 
 
 #page-footer   #col-b p { padding-left:35px;  }
@@ -170,7 +177,9 @@ address
  
 @media screen and (max-width:768px )
 {
-	#page-footer .text-center #col-a { width:100%;  padding-left:0px; border:1px #ccc solid; border-top-width:2px;}
+	#page-footer .text-center #col-a { width:100%;  padding-left:0px; border:1px #ccc solid; border-top-width:2px;  }
+	#page-footer .text-center #col-a p{  padding-left:20px;}
+
 	#page-footer  #col-bc  { width:100%;  display:  inline-block;  float: left; clear:right;  }
 
 	#page-footer .text-center #col-b { width:100%;border:1px #ccc solid; }
@@ -179,39 +188,26 @@ address
 	#page-footer   #col-c p { padding-left:20px;}
 
 } 
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
+ 
 
 
 
 
 /********** Navigation haut AIDE et les pages html *******************/
-
+ 
 
 
 .navbar .brand {
 	
 	min-width:140px; 
-	min-height: 60px; min-height: 75px;
+	/* min-height: 60px; */  min-height: 75px;
 	padding-top:5px;
   	font-size: 0px; 
 	line-height: 55px;
- 
-min-width:202px; 
-
-
+	min-width:202px; 
 }
+
 
 /* logo epi page interne */
 .navbar .navbar-inner { 
@@ -246,16 +242,13 @@ min-width:202px;
 
 #page-site-index .navbar a.brand {margin-bottom:20px;  }
 
-
  
-.collapse {  }
 
 .nav-collapse.collapse  { 
 	
 	float: right; clear:both;
 	margin-left:-250px;
 	margin-top:7px; margin-top:3px; 
- 
 	font-size:12px; 
  }
  
@@ -267,11 +260,6 @@ min-width:202px;
  }
 
  
-
-
-
-
-
 
 .navbar .nav > li > a { 
 	padding:5px; padding-top:1px; padding-bottom:3px; text-shadow: NONE;
@@ -287,11 +275,11 @@ min-width:202px;
 
 
 
-/*  .navbar-text {  }  */
+  
 
 
 .logininfo { 
-	/*background-color:#e3e3e3;  */
+	 
 	line-height:21px; 
 	padding-left:10px; padding-right:10px; 
 
@@ -308,8 +296,6 @@ min-width:202px;
 
 
 
-
-
 .nav-collapse.collapse .dropdown {
 	border-right:1px dotted #333;  
  }
@@ -319,11 +305,12 @@ min-width:202px;
 }
 
 .dropdown-menu > li > a {
-padding-left:8px; padding-right:8px;
+	padding-left:8px; padding-right:8px;
 
 }
 
 /* MENU AIDE orange au survol */ 
+
 .dropdown-menu > li > a:hover {
 	color:#e64a00 !important;
 }
@@ -338,13 +325,7 @@ padding-left:8px; padding-right:8px;
 }
 
 
-
-
- .container-fluid { }  
-   .navbar-inner { }  
-
-
-
+ 
 
 
 
@@ -352,8 +333,7 @@ padding-left:8px; padding-right:8px;
 
 
 #page-header {
-	background-color: transparent;
-	 
+	background-color: transparent;	 
 	padding-top:5px; 
 }
 
@@ -363,31 +343,12 @@ padding-left:8px; padding-right:8px;
     
 	padding: 5px 0 0 0px;  
 	margin-bottom: 1px; margin-left: 0px; 
-	min-height: 78px;  min-height: 110px;  
-	
-	
+	min-height: 78px;  min-height: 110px;  		
 	/*max-width:  600px;  ***/
 }
 
 
-/* Franklin Gothic Medium Cond */
-@font-face { 
-	font-family: 'Franklin3'; 
-	src: url("/theme/clean_up1_epi/fonts/FRAMDCN.TTF") format('truetype'); 
-}
-
-@font-face { 
-	font-family: 'Univers 57 Condensed';
-	src: url("/theme/clean_up1_epi/fonts/PS_32.TTF") format('truetype'); 
-}
-
-@font-face { 
-	font-family: 'impact4';
-	src: url("/theme/clean_up1_epi/fonts/IMPACT.TTF"); 
-}
-
-
-
+ 
 #page-header h1{ 
 	 background: url(/theme/clean_up1_epi/pix_core/fond-fleche.gif) no-repeat; 
 	background-size: auto auto;  
@@ -396,66 +357,47 @@ padding-left:8px; padding-right:8px;
 	margin-top:0; margin-bottom:13px;
   	font-size: 26px; 
 	line-height: 25px;
- /*	
-font-family: Univers 57 Condensed; font-size: 32px;
-
-font-family: arial;  font-size: 26px; font-weight:lighter;
-font-family: 'impact4'; font-size: 26px; */
-font-family: 'Franklin3'; font-size: 32px;  
-text-shadow:none;
-font-weight: normal; 
+ 	font-family: 'Franklin3'; font-size: 32px;  
+	text-shadow:none;
+	font-weight: normal; 
 	  
 }
+
 
 /* logo epi page accueil */ 
 
 #page-site-index #region-main{border-top:0; }
 
 #page-site-index #page-header h1 { 
-	/*background: url(/theme/clean_up1_epi/pix_core/fond-titre-epi-m2.gif) no-repeat 0px 6px;  */
+
 	background: url(/theme/clean_up1_epi/pix_core/logo-epi-accueil.png) no-repeat 0px 4px;  
 	background-size: 92px 92px;
 
 	padding-left: 115px;  
 	line-height: 36px;
 	min-height: 87px;  min-height: 83px; 
-
- 
- 	 font-size:37px;   font-size:40px;  
-	   font-weight:bold; 
- 	  /* text-shadow: 1px 4px 9px #ccc;  color:#263f82; */
+ 	font-size:37px;   font-size:40px;  
+	font-weight:bold; 
+ 	 /*text-shadow: 1px 1px 2px #aaa; color:#263f82;*/
 }
 
 
-
-
-/**********  LIENS **********/
-
-a:link, a:active { color:#003399; }
-a:visited { color: #5476BB ; }
-a:hover {color: #0000ff !important; text-decoration:underline !important;} 
-
-
+ 
+ 
 
 /**********  NAVIGATION de gauche / ORANGE  **********/
 
-.row-fluid .desktop-first-column a:link{
-    						 color:#D14B0C;  
-}
+.row-fluid .desktop-first-column a:link { color:#D14B0C ; }
  
-.row-fluid .desktop-first-column a:visited{
-    						
-}
-
-.row-fluid .desktop-first-column a:hover{
-    						color: #e64a00 !important;
-}
+.row-fluid .desktop-first-column a:hover{ color: #e64a00 !important; }
+ 
+.block_navigation .block_tree  a:visited  { color:#777 !important ; }  /* niv 2 ok safari */
 
 
 
 
+/********** SE SITUER  **********/
 
-/**** se situer ****/
 
 .block_navigation .block_tree .active_tree_node 
 {
@@ -505,6 +447,7 @@ a:hover {color: #0000ff !important; text-decoration:underline !important;}
 .breadcrumb a:hover{
     	color: #e64a00 !important;
 }
+
 
 
 /******* pages *********/
@@ -583,11 +526,7 @@ a:hover {color: #0000ff !important; text-decoration:underline !important;}
 
 
 
-.block_navigation .block_tree li {
-	/*font-size: 0.95em;*/
-
-
-}
+.block_navigation .block_tree li { /*font-size: 0.95em;*/ }
 
 
 
@@ -677,9 +616,7 @@ a:hover {color: #0000ff !important; text-decoration:underline !important;}
 	background-color:#e9e9e9;
 } 
 
-
-#settingsnav {  }   
-
+ 
 
 
 /**************** Bloc Synopsis *****************/ 
@@ -708,7 +645,7 @@ a:hover {color: #0000ff !important; text-decoration:underline !important;}
   	
 	border: 0px #ccc solid;
 	padding-bottom:15px;
-	/* color:#663300; */ color :#C66042;  
+	color :#C66042;  
 	
 
 }
@@ -716,14 +653,14 @@ a:hover {color: #0000ff !important; text-decoration:underline !important;}
 
 .block_lightsynopsis .header .title h2 {
 
-	color:#D14B0C; color:white;
+	/*color:#D14B0C; */color:white;
 
 }
 
 
 
 
-/********** BLOC COURS **********/ 
+/********** sections COURS **********/ 
 
 #page-course-view-topics #region-main { border-top:0 !important;  
  }
@@ -818,21 +755,38 @@ a:hover {color: #0000ff !important; text-decoration:underline !important;}
 }
  
 
-
-
   
 
 
 /********* Ajouter activité ********/
 
+/*
 .section-modchooser-text {
 		background-color: #f7edd8; 
-		border:1px #f7c8ac solid; border:1px solid #d14b0c;
+		 border:1px #f7c8ac solid; border:1px solid #d14b0c; 
 		padding:1px; padding-left:5px; 
 		padding-right:5px; 
-		border-radius: 6px;	margin-right:5px;	}
+		border-radius: 6px;	margin-right:5px;	
+}
+*/
+ .section-modchooser-text {
+		
+	background-color: #d14b0c; color:white;
+		  background-color: #e9681d;
+		padding:1px; padding-left:5px; 
+		padding-right:5px; 
+		border-radius: 8px;	margin-right:5px;	
+}
 
- 
+.section-modchooser-text:hover {
+		 
+		 background-color: #0a4280;
+		padding:1px; padding-left:5px; 
+		padding-right:5px; 
+		border-radius: 6px;	margin-right:5px;	
+		 font-weight:bold;
+}
+a.section-modchooser-text:hover { text-decoration:none !important;}
 
 
 
@@ -859,7 +813,7 @@ a:hover {color: #0000ff !important; text-decoration:underline !important;}
 	
 	padding-top : 10px; margin-top:15px; margin-left:0px;
  	border:none; 
-	/*border-top: #666 1px dotted; pour distinguer chaque label avec ou sans titre  */
+	
 }
 
 
@@ -901,18 +855,9 @@ table {
 	border-top:1px solid #666;   
 }
 
-.generaltable { }
-
-
 
 
 /********** TABLEAUX des cours - Vue tableau ***********/
-
-/*-----  COULEURS -------
-#2c93ae 	vert des titres de tableau 
-#D5EAEC  	vert claire     
-#f7edd8 	sable P1
--------------------*/ 
 
 
 #page-mod-page-view table.dataTable thead th
@@ -960,7 +905,8 @@ table#permissions tbody tr:hover > th
 
 /********** VU TABLEAUX / Vue arborescence ***********/
 
-			/****** ONGLET tableau / arborescence *********/
+
+/****  ONGLET tableau / arborescence  ****/
 
 .tabtree ul{
 	text-align:center; 
@@ -969,13 +915,14 @@ table#permissions tbody tr:hover > th
 
 
 .tabtree ul li { display: inline; }
-
+ 
 .tabtree .tabrow0 
 {
 	width:100%;
 	margin:1em 0px
 }
 
+ 
 .tabtree .tabrow0 li{margin-right:-4px}
 
 .tabtree .tabrow0 li.here{}
@@ -1002,7 +949,7 @@ table#permissions tbody tr:hover > th
 }
 
 
-/* yassi */ 
+ 
 .tabtree .tabrow0 .here a  {	 
 	background:#fff; border:2px #ccc solid; border-bottom:2px white solid;  
 }
@@ -1011,9 +958,9 @@ table#permissions tbody tr:hover > th
 .tabtree .tabrow0 li a:hover{background:#fff; }
 
 .tabtree .tabrow0 ul,
-.tabtree .tabrow0 div{font-weight:normal; /* border-top:2px solid #ddd;  */ padding:0.25em 0px;margin:0px}
+.tabtree .tabrow0 div{font-weight:normal; padding:0.25em 0px; margin:0px}
 
-.tabtree .tabrow0 li.here .empty{display:block;height:1px;overflow:hidden;padding:0px;position:absolute;width:100%;bottom:-4px}
+.tabtree .tabrow0 li.here .empty{display:block; height:1px;overflow:hidden;padding:0px;position:absolute; /* width:100%;  */ bottom:-4px;  }
 
 .tabtree .tabrow0 .tabrow1{padding:5px 0 2px;margin-top:1px}
 
@@ -1058,18 +1005,10 @@ table#permissions tbody tr:hover > th
 .ie6 .tabtree .tabrow0 div{top:3.5em;padding:0.2em 0}
  
  
- 
 
 
+/******* Vue arborescence *******/
 
-
-
-
-
-
-
-
-/******* FIN ONGLET tableaux / arbo *******/
 
 
 .coursetree-name img.smallicon {  } /* yassi juin - image Rattachement multiple n'est pas en background*/ 
@@ -1083,10 +1022,7 @@ table#permissions tbody tr:hover > th
 #page-mod-page-view .coursetree ul.jqtree-tree a { padding-left:3px;}
 #page-mod-page-view .coursetree ul.jqtree-tree a.img { } 
 
-
 #page-mod-page-view ul.jqtree-tree li.jqtree-folder img { }
-
-
 
 #page-mod-page-view .coursetree ul.jqtree-tree
 {
@@ -1121,8 +1057,8 @@ table#permissions tbody tr:hover > th
 
 
 
-
 /* prendre le pas sur le fichier jqtree.css qui vient après ce fichier up1 pour fixer la couleur de TR selectionné */
+
 
 #page-mod-page-view ul.jqtree-tree li.jqtree-selected > div,
 #page-mod-page-view ul.jqtree-tree li.jqtree-selected > div:hover {
@@ -1136,32 +1072,7 @@ table#permissions tbody tr:hover > th
 }
 
 
- /* Personalisation pages des UFR */
-
-#ufr-iej  { 
-	background-color:#ccc !important; height:150px; padding:0; margin:0; 
-	background-image: url("/theme/clean_up1_epi/img-up1/accIEJ1.jpg"); 
-	background-size:100%;
-	background-repeat:no-repeat; 
-} 
  
-
-#ufr00  { 
-	background-color:#eee; height:150px; padding:0; margin:0; 
-	background-image: url("/theme/clean_up1_epi/img-up1/img22.jpg"); 
-	background-size:100%;
-	background-repeat:no-repeat; 
-} 
- 
-
-#ufr-transv{ 
-	background-color:#ccc !important; height:150px; padding:0; margin:0; 
-	background-image: url("/theme/clean_up1_epi/img-up1/img91.gif"); 
-	background-size:100%;
-	background-repeat:no-repeat; 
-} 
-
-
 
 
 
@@ -1250,6 +1161,7 @@ table.orange { margin-top :10px !important; }
 
 
 /****************** Page de connexion multi *************************/
+
 
 #page-local-login-multi-index #region-main.span12 
 {
@@ -1373,6 +1285,7 @@ table.orange { margin-top :10px !important; }
  {
 			border:1px solid #003366; border-top:3px solid #003366; 
 			padding:20px; padding-bottom:0px; 
+			padding-right:5px; /* ergonomie amélioré - Yassi nov. 2014  1/3 */ 
 			background-color:#fff;
 
   	background-image: url("/theme/clean_up1_epi/pix_core/i/course2.svg"),url("/theme/clean_up1_epi/pix_core/i/edit-crea.svg") ;  
@@ -1384,23 +1297,119 @@ table.orange { margin-top :10px !important; }
 			
 }
 
-#page-local-crswizard-index #region-main.span12 p,
-#page-local-crswizard-update-index #region-main.span12 p
-	{ margin-right:120px; }
+/*** CADRES 58%-36% taille des blocs rechercher-selectionner
+     + suppression de marge right 120-130 
+     + cadres gris -  Yassi nov. 2014 2/3 ***/
+
+div.by-widget {
+		width:58% !important; padding-bottom:20px !important;
+		border-color:#999 !important; padding-left:9px !important;
+} 
+
+div.block-item-selected {
+		width:36% !important; /*background-color:#DBEAEB;*/
+		border-color:#999 !important; padding-left:9px !important;
+} 
 
 
-#page-local-crswizard-index #region-main.span12  ul li,
-#page-local-crswizard-update-index #region-main.span12 ul li
-	{ margin-right: 120px; }
+
+.widgetselect-panel-left, .widgetselect-panel-right
+{
+		border-color:#999 !important;
+		padding-left:9px !important; 
+}
 
 
-/* bouton {{ TOUT DEVELOPPER }} */ 
+
+#page-local-crswizard-index h3,
+#page-local-crswizard-update-index h3
+
+{
+		font-size:19px;  /* yassi nov 2014 */
+}
+
+
+
+/*** les consignes/commentaires en h2 couleurs orange ***/
+
+#page-local-crswizard-index h2.crswizardWarning,
+#page-local-crswizard-update-index h2.crswizardWarning
+
+{
+		color: #e64a00; color: #d14b0c;  
+		font-size:13px; font-family:arial,verdana,sans-serfi;
+		font-weight:bold;
+		border-left:3px #d14b0c solid;
+		padding-left:10px;
+}
+
+
+
+
+/***** titre 2 de la page *****/ 
+#page-local-crswizard-index .box.titlecrswizard:nth-child(2n+1),
+#page-local-crswizard-update-index .box.titlecrswizard:nth-child(2n+1)
+{  
+			margin-bottom:20px; margin-right: 130px;
+			padding-left: 12px; 
+			font-size:18px; text-transform : none; font-weight:normal;
+
+			 
+			border :1px solid #E9681d;  border-radius:4px;
+			border-top :2px solid #E9681d; 
+			background-color: #E9681d; color: #fff;
+}
+
+
+
+/*** blocs assistant créa avec fond ***/ 
+
+#page-local-crswizard-index #region-main.span12 fieldset.clearfix.collapsible,  
+#page-local-crswizard-update-index #region-main.span12 fieldset.clearfix.collapsible
+{
+		padding-left:10px; padding-bottom:0px; padding-top:0px;
+		margin-right:10px; /* crea Yassi nov. 2014 3/3 */
+		border : 1px dotted #E9681d ;
+		border-left : 1px solid #E9681d ; border-right:0; border-bottom-color:#ccc; 
+ 		background-color: #F7EDD8; background-color: #e9e9e9;
+		margin-bottom: 20px !important; 
+}
+
+
+/*** titre des blocs assistant créa cliquables ***/
+
+#page-local-crswizard-index #region-main.span12 legend, 
+#page-local-crswizard-update-index #region-main.span12 legend 
+			{
+			padding-left:9px; margin-top: 0px; padding-bottom:0; }
+
+#page-local-crswizard-index #region-main.span12 legend  a:link, 
+#page-local-crswizard-update-index #region-main.span12 legend  a:link
+			{
+  			padding-right:30px; padding-top:6px;
+			font-size: 15px !important; font-weight:bold;
+			color: #003399; 
+			border-bottom: 0px dotted #E9681d ;
+			border-top : 2px solid #E9681d; 
+			border-left: 1px solid #E9681d ; border-right: 1px dotted #E9681d ;
+			border-radius: 6px; border-bottom-left-radius :0;border-bottom-right-radius :0;
+
+			border-top-left-radius :0;
+	 		background-color: #F7EDD8; background-color: #e9e9e9;	
+
+}
+
+
+
+/* bouton {{ TOUT DEVELOPPER }} dans l'assistant création */ 
+
 .jsenabled .collapsible-actions  { margin-bottom: 20px; margin-top :20px;}
 
 .collapsible-actions .collapseexpand
 {
-			margin-right:120px;   
+			margin-right:130px;   
 			padding-right:10px; padding-top:3px; padding-bottom : 4px;
+
 			font-size:13px; font-family:verdana,arial,sans-serfi;
 			border-radius: 4px;
 			border-bottom: 1px dotted #003399;
@@ -1408,68 +1417,16 @@ table.orange { margin-top :10px !important; }
 			border-top:0;border-bottom:0;
 }
 
-.box.titlecrswizard {padding-bottom:4px; padding-top:4px; 
+.box.titlecrswizard {
+			padding-bottom:4px; padding-top:4px; 
 			font-size:18px; text-transform : uppercase; font-weight:bold;
 			color:#003366;
-			margin-bottom: 10px;}
-
-
-/***** titre 2 de la page *****/ 
-#page-local-crswizard-index .box.titlecrswizard:nth-child(2n+1),
-#page-local-crswizard-update-index .box.titlecrswizard:nth-child(2n+1)
-{  
-			margin-right: 120px; margin-bottom:20px;
-			background-color: #eee; padding-left: 20px; 
-			font-size:18px; text-transform : none; font-weight:normal;
-
-			 
-			border :1px solid #E9681d;  
-			border-top :2px solid #E9681d; 
-			background-color: #E9681d; color: #fff;
+			margin-bottom: 10px;
 }
 
 
 
-/* espace des formulaire avec fond */ 
 
-#page-local-crswizard-index #region-main.span12 fieldset.clearfix.collapsible,  
-#page-local-crswizard-update-index #region-main.span12 fieldset.clearfix.collapsible
-{
-		padding-left:10px; padding-bottom:0px; padding-top:0px;
-		margin-right:20px; 
-		border : 1px dotted #E9681d ;
-		border-left : 1px solid #E9681d ; border-right:0; border-bottom-color:#ccc; 
- 		background-color: #F7EDD8; background-color: #e9e9e9;
-
-		margin-bottom: 20px !important; 
-}
-
-
-
-#page-local-crswizard-index #region-main.span12 legend, 
-#page-local-crswizard-update-index #region-main.span12 legend 
-
-	{padding-left:9px; margin-top: 0px; padding-bottom:0; }
-
-#page-local-crswizard-index #region-main.span12 legend  a:link, 
-#page-local-crswizard-update-index #region-main.span12 legend  a:link
-
-{  			padding-right:30px; 
-			
-			font-size: 15px !important; font-weight:bold;
-			 
-			color: #003399; 
-			border-bottom: 0px dotted #E9681d ;
-			border-top : 2px solid #E9681d; 
-
-			border-left: 1px solid #E9681d ; border-right: 1px dotted #E9681d ;
-			border-radius: 6px; border-bottom-left-radius :0;border-bottom-right-radius :0;
-
-			border-top-left-radius :0;
-	 		background-color: #F7EDD8; background-color: #e9e9e9;
-			
-
-}
 
 
 
@@ -1495,6 +1452,7 @@ table.orange { margin-top :10px !important; }
 
 
 /******* tableau SUPPRESSION de COURS ******/
+
 
 
 #page-local-crswizard-delete-index .row-fluid
@@ -1539,12 +1497,11 @@ table.orange { margin-top :10px !important; }
  
 
 
-/****************  supprimer bloc de gauche DEVOIR NOTES CL- ****/
-
+/****************  supprimer bloc de gauche DEVOIR NOTES CL-  
 
 
 #page-mod-assign-view  #block-region-side-pre.span4 { display:none; }
-#page-mod-assign-view  section#region-main {width:100%; }
+#page-mod-assign-view  section#region-main { width:100%; }           	 
  
 #page-mod-assign-view table.flexible td.c1,
 #page-mod-assign-view table.flexible th.c1,   
@@ -1552,6 +1509,7 @@ table.orange { margin-top :10px !important; }
 #page-mod-assign-view .generaltable td.c1
 {  display:none;}
 
+******/
  
 
 
@@ -1560,12 +1518,12 @@ table.orange { margin-top :10px !important; }
 
 #page-grade-report-grader-index .row-fluid .span3 { width: 10%; display:none; }
  
-#page-grade-report-grader-index .row-fluid .span9  {width:100%; }
+#page-grade-report-grader-index .row-fluid .span9  { width:100%; }
 
 
 
 
-/*---------- couleur global bleuvert tete des tableaux NOTES  -------- -----*/
+/*---------- couleur global bleu-vert tete des tableaux NOTES  -------- -----*/
 
 
 table.flexible th, .generaltable th {} 
@@ -1618,17 +1576,16 @@ table#user-grades tr.avg td.cell
 #page-grade-report-user-index  th.header  {background-color: #d5eaec; } 
 
 
+
 /*** page objectifs **/ 
 
 #page-grade-edit-outcome-course select  
 {
 	width: 98%;
-	overflow-x:scroll !important;
-	  
+	overflow-x:scroll !important; 
 }
  
 #page-grade-edit-outcome-course select#removeoutcomes option
-
 {
 	background-color: #eee;
 }
@@ -1640,36 +1597,53 @@ table#user-grades tr.avg td.cell
 	border-bottom:1px dotted #ccc;
 }
 
+
 #page-grade-edit-outcome-course select option:hover
 {	 
 	 background-color: #f7edd8; 
 }
 
+
 #page-grade-edit-outcome-course label, input, button, select, textarea
 {
 	font-size:12px;
-	
 }
+
+
 #page-grade-edit-outcome-course label 
 {
 	font-weight:bold; background-color: #d5eaec;  
-
 	padding-top:4px; padding-bottom:4px; 
 	border:1px solid #ccc; margin-left:10px; margin-right:10px; 
 	border-radius: 5px; 
 }
 
 
+/*** page objectifs : regler la taille de la zone bouton ajouter/supprimer ***/ 
+
+#page-grade-edit-outcome-course .courseoutcomes td
+{   min-width:112px;  }
+
+
 #page-grade-edit-outcome-course p.arrow_button
-{
-    text-align:left; width: 110px;
-}
+{   text-align:left; width: 110px;  }
 
 
 #page-grade-edit-outcome-course input, textarea, .uneditable-input
-{
-  width: 110px;
-}
+{   /*width: 110px; zone textarea n'est pas à être limité*/  }
+
+
+/**** Page notification feedback : Elargir la zone de description  BR-YA déc. 2014 ****/ 
+
+#page-local-up1_notification-notification textarea 
+{ width:100%;}  
+
+
+
+
+
+
+
 
 
 #page-grade-edit-outcome-course button, 
@@ -1712,7 +1686,7 @@ input[type="reset"]
 
 
 
-/* yassi 55 */
+/* Ancien */
 
 /*******************************************************************************************************/
 /************
@@ -1802,7 +1776,7 @@ input[type="reset"]
 
 
 
-/* (((((((((((((((((  BOUTONS    ))))))))))))))))))))))  */
+/* (((((((((((((((((  BOUTONS  ))))))))))))))))))))))  */
 
  /*****
 button, input.form-submit, input[type="button"], input[type="submit"], input[type="reset"]
@@ -1821,13 +1795,22 @@ button, input.form-submit, input[type="button"], input[type="submit"], input[typ
 ****/ 
 
 
-/*fichier crswizard / bouton précédent  */
-  
+   
+/****  ASSISTANT CREATION  - bouton suivant - Yassi nov. 2014  ****/ 
+#page-local-crswizard-index button, input.form-submit, input[type="button"], input[type="submit"], input[type="reset"]
+{ 
+	font-size: 14px; margin-top:2px;
+}
+
+
+/****  ASSISTANT CREATION - fichier crswizard / bouton précédent ****/
+
+
 .previousstage a, a.previousstage  
 
 {	color: inherit;
 	display: inline-block;
-  	 text-align: center;
+  	text-align: center;
   	background-color: #f5f5f5; 
   	background-image: #ffffff;
   	background-repeat: repeat-x;
@@ -1838,26 +1821,19 @@ button, input.form-submit, input[type="button"], input[type="submit"], input[typ
   	line-height: 20px !important;
 	padding : 4px 12px 4px 12px !important;
 	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
-
 	text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.75);
- 
  	background:-webkit-linear-gradient(#fff,#ededed) !important;
 	background:-moz-linear-gradient(#fff,#eee)!important;
 	background:-ms-linear-gradient(#fff,#eee)!important;
 	background:-o-linear-gradient(#fff,#eee)!important;
-	background:linear-gradient(#fff,#dedede)!important;  
- 	
+	background:linear-gradient(#fff,#dedede)!important;  	
 	border-radius: 4px ;
 	border:1px #ddd solid !important;  border-bottom  : 1px solid #b3b3b3 !important; 
-  
- 	 box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.2) inset, 0px 1px 2px rgba(0, 0, 0, 0.05); 
- 
+ 	box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.2) inset, 0px 1px 2px rgba(0, 0, 0, 0.05); 
 }
 
  
- previousstage a:hover, a.previousstage:hover
-
-{	
+ .previousstage a:hover, a.previousstage:hover {	
   	color:#333 !important; text-decoration:none !important;
 	background:-webkit-linear-gradient(#fff,#ededed) !important;
 	background:-moz-linear-gradient(#fff,#eee)!important;
@@ -1866,9 +1842,18 @@ button, input.form-submit, input[type="button"], input[type="submit"], input[typ
 	background:linear-gradient(#eee,#ddd)!important;  
 }
 
-
-
  
+
+
+  
+#page-grade-edit-outcome-course button, input.form-submit, input[type="button"], input[type="submit"], input[type="reset"]
+{
+	
+ /*  display: inline-block; padding-top: 4px; padding-right: 10px; padding-bottom: 4px;
+    padding-left: 5px; margin-left: 0px; margin-right: 0px;  */
+
+}
+
 
 
 
@@ -1929,7 +1914,7 @@ button#request-details-toggle:hover {
 
 
 
-/************** bouton REJOINDRE l'ESPACE (Fiche INFOS sur les cours ) ***************/ 
+/************** Bouton REJOINDRE l'ESPACE (Fiche INFOS sur les cours ) ***************/ 
 
  
 
@@ -1947,25 +1932,7 @@ div#synopsis-bigbutton div.join input
   /* background-color: PaleGreen; ORIGINE !!!!????? */ 
 }
 
-
-/*  bleu/vert YA 
-div#synopsis-bigbutton div.join input
-{
- 	background:#ccc;
-	background-color: #D5EAEC ; 
- 	background:-webkit-linear-gradient(#2c93ae,#35adcd) !important;
-	background:-moz-linear-gradient(#2c93ae,#35adcd)!important;
-	background:-ms-linear-gradient(#2c93ae,#35adcd)!important;
-	background:-o-linear-gradient(#2c93ae,#35adcd)!important;
-	background:linear-gradient(#2c93ae,#35adcd)!important;  	 
-	font-size:1.1em; font-family:verdana,arial,sans-serif;  
-	color:#fff;text-decoration:none;margin:auto;
-	padding:6px; padding-left:15px;padding-right:15px;
-	border:1px solid #ccc;
-	text-shadow:none;  
-
-}*/
-
+ 
 
 div#synopsis-bigbutton div.join input {  color: #D14B0c;  border:2px solid #ccc;  }  
 div#synopsis-bigbutton div.join input:hover{ 
@@ -2014,24 +1981,7 @@ background:-webkit-linear-gradient(#fff,#ddd) !important;
 
 
 
-
-
-/*  bleu des boutons / ORIGINAL ????
-					background-color:#006dcc;
-					*background-color:#04c;
-					background-image:-moz-linear-gradient(top,#08c,#04c);
-					background-image:-webkit-gradient(linear,0 0,0 100%,from(#08c),to(#04c));
-					background-image:-webkit-linear-gradient(top,#08c,#04c);
-					background-image:-o-linear-gradient(top,#08c,#04c);
-					background-image:linear-gradient(to bottom,#08c,#04c);
-					background-repeat:repeat-x;
-					border-color:#04c #04c #002a80;
-					border-color:rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
-					filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc',endColorstr='#ff0044cc',GradientType=0);
-					filter:progid:DXImageTransform.Microsoft.gradient(enabled=false)
-
-*/ 
-
+ 
 
 
 /*  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  */
@@ -2088,7 +2038,6 @@ background:-webkit-linear-gradient(#fff,#ddd) !important;
  	{ margin-left:-100px; }
 
 
-
 	#page-local-crswizard-index #region-main.span12 fieldset.clearfix.collapsible,  
 	#page-local-crswizard-update-index #region-main.span12 fieldset.clearfix.collapsible
 	{
@@ -2134,14 +2083,11 @@ background:-webkit-linear-gradient(#fff,#ddd) !important;
 
 
 
-
 	 #page-footer .footnote.text-center 
 	{  
-	 
-	padding-top: 90px;
-	
+	 padding-top: 90px;
 	 padding-left: 5px;   padding-right: 5px;
-		 background-position: 10px 10px;
+	 background-position: 10px 10px;
 	}
 
 	#page-footer .logininfo 
@@ -2153,8 +2099,6 @@ background:-webkit-linear-gradient(#fff,#ddd) !important;
  	}
 
 
-
-
 }
 
 
@@ -2163,16 +2107,61 @@ background:-webkit-linear-gradient(#fff,#ddd) !important;
 @media screen and (max-width:480px;)
 { */ 
    #page-footer .footnote.text-center 
-	{  
-	 
-	padding-top: 90px;
-	
+	{ 
+	 padding-top: 90px;
 	 padding-left: 5px;   padding-right: 5px;
-		 background-position: 10px 10px;
-		}
-
+	 background-position: 10px 10px;
+	}
 */
 }
+
+
+
+
+
+ /************ OPTION de test :  Personalisation pages des UFR  
+ 
+#ufr-iej  { 
+	background-color:#ccc !important; height:150px; padding:0; margin:0; 
+	background-image: url("/theme/clean_up1_epi/img-up1/accIEJ1.jpg"); 
+	background-size:100%;
+	background-repeat:no-repeat; 
+} 
+ 
+
+#ufr00  { 
+	background-color:#eee; height:150px; padding:0; margin:0; 
+	background-image: url("/theme/clean_up1_epi/img-up1/img22.jpg"); 
+	background-size:100%;
+	background-repeat:no-repeat; 
+} 
+ 
+
+#ufr-transv{ 
+	background-color:#ccc !important; height:150px; padding:0; margin:0; 
+	background-image: url("/theme/clean_up1_epi/img-up1/img91.gif"); 
+	background-size:100%;
+	background-repeat:no-repeat; 
+} 
+
+***********/
+
+
+/************** dé-bug ************/
+
+/*** monter la fenetre/form du "Inscrire des utilisateurs" au 1er plan (au-dessus de menu EPI et menu ENT)... donc accessible ***/
+
+.user-enroller-panel .uep-wrap
+{
+ position: relative;
+	z-index: 101000;
+
+}
+
+
+
+
+
 
 
 

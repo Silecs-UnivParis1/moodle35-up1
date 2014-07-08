@@ -1,0 +1,101 @@
+/***********/
+
+
+#flex-caption {position: absolute; bottom:0px; z-index: 11; display:block;  zoom:1;  
+
+}
+  
+.slides li { width:100%
+	word-wrap: break-word;  
+	/*overflow: hidden;*/
+  	-o-text-overflow: ellipsis; /* pour Opera 9 */
+  	text-overflow: ellipsis; /* pour le reste du monde */
+
+} 
+
+
+#flex-caption hgroup { color:#000;  width:100%; 
+
+} 
+
+
+/* Etudiant - Enseignant */
+
+#flex-caption h3 { padding-left:17px; margin:0; padding-bottom: 0px; color:#fff; 
+	font-size:2.8em; font-size:2.4em;
+	font-style: normal;
+	 
+	font-weight:bolder; font-family: arial,verdana,arial, sans-serif;
+
+	opacity: .9 !important; 
+	filter:alpha(opacity=90);
+	text-shadow: 2px 2px 4px #ccc;
+	
+ } 
+
+
+
+
+
+
+
+
+#flex-caption h1 {   font-size:1.4em; font-size:1.25em;
+			line-height:1.1em;line-height:1em;
+			font-style:italic; font-weight:bold;  font-family:Georgia, "Times New Roman", Times, serif; 
+			padding-left:17px; padding-right: 15px; 
+			padding-top:5px; padding-bottom:4px; 
+
+			color:#fff; 
+			background-color:#EA681D; 
+			margin:0;  
+			width:60%; 
+
+		}
+
+
+#flex-caption h2  {  /*display:block; */
+			font-size:0.88em; line-height:1.2em;
+			font-family:Arial,verdana,sans-serif; margin:0; 
+			padding:0px; padding-top: 6px; padding-left:17px; padding-right: 15px;  
+			background-color:#E2E0E3;
+			opacity: .79 !important; filter:alpha(opacity=7.9);
+			padding-bottom:3px; color:#000; /* width:98%;*/
+
+}
+
+
+#flex-caption h2 a{  background-color:#0a4080; color:#fff !important; padding-left:8px; padding-right:8px; margin-left:1px;
+}
+
+
+#slider-wrap {
+  		clear: both;
+  		height: auto;
+  		background-color: #ebebeb;
+      
+}
+
+
+
+/*  @@@@@@@@@@@@@@@@@   */
+
+@media screen and (max-width:320px;)
+
+{
+	#flex-caption h3 { display:none; }
+	#flex-caption h1 { font-size:0.8em; line-height:0.9em; width:70%; padding-left:10px; }
+	#flex-caption h2  {  display:none;} 
+}
+
+/*  @@@@@@@@@@@@@@@@@@   */
+
+
+
+
+
+
+
+
+ 
+ 
