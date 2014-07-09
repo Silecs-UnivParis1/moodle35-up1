@@ -38,9 +38,6 @@ function rofGlobalSync($verb=0, $dryrun=false) {
     // echo fetchPrograms($verb, $dryrun);
     processPrograms($verb, $dryrun);
 
-
-die();
-
     progressBar($verb, 1, "\nCourses... \n");
     echo fetchCourses($verb, $dryrun);
 
