@@ -45,7 +45,7 @@ function report_base_counts($parentcat) {
  */
 function count_roles_from_courses($roles, $courses) {
     global $DB;
-    
+
     $res = 0;
     foreach ($roles as $role => $rolefr) {
         $dbrole = $DB->get_record('role', array('shortname' => $role));
@@ -60,3 +60,17 @@ function count_roles_from_courses($roles, $courses) {
     return $res;
 }
 
+/**
+ * Renvoie les catégories de cours de niveau 2
+ * @return array
+ */
+function get_parentcat() {
+    global $DB;
+    $parentcat = array();
+    $sql = "select id, idnumber from {course_categories} where idnumber like '2:%' order by idnumber";
+    $period = $DB->get_records_sql_menu($sql);
+    foreach ($period as $id => $idnumber) {
+        $parentcat[$id] = substr($idnumber, 2);
+    }
+    return $parentcat;
+}

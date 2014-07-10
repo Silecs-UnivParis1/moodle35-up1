@@ -19,6 +19,7 @@ require_once($CFG->libdir.'/adminlib.php');
 
 require_login();
 // admin_externalpage_setup('up1_reporting', '', null, '', array('pagelayout'=>'report'));
+$parentcat = optional_param('period', 0, PARAM_INT);
 
 $systemcontext = context_system::instance();
 $PAGE->set_context($systemcontext);
@@ -33,7 +34,16 @@ if ( ! is_siteadmin() ) {
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'tool_up1_reporting'));
 
-$parentcat = get_config('local_crswizard','cas2_default_etablissement');
+$periodes = get_parentcat();
+if ($parentcat == 0 || array_key_exists($parentcat, $periodes) == FALSE) {
+    $parentcat = get_config('local_crswizard','cas2_default_etablissement');
+}
+
+echo '<form method="GET">Période&nbsp/&nbspÉtablissement&nbsp:&nbsp';
+echo html_writer::select($periodes, 'period', $parentcat, false);
+echo "&nbsp  &nbsp";
+echo '<input type="submit" value="ok">';
+echo '</form>';
 
 echo "<h2>Comptages par catégories - niveaux 3 et 4</h2>\n";
 echo "<p>Note : pour les étudiants et les enseignants, les comptages sont dédoublonnés au niveau le plus bas (4 = niveau-LMD)
