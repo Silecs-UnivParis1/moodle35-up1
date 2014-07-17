@@ -461,11 +461,15 @@ class wizard_core {
             $instance->roleid = $roleid;
             $instance->name = $name;
             $instance->password = $tabClef['password'];
-            $instance->customint1 = 0; // clef d'inscription groupe ?
-            $instance->customint2 = 0;
-            $instance->customint3 = 0;
-            $instance->customint4 = 0; // envoie d'un message
+            if ($enrol == 'self') {
+                $instance->customint1 = 0; // groupkey - clef d'inscription groupe
+                $instance->customint2 = 0; // longtimenosee
+                $instance->customint3 = 0; // maxenrolled
+                $instance->customint4 = 0; // sendcoursewelcomemessage - envoie d'un message
+                $instance->customint5 = 0; // lié aux cohorts
+                $instance->customint6 = 1; // newenrols - permet de s'enroler
 
+            }
             $instance->enrolstartdate = $startdate;
             $instance->enrolenddate = $enddate;
             $instance->timemodified = $course->timecreated;
