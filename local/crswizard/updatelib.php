@@ -70,3 +70,17 @@ function update_course_idnumber() {
     echo "<p>temps opération (en seconde) : " . $time;
     echo "</p>\n";
 }
+
+function update_enrol_self() {
+    global $DB;
+    $timestart = microtime();
+    echo "<p>Correction des Clefs d'inscription étudiante</p>";
+    $sql = "UPDATE {enrol} SET customint5=0, customint6=1 WHERE enrol = 'self' and name = 'clef Etudiante' and customint6 is null";
+    $DB->execute($sql);
+    $timeend = microtime();
+    $time = $timeend - $timestart;
+    echo "<p>Mise à jour terminée</p>";
+    echo "<p>temps opération (en seconde) : " . $time;
+    echo "</p>\n";
+
+}

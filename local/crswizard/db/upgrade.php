@@ -38,5 +38,9 @@ function xmldb_local_crswizard_upgrade($oldversion) {
         update_course_idnumber();
     }
 
+    if ($oldversion < 2014071700) {
+        update_enrol_self();
+    }
+
     return true;
 }
