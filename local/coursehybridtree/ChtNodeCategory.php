@@ -3,11 +3,11 @@
 
 class ChtNodeCategory extends ChtNode
 {
-    private $id;
+    private $catid; // Moodle id from course_categories
 
-    static function buildFromCategoryId($id) {
+    static function buildFromCategoryId($catid) {
         global $DB;
-        $record = $DB->get_record('category', array('id' => (int) $id));
+        $record = $DB->get_record('category', array('id' => (int) $catid));
         return self::buildFromCategory($record);
     }
 
@@ -15,13 +15,13 @@ class ChtNodeCategory extends ChtNode
         $new = new self;
         $new->name = $record->name;
         $new->code = $record->idnumber;
-        $new->id = $record->id;
+        $new->catid = $record->id;
         $new->absolutePath = str_replace('/', '/cat', $record->path);
         return $new;
     }
 
     function initPath($parentPath) {
-        $this->path = $parentPath . '/cat' . $this->id;
+        $this->path = $parentPath . '/cat' . $this->catid;
         return $this;
     }
 
@@ -60,7 +60,9 @@ class ChtNodeCategory extends ChtNode
      */
     private function hasRofChildren() {
         if ($this->getDepth() == 4) {
-            //...
+            return false; // true
+        } else {
+            return false;
         }
     }
 }

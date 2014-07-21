@@ -15,7 +15,7 @@ class CourseHybridTree
 abstract class ChtNode
 {
     public $name;
-    public $code;
+    public $code; // generally, Moodle idnumber
 
     protected $path;
 
