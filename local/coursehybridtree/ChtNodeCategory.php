@@ -1,13 +1,19 @@
 <?php
 /* @var $DB moodle_database */
 
+require_once($CFG->dirroot.'/course/lib.php');
+require_once($CFG->dirroot.'/lib/coursecatlib.php');
+// require_once($CFG->dirroot . "/local/up1_courselist/courselist_tools.php");
+require_once($CFG->dirroot . "/local/up1_courselist/Courselist_cattools.php");
+
 class ChtNodeCategory extends ChtNode
 {
     private $catid; // Moodle id from course_categories
+    // private $component; // to be defined ? only if catlevel >=3
 
     static function buildFromCategoryId($catid) {
         global $DB;
-        $record = $DB->get_record('category', array('id' => (int) $catid));
+        $record = $DB->get_record('course_categories', array('id' => (int) $catid));
         return self::buildFromCategory($record);
     }
 
@@ -23,13 +29,18 @@ class ChtNodeCategory extends ChtNode
     /**
      * Initialize the paths from the parent node.
      *
-     * @param ChtNode $parent
+     * @param ChtNode $parent (optionally null if no parent, as for debugging)
      * @return \ChtNodeCategory
      */
     function initPath($parent) {
-        $this->path = $parent->getPath() . '/cat' . $this->catid;
-        $this->absolutePath = $parent->getAbsolutePath() . '/cat' . $this->catid;
-        return $this;
+        if ($parent === null) {
+            $this->path = '/cat' . $this->catid;
+            return $this;
+        } else {
+            $this->path = $parent->getPath() . '/cat' . $this->catid;
+            $this->absolutePath = $parent->getAbsolutePath() . '/cat' . $this->catid;
+            return $this;
+        }
     }
 
     function listChildren() {
@@ -70,22 +81,34 @@ class ChtNodeCategory extends ChtNode
     }
 
     /**
-     * @todo Code this!
+     * add categories children, only for populated children
      */
     private function addCategoryChildren() {
-        // ...
-        $children[] = ChtNodeCategory::buildFromCategoryId($id)
-               ->initPath($this->path);
+        // get all children categories (standard Moodle)
+        $categories = coursecat::get($this->catid)->get_children();
+        // then keep only populated ones
+        foreach ($categories as $category) {
+            $courses = courselist_cattools::get_descendant_courses($category->id);
+            $n = count($courses);
+            if ($n >= 1) {
+                $children[] = ChtNodeCategory::buildFromCategoryId($category->id)
+                    ->initPath($this->path);
+            }
+        }
     }
 
     /**
-     * @todo Code this!
+     * add direct courses children (case category level=4)
      */
     private function addCourseChildren() {
-        // ...
-        $children[] = ChtNodeCourse::buildFromCourseId($courseId)
+        $component = courselist_cattools::get_component_from_category($this->catid);
+
+        $courses = courselist_cattools::get_descendant_courses($this->parentcatid);
+        list($rofcourses, $catcourses) = courselist_roftools::split_courses_from_rof($courses, $component);
+        foreach ($catcourses as $crsid) {
+            $children[] = ChtNodeCourse::buildFromCourseId($courseId)
                 ->initPath($this->path);
+        }
     }
+
 }
-
-

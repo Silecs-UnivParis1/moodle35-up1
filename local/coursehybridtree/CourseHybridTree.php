@@ -66,14 +66,16 @@ abstract class ChtNode
     function getPseudopath() {
         $arrAbsolutePath = $this->pathArray($this->absolutePath);
         $last = '';
+        $lastindex = 0;
         foreach ($arrAbsolutePath as $index => $pathItem) {
             if ( preg_match('/cat[0-9]+/', $pathItem) ) {
                 $last = $pathItem;
+                $lastindex = $index;
             } else {
                 break;
             }
         }
-        $pseudoPath = '/' . implode('/', array_slice($arrAbsolutePath, $index-1));
+        $pseudoPath = '/' . implode('/', array_slice($arrAbsolutePath, $lastindex ));
         return $pseudoPath;
     }
 
