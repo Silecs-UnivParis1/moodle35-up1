@@ -10,10 +10,29 @@ class ChtNodeRof extends ChtNode
         /**
          * @todo
          */
-        return $children;
+        return $this->children;
     }
 
     function toHtmlTree() {
-        return "<span>ROF {$this->name}</span>";
+        if ($this->isHybrid()) {
+            // ...
+
+        } else {
+            return sprintf("<span>ROF %s</span>", htmlspecialchars($this->name));
+        }
+    }
+
+    /**
+     * @return boolean
+     */
+    private function isHybrid() {
+        if (
+                count($this->children) > 1
+                && $this->children[0] instanceof ChtNodeCourse
+                && $this->children[1] instanceof ChtNodeRof
+                ) {
+            return true;
+        }
+        return false;
     }
 }

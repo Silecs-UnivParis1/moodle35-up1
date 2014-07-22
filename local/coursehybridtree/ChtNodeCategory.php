@@ -20,8 +20,15 @@ class ChtNodeCategory extends ChtNode
         return $new;
     }
 
-    function initPath($parentPath) {
-        $this->path = $parentPath . '/cat' . $this->catid;
+    /**
+     * Initialize the paths from the parent node.
+     *
+     * @param ChtNode $parent
+     * @return \ChtNodeCategory
+     */
+    function initPath($parent) {
+        $this->path = $parent->getPath() . '/cat' . $this->catid;
+        $this->absolutePath = $parent->getAbsolutePath() . '/cat' . $this->catid;
         return $this;
     }
 
@@ -33,13 +40,9 @@ class ChtNodeCategory extends ChtNode
         if ($this->hasRofChildren()) {
             // ...
         } else {
-            // ...
-            $children[] = ChtNodeCategory::buildFromCategoryId($id)
-                    ->initPath($this->path);
-
+            $this->addCategoryChildren();
             // if it contains directly courses (rare)...
-            $children[] = ChtNodeCourse::buildFromCourseId($courseId)
-                    ->initPath($this->path);
+            $this->addCourseChildren();
         }
         return $children;
     }
@@ -64,6 +67,24 @@ class ChtNodeCategory extends ChtNode
         } else {
             return false;
         }
+    }
+
+    /**
+     * @todo Code this!
+     */
+    private function addCategoryChildren() {
+        // ...
+        $children[] = ChtNodeCategory::buildFromCategoryId($id)
+               ->initPath($this->path);
+    }
+
+    /**
+     * @todo Code this!
+     */
+    private function addCourseChildren() {
+        // ...
+        $children[] = ChtNodeCourse::buildFromCourseId($courseId)
+                ->initPath($this->path);
     }
 }
 

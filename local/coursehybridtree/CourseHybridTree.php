@@ -21,10 +21,13 @@ abstract class ChtNode
 
     protected $absolutePath;
 
+    /**
+     * @var array children nodes
+     */
     protected $children = null;
 
     /**
-     * Depth from the root node.
+     * Depth from the root node of the tree (not the absolute depth).
      *
      * @return int
      */
@@ -43,14 +46,14 @@ abstract class ChtNode
     }
 
     /**
-     * Path from the root of Moodle.
+     * Path from the root of Moodle (not internal to Moodle).
      */
     function getAbsolutePath() {
         return $this->absolutePath;
     }
 
     /**
-     * The part of the absolute path from the last Moodle category.
+     * The part of the absolute path from the last Moodle category (included).
      */
     function getPseudopath() {
         /**
