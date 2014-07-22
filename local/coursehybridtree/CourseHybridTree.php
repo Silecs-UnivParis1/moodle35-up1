@@ -53,13 +53,36 @@ abstract class ChtNode
     }
 
     /**
+     * set absolute path ; FOR TESTING AND DEBUGGING ONLY
+     * @param string $path
+     */
+    function setAbsolutePath($path) {
+        $this->absolutePath = $path;
+    }
+
+    /**
      * The part of the absolute path from the last Moodle category (included).
      */
     function getPseudopath() {
-        /**
-         * @todo absolutepath -> pseudopath
-         */
-        return "/cat...";
+        $arrAbsolutePath = $this->pathArray($this->absolutePath);
+        $last = '';
+        foreach ($arrAbsolutePath as $index => $pathItem) {
+            if ( preg_match('/cat[0-9]+/', $pathItem) ) {
+                $last = $pathItem;
+            } else {
+                break;
+            }
+        }
+        $pseudoPath = '/' . implode('/', array_slice($arrAbsolutePath, $index-1));
+        return $pseudoPath;
+    }
+
+    /**
+     * This helper function returns a "clean" simple array from a path
+     * @param string $path "/comp1/comp2/comp3..."
+     */
+    function pathArray($path) {
+        return array_values(array_filter(explode('/', $path)));
     }
 
     /**
@@ -69,3 +92,4 @@ abstract class ChtNode
 
     abstract function toHtmlTree();
 }
+

@@ -15,7 +15,7 @@ function ok($expected, $cmp, $b, $msg) {
         die(
                 " *** $msg ERROR"
                 . "\n\tExpected: " . print_r($expected, true)
-                . "\n\tResult: " . print_r($b, true) . "\n"
+                . "\n\tResult: [" . print_r($b, true) . "]\n"
         );
     }
 }

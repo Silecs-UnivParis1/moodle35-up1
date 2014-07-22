@@ -4,13 +4,21 @@ require_once __DIR__ . '/testlib.php';
 $node = ChtNodeCourse::buildFromCourseId(4);
 ok('ChtNodeCourse', '===', get_class($node), "Classe");
 
-ok('<Nom du cours>', '===', $node->name, "name");
-ok('id?', '===', $node->code, "code");
+ok('Mathématiques 1 - indépendant', '===', $node->name, "name");
+ok('', '===', $node->code, "code");
 
 $node->initPath();
-ok('', '===', $node->getPath(), "path");
-ok('', '===', $node->getAbsolutePath(), "apath");
-ok('', '===', $node->getPseudoPath(), "ppath");
+ok('/4', '===', $node->getPath(), "path");
+ok('/4', '===', $node->getAbsolutePath(), "abs path");
+ok('/4', '===', $node->getPseudoPath(), "pseudopath");
+
+// 2 tests supplémentaires sur le Pseudopath en "tordant" le node car il n'est pas réaliste
+$node->setAbsolutePath('/cat1/cat2/cat3/01/PROG-1/123');
+ok('/cat3/01/PROG-1/123', '===', $node->getPseudopath(), "pseudopath");
+
+$node->setAbsolutePath('/cat1/01/PROG-1/123');
+ok('/cat1/01/PROG-1/123', '===', $node->getPseudopath(), "pseudopath");
+
 
 $children = $node->listChildren();
 ok(0, '===', count($children), "children count");
