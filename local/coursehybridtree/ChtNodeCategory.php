@@ -5,6 +5,7 @@ require_once($CFG->dirroot.'/course/lib.php');
 require_once($CFG->dirroot.'/lib/coursecatlib.php');
 // require_once($CFG->dirroot . "/local/up1_courselist/courselist_tools.php");
 require_once($CFG->dirroot . "/local/up1_courselist/Courselist_cattools.php");
+require_once($CFG->dirroot . "/local/up1_courselist/Courselist_roftools.php");
 
 class ChtNodeCategory extends ChtNode
 {
@@ -51,7 +52,7 @@ class ChtNodeCategory extends ChtNode
             // if it contains directly courses (rare)...
             $this->addCourseChildren();
         }
-        return $children;
+        return $this->children;
     }
 
     function toHtmlTree($recursive=false) {
@@ -77,7 +78,7 @@ class ChtNodeCategory extends ChtNode
     }
 
     /**
-     * add categories children, only for populated children
+     * add categories children, only for populated categories
      */
     private function addCategoryChildren() {
         // get all children categories (standard Moodle)
@@ -86,8 +87,10 @@ class ChtNodeCategory extends ChtNode
         foreach ($categories as $category) {
             $courses = courselist_cattools::get_descendant_courses($category->id);
             $n = count($courses);
+// TODO verbose mode?
+// echo "cat = $category->id  n = $n  crs=" . join(', ', $courses) . "\n";
             if ($n >= 1) {
-                $children[] = ChtNodeCategory::buildFromCategoryId($category->id)
+                $this->children[] = ChtNodeCategory::buildFromCategoryId($category->id)
                     ->setParent($this);
             }
         }
@@ -99,12 +102,15 @@ class ChtNodeCategory extends ChtNode
     private function addCourseChildren() {
         $component = courselist_cattools::get_component_from_category($this->catid);
 
-        $courses = courselist_cattools::get_descendant_courses($this->parentcatid);
+        $courses = courselist_cattools::get_descendant_courses($this->catid);
         list($rofcourses, $catcourses) = courselist_roftools::split_courses_from_rof($courses, $component);
+        
         foreach ($catcourses as $crsid) {
-            $children[] = ChtNodeCourse::buildFromCourseId($courseId)
+// echo "crsid = $crsid \n";
+            $this->children[] = ChtNodeCourse::buildFromCourseId($crsid)
                 ->setParent($this);
         }
+        
     }
 
 }
