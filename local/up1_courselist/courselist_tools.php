@@ -11,12 +11,13 @@
 require_once(dirname(dirname(__DIR__)) . "/config.php");
 require_once($CFG->dirroot . "/local/up1_metadata/lib.php");
 require_once($CFG->dirroot . "/local/roftools/roflib.php");
-require_once($CFG->dirroot.'/course/lib.php');
+require_once($CFG->dirroot . '/course/lib.php');
 
-require_once($CFG->dirroot . '/local/up1_courselist/Courselist_common.php');
-require_once($CFG->dirroot . '/local/up1_courselist/Courselist_cattools.php');
-require_once($CFG->dirroot . '/local/up1_courselist/Courselist_format.php');
-require_once($CFG->dirroot . '/local/up1_courselist/Courselist_roftools.php');
+require_once(__DIR__ . '/Courselist_common.php');
+require_once(__DIR__ . '/Courselist_cattools.php');
+require_once(__DIR__ . '/Courselist_format.php');
+require_once(__DIR__ . '/Courselist_roftools.php');
+
 
 /**
  * return a meta author tag wiht content = course teachers
