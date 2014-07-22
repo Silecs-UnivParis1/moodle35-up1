@@ -23,6 +23,7 @@ class ChtNodeCategory extends ChtNode
         $new->code = $record->idnumber;
         $new->catid = $record->id;
         $new->absolutePath = str_replace('/', '/cat', $record->path);
+        $new->path = '/cat' . $record->id; // we assume this node is an entry point
         return $new;
     }
 
@@ -32,15 +33,10 @@ class ChtNodeCategory extends ChtNode
      * @param ChtNode $parent (optionally null if no parent, as for debugging)
      * @return \ChtNodeCategory
      */
-    function initPath($parent) {
-        if ($parent === null) {
-            $this->path = '/cat' . $this->catid;
-            return $this;
-        } else {
-            $this->path = $parent->getPath() . '/cat' . $this->catid;
-            $this->absolutePath = $parent->getAbsolutePath() . '/cat' . $this->catid;
-            return $this;
-        }
+    function setParent($parent) {
+        $this->path = $parent->getPath() . '/cat' . $this->catid;
+        $this->absolutePath = $parent->getAbsolutePath() . '/cat' . $this->catid;
+        return $this;        
     }
 
     function listChildren() {
@@ -92,7 +88,7 @@ class ChtNodeCategory extends ChtNode
             $n = count($courses);
             if ($n >= 1) {
                 $children[] = ChtNodeCategory::buildFromCategoryId($category->id)
-                    ->initPath($this->path);
+                    ->setParent($this);
             }
         }
     }
@@ -107,7 +103,7 @@ class ChtNodeCategory extends ChtNode
         list($rofcourses, $catcourses) = courselist_roftools::split_courses_from_rof($courses, $component);
         foreach ($catcourses as $crsid) {
             $children[] = ChtNodeCourse::buildFromCourseId($courseId)
-                ->initPath($this->path);
+                ->setParent($this);
         }
     }
 

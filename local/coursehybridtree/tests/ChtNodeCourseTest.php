@@ -7,7 +7,7 @@ ok('ChtNodeCourse', '===', get_class($node), "Classe");
 ok('Mathématiques 1 - indépendant', '===', $node->name, "name");
 ok('', '===', $node->code, "code");
 
-$node->initPath();
+$node->setParent();
 ok('/4', '===', $node->getPath(), "path");
 ok('/4', '===', $node->getAbsolutePath(), "abs path");
 ok('/4', '===', $node->getPseudoPath(), "pseudopath");

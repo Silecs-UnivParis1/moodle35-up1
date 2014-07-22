@@ -7,7 +7,8 @@ ok('ChtNodeCategory', '===', get_class($node), "Classe");
 ok('02-Economie', '===', $node->name, "name");
 ok('3:02', '===', $node->code, "code");
 
-$node->initPath(null);
+// not necessary $node->setParent(null);
+
 ok('/cat10', '===', $node->getPath(), "path");
 ok('/cat4/cat5/cat10', '===', $node->getAbsolutePath(), "abs path");
 ok('/cat10', '===', $node->getPseudoPath(), "pseudopath");
