@@ -19,7 +19,6 @@ class ChtNodeCourse extends ChtNode
     }
 
     /**
-     * @global moodle_database $DB
      * @param object $record
      * @return ChtNodeCourse
      */
