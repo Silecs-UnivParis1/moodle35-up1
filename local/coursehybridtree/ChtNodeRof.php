@@ -29,13 +29,14 @@ class ChtNodeRof extends ChtNode
      * @return \ChtNodeCategory
      */
     function setParent($parent) {
+        $this->component = $parent->getComponent();
         $suffix = '/' . $this->rofid;
         if ($parent instanceof ChtNodeCategory) {
             $suffix = '/' . $this->component .':'. $this->rofid;
             // instead of pseudopath, insert component into first rofpath component
         }
-        $this->path = $parent->getPath() . '/cat' . $this->catid;
-        $this->absolutePath = $parent->getAbsolutePath() . '/cat' . $this->catid;
+        $this->path = $parent->getPath() . $suffix;
+        $this->absolutePath = $parent->getAbsolutePath() . $suffix;
         $this->component = $parent->getComponent();
         return $this;
     }
@@ -48,13 +49,10 @@ class ChtNodeRof extends ChtNode
         }
     }
 
-    /**
-     * Depth from the root node of the tree (not the absolute depth).
-     *
-     * @return int
-     */
-    function getDepth() {
-        return 0; // @todo
+    function getRofPathId() {
+        if (preg_match('@^/cat[0-9]+/cat[0-9]+/cat[0-9]+/cat[0-9]+/(.*)$@', $this->absolutePath, $matches)) {
+            return '/' . str_replace(':', '/', $matches[1]);
+        }
     }
 
 
