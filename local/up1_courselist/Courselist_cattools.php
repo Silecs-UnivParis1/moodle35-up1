@@ -20,6 +20,7 @@ class courselist_cattools {
      * get component (ex. 05) from categoryid
      * @param int $catid
      * @return string component, ex. "05"
+     * @TODO REWRITE THIS CODE after merge with 'extended idnumber'
      */
     public static function get_component_from_category($catid) {
         global $DB;

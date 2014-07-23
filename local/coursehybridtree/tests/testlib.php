@@ -10,7 +10,7 @@ function ok($expected, $cmp, $b, $msg) {
         eval("\$test = \$expected $cmp \$b;");
     }
     if ($test) {
-        echo " [X] $msg\n";
+        echo " [X] $msg : $expected\n";
     } else {
         die(
                 " *** $msg ERROR"
