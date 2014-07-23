@@ -32,10 +32,7 @@ abstract class ChtNode
      * @return int
      */
     function getDepth() {
-        /**
-         * todo count('/')-1
-         */
-        return 3;
+        return count(explode('/', $this->path)) - 1; // first item is empty
     }
 
     /**

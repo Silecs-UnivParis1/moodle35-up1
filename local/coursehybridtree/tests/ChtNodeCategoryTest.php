@@ -14,6 +14,7 @@ ok('3:02', '===', $node->code, "code");
 ok('/cat10', '===', $node->getPath(), "path");
 ok('/cat4/cat5/cat10', '===', $node->getAbsolutePath(), "abs path");
 ok('/cat10', '===', $node->getPseudoPath(), "pseudopath");
+ok(1, '===', $node->getDepth(), "depth");
 
 $children = $node->listChildren();
 ok(1, '===', count($children), "children count");
@@ -41,6 +42,7 @@ ok('1:2013-2014', '===', $node->code, "code");
 ok('/cat4', '===', $node->getPath(), "path");
 ok('/cat4', '===', $node->getAbsolutePath(), "abs path");
 ok('/cat4', '===', $node->getPseudoPath(), "pseudopath");
+ok(1, '===', $node->getDepth(), "depth");
 
 $children = $node->listChildren();
 // print_r($children);
