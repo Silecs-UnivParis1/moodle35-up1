@@ -1,7 +1,7 @@
 <?php
 /* @var $DB moodle_database */
 
-require_once($CFG->dirroot.'/course/lib.php');
+// require_once($CFG->dirroot.'/course/lib.php');
 require_once($CFG->dirroot.'/lib/coursecatlib.php');
 // require_once($CFG->dirroot . "/local/up1_courselist/courselist_tools.php");
 require_once($CFG->dirroot . "/local/up1_courselist/Courselist_cattools.php");
