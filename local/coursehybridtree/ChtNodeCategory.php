@@ -28,6 +28,10 @@ class ChtNodeCategory extends ChtNode
         return $new;
     }
 
+    function getComponent() {
+
+    }
+
     /**
      * Initialize the paths from the parent node.
      *
@@ -37,7 +41,7 @@ class ChtNodeCategory extends ChtNode
     function setParent($parent) {
         $this->path = $parent->getPath() . '/cat' . $this->catid;
         $this->absolutePath = $parent->getAbsolutePath() . '/cat' . $this->catid;
-        return $this;        
+        return $this;
     }
 
     function listChildren() {

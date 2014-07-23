@@ -10,3 +10,15 @@ $children = $node->listChildren();
 
 
 
+
+// Test intermédiaire : 2 noeuds créés à la main, association manuelle et test des héritages (profondeur, paths...)
+
+$node4 = ChtNodeCategory::buildFromCategoryId(11);
+$node5 = ChtNodeRof::buildFromRofId('UP1-PROG39308');
+$node5->SetParent($node4);
+
+ok(2, '===', $node5->getDepth(), "depth");
+ok(5, '===', $node5->getAbsoluteDepth(), "abs depth");
+ok('/02/UP1-PROG39308', '===', $node5->getRofPathId(), "rofpathid");
+ok('02', '===', $node5->getComponent(), "component");
+
