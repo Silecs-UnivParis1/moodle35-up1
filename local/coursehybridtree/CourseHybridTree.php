@@ -16,10 +16,9 @@ abstract class ChtNode
 {
     public $name;
     public $code; // generally, Moodle idnumber
-    private $component; // null or "composante" coded on 2 digits (01 to 37 ...)
-
+    
+    protected $component; // '00' or "composante" coded on 2 digits (01 to 37 ...)
     protected $path;
-
     protected $absolutePath;
 
     /**

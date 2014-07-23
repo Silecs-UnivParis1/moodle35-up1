@@ -36,9 +36,17 @@ class ChtNodeRof extends ChtNode
         }
         $this->path = $parent->getPath() . '/cat' . $this->catid;
         $this->absolutePath = $parent->getAbsolutePath() . '/cat' . $this->catid;
+        $this->component = $parent->getComponent();
         return $this;
     }
 
+    function getComponent() {
+        if ($this->component != '00' and $this->component != NULL) {
+            return $this->component;
+        } else {
+            throw new moodle_exception('Component should be defined for NodeRof ' . $this->rofid);
+        }
+    }
 
     /**
      * Depth from the root node of the tree (not the absolute depth).

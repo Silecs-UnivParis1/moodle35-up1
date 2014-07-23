@@ -50,6 +50,14 @@ class ChtNodeCourse extends ChtNode
         return $this;
     }
 
+    function getComponent() {
+        if ($this->component != '00' and $this->component != NULL) {
+            return $this->component;
+        } else {
+            throw new moodle_exception('Component should be defined for NodeCourse ' . $this->id);
+        }
+    }
+
     function listChildren() {
         if ($this->children !== null) {
             return $this->children;

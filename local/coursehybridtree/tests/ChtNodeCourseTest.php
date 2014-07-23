@@ -11,6 +11,8 @@ $node->setParent();
 ok('/4', '===', $node->getPath(), "path");
 ok('/4', '===', $node->getAbsolutePath(), "abs path");
 ok('/4', '===', $node->getPseudoPath(), "pseudopath");
+// ok('00', '===', $node->getComponent(), 'component'); //this must trigger an exception
+
 
 // 2 tests supplémentaires sur le Pseudopath en "tordant" le node car il n'est pas réaliste
 $node->setAbsolutePath('/cat1/cat2/cat3/01/PROG-1/123');

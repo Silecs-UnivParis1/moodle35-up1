@@ -29,7 +29,17 @@ class ChtNodeCategory extends ChtNode
     }
 
     function getComponent() {
-
+        if ($this->component != null) {
+            return $this->component;
+        }
+        $absdepth = $this->getAbsoluteDepth();
+        if ($absdepth < 3) {
+            $this->component = '00';
+            return $this->component;
+        } else {
+            $this->component = courselist_cattools::get_component_from_category($this->catid);
+            return $this->component;
+        }
     }
 
     /**
@@ -41,6 +51,9 @@ class ChtNodeCategory extends ChtNode
     function setParent($parent) {
         $this->path = $parent->getPath() . '/cat' . $this->catid;
         $this->absolutePath = $parent->getAbsolutePath() . '/cat' . $this->catid;
+        if ($parent->getAbsoluteDepth() != 2) {
+            $this->component = $parent->getComponent();
+        }
         return $this;
     }
 
