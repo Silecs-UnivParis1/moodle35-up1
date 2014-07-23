@@ -13,13 +13,30 @@ class ChtNodeRof extends ChtNode
      * @return ChtNodeRof
      */
     static function buildFromRofId($rofid) {
-        $record = rof_get_record($rofid);
+        list($record, ) = rof_get_record($rofid);
         // $table = rof_get_table($rofid);
         $new = new self;
         $new->name = $record->name;
         $new->code = $rofid;
         $new->rofid = $rofid;
         return $new;
+    }
+
+    /**
+     * Initialize the paths from the parent node.
+     *
+     * @param ChtNode $parent (optionally null if no parent, as for debugging)
+     * @return \ChtNodeCategory
+     */
+    function setParent($parent) {
+        $suffix = '/' . $this->rofid;
+        if ($parent instanceof ChtNodeCategory) {
+            $suffix = '/' . $this->component .':'. $this->rofid;
+            // instead of pseudopath, insert component into first rofpath component
+        }
+        $this->path = $parent->getPath() . '/cat' . $this->catid;
+        $this->absolutePath = $parent->getAbsolutePath() . '/cat' . $this->catid;
+        return $this;
     }
 
 

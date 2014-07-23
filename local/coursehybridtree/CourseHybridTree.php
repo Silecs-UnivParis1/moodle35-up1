@@ -16,6 +16,7 @@ abstract class ChtNode
 {
     public $name;
     public $code; // generally, Moodle idnumber
+    private $component; // null or "composante" coded on 2 digits (01 to 37 ...)
 
     protected $path;
 
@@ -34,6 +35,16 @@ abstract class ChtNode
     function getDepth() {
         return count(explode('/', $this->path)) - 1; // first item is empty
     }
+
+    /**
+     * Depth from the root node of the tree (not the absolute depth).
+     *
+     * @return int
+     */
+    function getAbsoluteDepth() {
+        return count(explode('/', $this->absolutePath)) - 1; // first item is empty
+    }
+
 
     /**
      * Path from the root of the tree.
