@@ -68,16 +68,15 @@ class ChtNodeCategory extends ChtNode
             return $this->children;
         }
         $this->children = array();
+        $coursesDescendant = courselist_cattools::get_descendant_courses($this->id);
+        list($coursesRof, $coursesCat) = courselist_roftools::split_courses_from_rof($coursesDescendant, $this->component);
         if ($this->hasRofChildren()) {
-            $courses = courselist_cattools::get_descendant_courses($this->id);
-            list($rofcourses, ) = courselist_roftools::split_courses_from_rof($courses, $this->component);
-            $this->addRofChildren('/' . $this->id, $rofcourses);
-            $this->addCourseChildren($this->id);
+            $this->addRofChildren('/' . $this->id, $coursesRof);
         } else {
             $this->addCategoryChildren();
-            // if it contains directly courses (rare)...
-            $this->addCourseChildren($this->id);
         }
+        // if it contains directly courses (rare)...
+        $this->addCourseChildren($coursesCat);
         return $this->children;
     }
 

@@ -206,8 +206,10 @@ abstract class ChtNode
              * On ne filtre pas par parentrofpath ?
              */
             $potentialNodePath = array_slice($this->pathArray($rofpathid), 0, $targetRofDepth);
-            $potentialNode = $potentialNodePath[$targetRofDepth - 1];
-            $potentialNodes[] = $potentialNode;
+            if (isset($potentialNodePath[$targetRofDepth - 1])) {
+                $potentialNode = $potentialNodePath[$targetRofDepth - 1];
+                $potentialNodes[] = $potentialNode;
+            }
         }
         foreach (array_unique($potentialNodes) as $rofid) {
             $this->children[] = ChtNodeRof::buildFromRofId($rofid)
@@ -218,16 +220,12 @@ abstract class ChtNode
     /**
      * add direct courses children
      *
-     * @param integer $catid category.id
+     * @param array $courses Format [ id => rof ] (used by roftools and such).
      */
-    protected function addCourseChildren($catid) {
-        $courses = courselist_cattools::get_descendant_courses($catid);
-        list(, $catcourses) = courselist_roftools::split_courses_from_rof($courses, $this->component);
-        /** @TODO factorize this result ? */
-        foreach ($catcourses as $crsid) {
+    protected function addCourseChildren($courses) {
+        foreach (array_keys($courses) as $crsid) {
             $this->children[] = ChtNodeCourse::buildFromCourseId($crsid)
                 ->setParent($this);
         }
     }
 }
-

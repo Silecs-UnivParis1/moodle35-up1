@@ -60,14 +60,13 @@ class ChtNodeRof extends ChtNode
          }
     }
 
-
     function listChildren() {
         if ($this->children !== null) {
             return $this->children;
         }
         $this->children = array();
         $this->addRofChildren($this->getRofPathId(), courselist_roftools::get_courses_from_parent_rofpath($this->getRofPathId()));
-        $this->addCourseChildren($this->getCatid());
+        $this->addCourseChildren(courselist_roftools::get_courses_from_parent_rofpath($this->getRofPathId(), false));
         return $this->children;
     }
 
