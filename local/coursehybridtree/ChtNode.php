@@ -168,6 +168,19 @@ abstract class ChtNode
     }
 
     /**
+     * @param string $id
+     * @return ChtNode
+     */
+    function findChildById($id) {
+        foreach ($this->listChildren() as $child) {
+            if ($child->id === $id) {
+                return $child;
+            }
+        }
+        return null;
+    }
+
+    /**
      * add Rof children
      *
      * @param string $parentRofpath

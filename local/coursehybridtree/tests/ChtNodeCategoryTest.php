@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/testlib.php';
 
-echo "\n Catégorie de niveau 4\n";
+echo "\nCatégorie de niveau 4\n";
 $node = ChtNodeCategory::buildFromCategoryId(11);
 ok('ChtNodeCategory', '===', get_class($node), "Classe");
 ok('Licences', '===', $node->name, "name");
@@ -15,7 +15,7 @@ ok(4, '===', $node->getAbsoluteDepth(), "abs depth");
 ok('02', '===', $node->getComponent(), "component");
 
 
-echo "\n Catégorie de niveau 3\n";
+echo "\nCatégorie de niveau 3\n";
 $node = ChtNodeCategory::buildFromCategoryId(10);
 ok('ChtNodeCategory', '===', get_class($node), "Classe");
 ok('02-Economie', '===', $node->name, "name");
@@ -33,12 +33,9 @@ ok(1, '===', count($children), "children count");
 
 
 
-echo"\n Catégorie de niveau 1 \n";
+echo "\nCatégorie de niveau 1\n";
 $node = ChtNodeCategory::buildFromCategoryId(4);
 ok('ChtNodeCategory', '===', get_class($node), "Classe");
-
-ok('Année 2013-2014', '===', $node->name, "name");
-ok('1:2013-2014', '===', $node->code, "code");
 
 ok('/cat4', '===', $node->getPath(), "path");
 ok('/cat4', '===', $node->getAbsolutePath(), "abs path");
@@ -53,7 +50,7 @@ ok(1, '===', count($children), "children count");
 
 
 
-echo "\n Descend l'arbre (en profondeur)\n";
+echo "\nDescend l'arbre (en profondeur)\n";
 $child1 = $node->findChild("2:UP1");
 ok(null, '!==', $child1, "Level 1 child");
 $child2 = $child1->findChild("3:02");
@@ -66,3 +63,15 @@ ok(2, '===', count($child4->listChildren()), "Level 5 of size >=2");
 ok(null, '!==', $child4->findChild("UP1-PROG24870"), "Level 5 child1");
 ok(null, '!==', $child4->findChild("UP1-PROG25562"), "Level 5 child2");
 //print_r($child4);
+
+echo "\nSous-catégories\n";
+$cat5 = ChtNodeCategory::buildFromCategoryId(5);
+ok(4, '===', count($cat5->listChildren()), "4 children in cat5");
+ok(null, '!==', $cat5->findChildById(6), "cat6 child of cat5");
+
+$cat29 = ChtNodeCategory::buildFromCategoryId(29);
+$children = $cat29->listChildren();
+ok(1, '===', count($children), "1 child in cat29");
+ok('ChtNodeCourse', '===', get_class($children[0]), "course child of cat29");
+ok("cours d'espagnol débutant", '===', $children[0]->name, "course10 child of cat29");
+
