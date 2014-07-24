@@ -100,5 +100,17 @@ abstract class ChtNode
     abstract function listChildren();
 
     abstract function toHtmlTree();
+
+    /**
+     * simple echo method
+     * @param boolean $printPath
+     */
+    function toPrint($printPath=false) {
+        echo "[$this->code] $this->name  ";
+        if ($printPath) {
+            echo $this->getAbsolutePath();
+        }
+        echo "\n";
+    }
 }
 
