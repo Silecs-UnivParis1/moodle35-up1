@@ -195,12 +195,17 @@ abstract class ChtNode
     /**
      * add direct courses children
      *
-     * @param array $courses Format [ id => rof ] (used by roftools and such).
+     * @param array $courses Format [DBrecord]  ou  [ id => rof ] (used by roftools and such).
      */
     protected function addCourseChildren($courses) {
-        foreach (array_keys($courses) as $crsid) {
-            $this->children[] = ChtNodeCourse::buildFromCourseId($crsid)
+        foreach ($courses as $crsid => $data) {
+            if (is_object($data)) {
+                $this->children[] = ChtNodeCourse::buildFromCourse($data)
                 ->setParent($this);
+            } else {
+                $this->children[] = ChtNodeCourse::buildFromCourseId($crsid)
+                    ->setParent($this);
+            }
         }
     }
 }
