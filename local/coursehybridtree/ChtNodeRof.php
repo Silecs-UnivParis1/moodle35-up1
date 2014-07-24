@@ -8,17 +8,43 @@ class ChtNodeRof extends ChtNode
     //private $id; // UP1-PROG... or UP1-C...
 
     /**
+     * @param string $path A path where the root is a category, and the end the rofid.
+     * @return ChtNodeRof
+     */
+    static function buildFromPath($path) {
+        $new = new self();
+        return $new->setPath($path)->readName();
+    }
+
+    /**
      * @param string $rofid
      * @return ChtNodeRof
      */
     static function buildFromRofId($rofid) {
-        list($record, ) = rof_get_record($rofid);
-        // $table = rof_get_table($rofid);
         $new = new self;
-        $new->name = $record->name;
         $new->code = $rofid;
         $new->id = $rofid;
-        return $new;
+        return $new->readName();
+    }
+
+    public function readName() {
+        list($record, ) = rof_get_record($this->id);
+        $this->name = $record->name;
+        return $this;
+    }
+
+    public function setPath($path) {
+        $this->path = $path;
+        $rofpath = preg_replace('#^(/cat\d+)+#', '', $path);
+        $m = array();
+        if (preg_match('#^/(\d+):.*?([^/]+)$#', $rofpath, $m)) {
+            $this->component = $m[1];
+            $this->id = preg_replace('/^\d+:/', '', $m[2]);
+            $this->code = $this->id;
+        } else {
+            die("Error reading path.");
+        }
+        return $this;
     }
 
     /**
@@ -49,13 +75,13 @@ class ChtNodeRof extends ChtNode
     }
 
     function getRofPathId() {
-        if (preg_match('@^/cat\d+/cat\d+/cat\d+/cat\d+/(.*)$@', $this->absolutePath, $matches)) {
+        if (preg_match('@/cat\d+/(\d+:.*)$@', $this->path, $matches)) {
             return '/' . str_replace(':', '/', $matches[1]);
         }
     }
 
     function getCatid() {
-       if (preg_match('@^/cat\d+/cat\d+/cat\d+/cat(\d+)/@', $this->absolutePath, $matches)) {
+       if (preg_match('@/cat(\d+)/\d+:@', $this->path, $matches)) {
             return (int)$matches[1];
          }
     }
