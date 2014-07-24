@@ -12,6 +12,7 @@ abstract class ChtNode
     public $code; // generally, Moodle idnumber
 
     protected $flag = '(N) ';
+    protected $info = true; // prefix label with additional information for debugging
     protected $component; // '00' or "composante" coded on 2 digits (01 to 37 ...)
     protected $path;
     protected $absolutePath;
@@ -133,7 +134,7 @@ abstract class ChtNode
             /* @var $node ChtNode */
             $children[] = array(
                 'id' => $node->serialize(),
-                'label' => $node->flag . $node->name,
+                'label' => ($this->info ? $node->flag . '[' . $node->id . ' ' . $node->code . '] ' : '') . $node->name,
                 'load_on_demand' => ( ! ($node instanceof ChtNodeCourse) ),
                 'depth' => $node->getDepth(),
             );
