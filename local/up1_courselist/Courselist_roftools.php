@@ -21,15 +21,16 @@ class courselist_roftools {
      * return all courses rattached to the given rofpath ; only this rofpath in the returned course value
      * @global moodle_database $DB
      * @param string $rofpath ex. "/02/UP1-PROG39308/UP1-PROG24870"
+     * @param boolean $recursive
      * @return array assoc-array(crsid => rofpathid) ; in case of multiple rattachements, only the matching rofpathid is returned
      */
-    public static function get_courses_from_parent_rofpath($rofpath) {
+    public static function get_courses_from_parent_rofpath($rofpath, $recursive = true) {
         global $DB;
         // 1st step : find the matching courses
         $fieldid = $DB->get_field('custom_info_field', 'id', array('objectname' => 'course', 'shortname' => 'up1rofpathid'), MUST_EXIST);
         $sql = "SELECT objectid, data FROM {custom_info_data} "
-                . "WHERE objectname='course' AND fieldid=? AND data LIKE ?";
-        $res = $DB->get_records_sql_menu($sql, array($fieldid, '%' . $rofpath . '%'));
+                . "WHERE objectname='course' AND fieldid=? AND data RLIKE ?";
+        $res = $DB->get_records_sql_menu($sql, array($fieldid, $rofpath . ($recursive ? '' : '(;|$)')));
         //var_dump($res);
         // 2nd step : filter the results to keep only matching rofpaths
         $rofcourses = array();
