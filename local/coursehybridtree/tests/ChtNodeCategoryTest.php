@@ -69,10 +69,11 @@ ok(
 file_put_contents(__DIR__ . '/output/course.html', $html, FILE_APPEND);
 
 
-// descend l'arbre (en profondeur)
+echo "\n Descend l'arbre (en profondeur)\n";
 while ($node->listChildren()) {
     echo "\n";
     $cnodes = $node->listChildren();
+    $cnodes[0]->toPrint(false);
     print_r($cnodes[0]);
     $node = $cnodes[0];
 }
