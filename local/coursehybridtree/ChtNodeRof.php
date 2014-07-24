@@ -4,8 +4,8 @@ require_once($CFG->dirroot . "/local/roftools/roflib.php");
 
 class ChtNodeRof extends ChtNode
 {
-
     //private $id; // UP1-PROG... or UP1-C...
+    protected $flag = '(R) ';
 
     /**
      * @param string $path A path where the root is a category, and the end the rofid.

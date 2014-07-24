@@ -10,6 +10,7 @@ require_once($CFG->dirroot . "/local/up1_courselist/Courselist_roftools.php");
 class ChtNodeCategory extends ChtNode
 {
     //private $id; // Moodle id from course_categories
+    protected $flag = '(C) ';
 
     static function buildFromCategoryId($catid) {
         global $DB;

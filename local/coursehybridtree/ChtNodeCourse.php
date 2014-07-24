@@ -2,6 +2,7 @@
 class ChtNodeCourse extends ChtNode
 {
     //private $id; // integer ID from the course DB.
+    protected $flag = '(E) ';
 
     /**
      * @global moodle_database $DB

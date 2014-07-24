@@ -36,7 +36,8 @@ abstract class ChtNode
 {
     public $name;
     public $code; // generally, Moodle idnumber
-    
+
+    protected $flag = '(N) ';
     protected $component; // '00' or "composante" coded on 2 digits (01 to 37 ...)
     protected $path;
     protected $absolutePath;
@@ -158,8 +159,8 @@ abstract class ChtNode
             /* @var $node ChtNode */
             $children[] = array(
                 'id' => $node->serialize(),
-                'label' => $node->name,
-                'load_on_demand' => true,
+                'label' => $node->flag . $node->name,
+                'load_on_demand' => ( ! ($node instanceof ChtNodeCourse) ),
                 'depth' => $node->getDepth(),
             );
         }
