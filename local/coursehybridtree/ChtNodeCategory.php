@@ -77,6 +77,9 @@ class ChtNodeCategory extends ChtNode
             $this->addCategoryChildren();
         }
         // if it contains directly courses (rare)...
+        /**
+         * @todo Fix the course list: $coursesCat is WRONG!
+         */
         $this->addCourseChildren($coursesCat);
         return $this->children;
     }
@@ -105,7 +108,7 @@ class ChtNodeCategory extends ChtNode
 // TODO verbose mode?
 // echo "cat = $category->id  n = $n  crs=" . join(', ', $courses) . "\n";
             if ($n >= 1) {
-                $this->children[] = ChtNodeCategory::buildFromCategoryId($category->id)
+                $this->children[] = ChtNodeCategory::buildFromCategory($category)
                     ->setParent($this);
             }
         }
