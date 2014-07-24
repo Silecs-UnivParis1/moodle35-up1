@@ -73,14 +73,11 @@ class ChtNodeCategory extends ChtNode
         list($coursesRof, $coursesCat) = courselist_roftools::split_courses_from_rof($coursesDescendant, $this->getComponent());
         if ($this->hasRofChildren()) {
             $this->addRofChildren('/' . $this->id, $coursesRof);
+            // if it contains directly courses (rare)...
+            $this->addCourseChildren($coursesCat);
         } else {
             $this->addCategoryChildren();
         }
-        // if it contains directly courses (rare)...
-        /**
-         * @todo Fix the course list: $coursesCat is WRONG!
-         */
-        $this->addCourseChildren($coursesCat);
         return $this->children;
     }
 

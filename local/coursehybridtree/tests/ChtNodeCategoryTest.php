@@ -49,7 +49,7 @@ ok('00', '===', $node->getComponent(), "component");
 
 $children = $node->listChildren();
 // print_r($children);
-ok(4, '===', count($children), "children count");
+ok(1, '===', count($children), "children count");
 
 
 
