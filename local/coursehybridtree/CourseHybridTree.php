@@ -9,7 +9,19 @@
 
 class CourseHybridTree
 {
-
+    static public function createTree($node) {
+        $m = array();
+        if (preg_match('#/cat(\d+)$#', $node, $m)) {
+            return ChtNodeCategory::buildFromCategoryId($m[1]);
+        } else if (preg_match('/^{/', $node)) {
+            $attributes = json_decode($node);
+            $class = $attributes->class;
+            unset($attributes->class);
+            return $class::unserialize($attributes);
+        } else {
+            die('{label: "An error occured: wrong node request"}');
+        }
+    }
 }
 
 abstract class ChtNode
@@ -20,6 +32,8 @@ abstract class ChtNode
     protected $component; // '00' or "composante" coded on 2 digits (01 to 37 ...)
     protected $path;
     protected $absolutePath;
+
+    protected $id;
 
     /**
      * @var array children nodes
@@ -99,7 +113,39 @@ abstract class ChtNode
      */
     abstract function listChildren();
 
-    abstract function toHtmlTree();
+    public function serialize() {
+        $o = new stdClass();
+        foreach (array('name', 'code', 'component', 'path', 'absolutePath', 'id') as $attr) {
+            $o->$attr = $this->$attr;
+        }
+        $o->class = get_class($this);
+        return json_encode($o);
+    }
+
+    static public function unserialize($data) {
+        $new = new static;
+        foreach (array('name', 'code', 'component', 'path', 'absolutePath', 'id') as $attr) {
+            $new->$attr = $data->$attr;
+        }
+        return $new;
+    }
+
+    /**
+     * @return array Cf http://mbraak.github.io/jqTree/
+     */
+    public function listJqtreeChildren() {
+        $children = array();
+        foreach ($this->listChildren() as $node) {
+            /* @var $node ChtNode */
+            $children[] = array(
+                'id' => $node->serialize(),
+                'label' => $node->name,
+                'load_on_demand' => true,
+                'depth' => $node->getDepth(),
+            );
+        }
+        return $children;
+    }
 
     /**
      * simple echo method

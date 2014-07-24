@@ -5,8 +5,7 @@ require_once($CFG->dirroot . "/local/roftools/roflib.php");
 class ChtNodeRof extends ChtNode
 {
 
-    private $rofid; // UP1-PROG... or UP1-C...
-    // private $component; // to be defined ?
+    //private $id; // UP1-PROG... or UP1-C...
 
     /**
      * @param string $rofid
@@ -18,7 +17,7 @@ class ChtNodeRof extends ChtNode
         $new = new self;
         $new->name = $record->name;
         $new->code = $rofid;
-        $new->rofid = $rofid;
+        $new->id = $rofid;
         return $new;
     }
 
@@ -30,9 +29,9 @@ class ChtNodeRof extends ChtNode
      */
     function setParent($parent) {
         $this->component = $parent->getComponent();
-        $suffix = '/' . $this->rofid;
+        $suffix = '/' . $this->id;
         if ($parent instanceof ChtNodeCategory) {
-            $suffix = '/' . $this->component .':'. $this->rofid;
+            $suffix = '/' . $this->component .':'. $this->id;
             // instead of pseudopath, insert component into first rofpath component
         }
         $this->path = $parent->getPath() . $suffix;
@@ -45,7 +44,7 @@ class ChtNodeRof extends ChtNode
         if ($this->component != '00' and $this->component != NULL) {
             return $this->component;
         } else {
-            throw new moodle_exception('Component should be defined for NodeRof ' . $this->rofid);
+            throw new moodle_exception('Component should be defined for NodeRof ' . $this->id);
         }
     }
 

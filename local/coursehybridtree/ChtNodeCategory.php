@@ -9,8 +9,7 @@ require_once($CFG->dirroot . "/local/up1_courselist/Courselist_roftools.php");
 
 class ChtNodeCategory extends ChtNode
 {
-    private $catid; // Moodle id from course_categories
-    // private $component; // to be defined ? only if catlevel >=3
+    //private $id; // Moodle id from course_categories
 
     static function buildFromCategoryId($catid) {
         global $DB;
@@ -19,10 +18,14 @@ class ChtNodeCategory extends ChtNode
     }
 
     static function buildFromCategory($record) {
+        if (empty($record->id)) {
+            // Cannot build node from an empty record.
+            return null;
+        }
         $new = new self;
         $new->name = $record->name;
         $new->code = $record->idnumber;
-        $new->catid = $record->id;
+        $new->id = $record->id;
         $new->absolutePath = str_replace('/', '/cat', $record->path);
         $new->path = '/cat' . $record->id; // we assume this node is an entry point
         return $new;
@@ -37,7 +40,7 @@ class ChtNodeCategory extends ChtNode
             $this->component = '00';
             return $this->component;
         } else {
-            $this->component = courselist_cattools::get_component_from_category($this->catid);
+            $this->component = courselist_cattools::get_component_from_category($this->id);
             return $this->component;
         }
     }
@@ -49,8 +52,8 @@ class ChtNodeCategory extends ChtNode
      * @return \ChtNodeCategory
      */
     function setParent($parent) {
-        $this->path = $parent->getPath() . '/cat' . $this->catid;
-        $this->absolutePath = $parent->getAbsolutePath() . '/cat' . $this->catid;
+        $this->path = $parent->getPath() . '/cat' . $this->id;
+        $this->absolutePath = $parent->getAbsolutePath() . '/cat' . $this->id;
         if ($parent->getAbsoluteDepth() != 2) {
             $this->component = $parent->getComponent();
         }
@@ -100,7 +103,7 @@ class ChtNodeCategory extends ChtNode
      */
     private function addCategoryChildren() {
         // get all children categories (standard Moodle)
-        $categories = coursecat::get($this->catid)->get_children();
+        $categories = coursecat::get($this->id)->get_children();
         // then keep only populated ones
         foreach ($categories as $category) {
             $courses = courselist_cattools::get_descendant_courses($category->id);
@@ -118,7 +121,7 @@ class ChtNodeCategory extends ChtNode
      * add direct courses children (case category level=4)
      */
     private function addCourseChildren() {
-        $courses = courselist_cattools::get_descendant_courses($this->catid);
+        $courses = courselist_cattools::get_descendant_courses($this->id);
         list($rofcourses, $catcourses) = courselist_roftools::split_courses_from_rof($courses, $this->component);
         /** @TODO factorize this result ? */
         foreach ($catcourses as $crsid) {
@@ -133,10 +136,10 @@ class ChtNodeCategory extends ChtNode
      * add Rof children (general case)
      */
     private function addRofChildren() {
-        $courses = courselist_cattools::get_descendant_courses($this->catid);
+        $courses = courselist_cattools::get_descendant_courses($this->id);
         list($rofcourses, $catcourses) = courselist_roftools::split_courses_from_rof($courses, $this->component);
         /** @TODO factorize this result ? */
-        $parentRofpath = '/' . $this->catid;
+        $parentRofpath = '/' . $this->id;
         $targetRofDepth = 2;
         $potentialNodes = array();
 

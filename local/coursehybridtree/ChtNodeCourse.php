@@ -1,11 +1,7 @@
 <?php
 class ChtNodeCourse extends ChtNode
 {
-    /**
-     *
-     * @var integer ID from the course DB.
-     */
-    private $id;
+    //private $id; // integer ID from the course DB.
 
     /**
      * @global moodle_database $DB
