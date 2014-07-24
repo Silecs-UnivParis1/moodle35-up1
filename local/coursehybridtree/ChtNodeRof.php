@@ -71,15 +71,6 @@ class ChtNodeRof extends ChtNode
         return $this->children;
     }
 
-    function toHtmlTree() {
-        if ($this->isHybrid()) {
-            // ...
-
-        } else {
-            return sprintf("<span>ROF %s</span>", htmlspecialchars($this->name));
-        }
-    }
-
     /**
      * @return boolean
      */

@@ -24,12 +24,3 @@ ok('/cat1/01/PROG-1/123', '===', $node->getPseudopath(), "pseudopath");
 
 $children = $node->listChildren();
 ok(0, '===', count($children), "children count");
-
-$html = $node->toHtmlTree();
-ok(
-        '/^<span\b/',
-        function($a,$b) { return preg_match($a, $b); },
-        $html,
-        "HTML starts with span"
-);
-file_put_contents(__DIR__ . '/output/course.html', $html);

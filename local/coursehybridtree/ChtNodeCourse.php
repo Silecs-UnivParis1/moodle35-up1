@@ -64,8 +64,4 @@ class ChtNodeCourse extends ChtNode
          */
         return $this->children;
     }
-
-    function toHtmlTree() {
-        return "<span>COURSE {$this->name}</span>";
-    }
 }

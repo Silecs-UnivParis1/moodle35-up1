@@ -9,11 +9,19 @@
 
 class CourseHybridTree
 {
+    /**
+     * Return a new instance of one of the ChtNode*.
+     *
+     * @param string $node
+     * @return ChtNode
+     */
     static public function createTree($node) {
         $m = array();
         if (preg_match('#/cat(\d+)$#', $node, $m)) {
+            // root node, given through a category
             return ChtNodeCategory::buildFromCategoryId($m[1]);
         } else if (preg_match('/^{/', $node)) {
+            // inside node (non-root), given through serialized attributes
             $attributes = json_decode($node);
             $class = $attributes->class;
             unset($attributes->class);
@@ -113,6 +121,11 @@ abstract class ChtNode
      */
     abstract function listChildren();
 
+    /**
+     * Serialize.
+     *
+     * @return string
+     */
     public function serialize() {
         $o = new stdClass();
         foreach (array('name', 'code', 'component', 'path', 'absolutePath', 'id') as $attr) {
@@ -122,6 +135,12 @@ abstract class ChtNode
         return json_encode($o);
     }
 
+    /**
+     * Return a new instance from a plain object.
+     *
+     * @param Stdclass $data
+     * @return \static
+     */
     static public function unserialize($data) {
         $new = new static;
         foreach (array('name', 'code', 'component', 'path', 'absolutePath', 'id') as $attr) {

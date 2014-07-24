@@ -31,6 +31,9 @@ class ChtNodeCategory extends ChtNode
         return $new;
     }
 
+    /**
+     * @return string
+     */
     function getComponent() {
         if ($this->component != null) {
             return $this->component;
@@ -74,17 +77,6 @@ class ChtNodeCategory extends ChtNode
             $this->addCourseChildren();
         }
         return $this->children;
-    }
-
-    function toHtmlTree($recursive=false) {
-        $html = "<span>{$this->name}</span>";
-
-        if ($recursive) {
-            foreach ($this->listChildren() as $child) {
-                $html .= $child->toHtmlTree();
-            }
-        }
-        return $html;
     }
 
     /**

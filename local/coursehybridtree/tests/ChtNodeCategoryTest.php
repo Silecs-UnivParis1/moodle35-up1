@@ -31,14 +31,6 @@ ok('02', '===', $node->getComponent(), "component");
 $children = $node->listChildren();
 ok(1, '===', count($children), "children count");
 
-$html = $node->toHtmlTree();
-ok(
-        '/^<span\b/',
-        function($a,$b) { return preg_match($a, $b); },
-        $html,
-        "HTML starts with span"
-);
-file_put_contents(__DIR__ . '/output/course.html', $html);
 
 
 echo"\n Catégorie de niveau 1 \n";
@@ -59,14 +51,6 @@ $children = $node->listChildren();
 // print_r($children);
 ok(4, '===', count($children), "children count");
 
-$html = $node->toHtmlTree();
-ok(
-        '/^<span\b/',
-        function($a,$b) { return preg_match($a, $b); },
-        $html,
-        "HTML starts with span"
-);
-file_put_contents(__DIR__ . '/output/course.html', $html, FILE_APPEND);
 
 
 echo "\n Descend l'arbre (en profondeur)\n";
