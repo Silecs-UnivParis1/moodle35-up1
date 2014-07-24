@@ -4,7 +4,7 @@ require_once($CFG->dirroot . "/local/roftools/roflib.php");
 
 class ChtNodeRof extends ChtNode
 {
-    
+
     private $rofid; // UP1-PROG... or UP1-C...
     // private $component; // to be defined ?
 
@@ -50,9 +50,15 @@ class ChtNodeRof extends ChtNode
     }
 
     function getRofPathId() {
-        if (preg_match('@^/cat[0-9]+/cat[0-9]+/cat[0-9]+/cat[0-9]+/(.*)$@', $this->absolutePath, $matches)) {
+        if (preg_match('@^/cat\d+/cat\d+/cat\d+/cat\d+/(.*)$@', $this->absolutePath, $matches)) {
             return '/' . str_replace(':', '/', $matches[1]);
         }
+    }
+
+    function getCatid() {
+       if (preg_match('@^/cat\d+/cat\d+/cat\d+/cat(\d+)/@', $this->absolutePath, $matches)) {
+            return (int)$matches[1];
+         }
     }
 
 
@@ -61,9 +67,8 @@ class ChtNodeRof extends ChtNode
             return $this->children;
         }
         $this->children = array();
-        /**
-         * @todo
-         */
+        $this->addRofChildren();
+        $this->addCourseChildren();
         return $this->children;
     }
 
@@ -89,4 +94,46 @@ class ChtNodeRof extends ChtNode
         }
         return false;
     }
+
+
+    /**
+     * add direct courses children
+     */
+    private function addCourseChildren() {
+        $courses = courselist_cattools::get_descendant_courses($this->getCatid());
+        list($rofcourses, $catcourses) = courselist_roftools::split_courses_from_rof($courses, $this->component);
+        /** @TODO factorize this result ? */
+        foreach ($catcourses as $crsid) {
+// echo "crsid = $crsid \n";
+            $this->children[] = ChtNodeCourse::buildFromCourseId($crsid)
+                ->setParent($this);
+        }
+
+    }
+
+    /**
+     * add Rof children (general case)
+     */
+    private function addRofChildren() {
+        $parentRofpath = $this->getRofPathId();
+        $rofcourses = courselist_roftools::get_courses_from_parent_rofpath($parentRofpath);
+        $targetRofDepth = count(explode('/', $parentRofpath));
+        $potentialNodes = array();
+
+        foreach ($rofcourses as $rofpathid) {
+            /**
+             * On ne filtre pas par parentrofpath ?
+             */
+            $potentialNodePath = array_slice($this->pathArray($rofpathid), 0, $targetRofDepth);
+            $potentialNode = $potentialNodePath[$targetRofDepth - 1];
+            $potentialNodes[] = $potentialNode;
+        }
+        foreach (array_unique($potentialNodes) as $rofid) {
+            $this->children[] = ChtNodeRof::buildFromRofId($rofid)
+                    ->setParent($this);
+        }
+    }
+
+
+
 }

@@ -70,10 +70,15 @@ file_put_contents(__DIR__ . '/output/course.html', $html, FILE_APPEND);
 
 
 echo "\n Descend l'arbre (en profondeur)\n";
-while ($node->listChildren()) {
-    echo "\n";
-    $cnodes = $node->listChildren();
-    $cnodes[0]->toPrint(false);
-    print_r($cnodes[0]);
-    $node = $cnodes[0];
-}
+$child1 = $node->findChild("2:UP1");
+ok(null, '!==', $child1, "Level 1 child");
+$child2 = $child1->findChild("3:02");
+ok(null, '!==', $child2, "Level 2 child");
+$child3 = $child2->findChild("4:02/Licences");
+ok(null, '!==', $child3, "Level 3 child");
+$child4 = $child3->findChild("UP1-PROG39308");
+ok(null, '!==', $child4, "Level 4 child {$child4->code}");
+ok(2, '===', count($child4->listChildren()), "Level 5 of size >=2");
+ok(null, '!==', $child4->findChild("UP1-PROG24870"), "Level 5 child1");
+ok(null, '!==', $child4->findChild("UP1-PROG25562"), "Level 5 child2");
+//print_r($child4);

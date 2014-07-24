@@ -112,5 +112,18 @@ abstract class ChtNode
         }
         echo "\n";
     }
+
+    /**
+     * @param string $code
+     * @return ChtNode
+     */
+    function findChild($code) {
+        foreach ($this->listChildren() as $child) {
+            if ($child->code === $code) {
+                return $child;
+            }
+        }
+        return null;
+    }
 }
 
