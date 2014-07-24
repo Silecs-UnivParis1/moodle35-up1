@@ -70,7 +70,7 @@ class ChtNodeCategory extends ChtNode
         }
         $this->children = array();
         $coursesDescendant = courselist_cattools::get_descendant_courses($this->id);
-        list($coursesRof, $coursesCat) = courselist_roftools::split_courses_from_rof($coursesDescendant, $this->component);
+        list($coursesRof, $coursesCat) = courselist_roftools::split_courses_from_rof($coursesDescendant, $this->getComponent());
         if ($this->hasRofChildren()) {
             $this->addRofChildren('/' . $this->id, $coursesRof);
         } else {
