@@ -190,5 +190,44 @@ abstract class ChtNode
         }
         return null;
     }
+
+    /**
+     * add Rof children
+     *
+     * @param string $parentRofpath
+     * @param array $rofcourses
+     */
+    protected function addRofChildren($parentRofpath, $rofcourses) {
+        $targetRofDepth = count(explode('/', $parentRofpath));
+        $potentialNodes = array();
+
+        foreach ($rofcourses as $rofpathid) {
+            /**
+             * On ne filtre pas par parentrofpath ?
+             */
+            $potentialNodePath = array_slice($this->pathArray($rofpathid), 0, $targetRofDepth);
+            $potentialNode = $potentialNodePath[$targetRofDepth - 1];
+            $potentialNodes[] = $potentialNode;
+        }
+        foreach (array_unique($potentialNodes) as $rofid) {
+            $this->children[] = ChtNodeRof::buildFromRofId($rofid)
+                    ->setParent($this);
+        }
+    }
+
+    /**
+     * add direct courses children
+     *
+     * @param integer $catid category.id
+     */
+    protected function addCourseChildren($catid) {
+        $courses = courselist_cattools::get_descendant_courses($catid);
+        list(, $catcourses) = courselist_roftools::split_courses_from_rof($courses, $this->component);
+        /** @TODO factorize this result ? */
+        foreach ($catcourses as $crsid) {
+            $this->children[] = ChtNodeCourse::buildFromCourseId($crsid)
+                ->setParent($this);
+        }
+    }
 }
 

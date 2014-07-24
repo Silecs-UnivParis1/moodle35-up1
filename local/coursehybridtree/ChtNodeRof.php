@@ -66,8 +66,8 @@ class ChtNodeRof extends ChtNode
             return $this->children;
         }
         $this->children = array();
-        $this->addRofChildren();
-        $this->addCourseChildren();
+        $this->addRofChildren($this->getRofPathId(), courselist_roftools::get_courses_from_parent_rofpath($this->getRofPathId()));
+        $this->addCourseChildren($this->getCatid());
         return $this->children;
     }
 
@@ -84,46 +84,4 @@ class ChtNodeRof extends ChtNode
         }
         return false;
     }
-
-
-    /**
-     * add direct courses children
-     */
-    private function addCourseChildren() {
-        $courses = courselist_cattools::get_descendant_courses($this->getCatid());
-        list($rofcourses, $catcourses) = courselist_roftools::split_courses_from_rof($courses, $this->component);
-        /** @TODO factorize this result ? */
-        foreach ($catcourses as $crsid) {
-// echo "crsid = $crsid \n";
-            $this->children[] = ChtNodeCourse::buildFromCourseId($crsid)
-                ->setParent($this);
-        }
-
-    }
-
-    /**
-     * add Rof children (general case)
-     */
-    private function addRofChildren() {
-        $parentRofpath = $this->getRofPathId();
-        $rofcourses = courselist_roftools::get_courses_from_parent_rofpath($parentRofpath);
-        $targetRofDepth = count(explode('/', $parentRofpath));
-        $potentialNodes = array();
-
-        foreach ($rofcourses as $rofpathid) {
-            /**
-             * On ne filtre pas par parentrofpath ?
-             */
-            $potentialNodePath = array_slice($this->pathArray($rofpathid), 0, $targetRofDepth);
-            $potentialNode = $potentialNodePath[$targetRofDepth - 1];
-            $potentialNodes[] = $potentialNode;
-        }
-        foreach (array_unique($potentialNodes) as $rofid) {
-            $this->children[] = ChtNodeRof::buildFromRofId($rofid)
-                    ->setParent($this);
-        }
-    }
-
-
-
 }

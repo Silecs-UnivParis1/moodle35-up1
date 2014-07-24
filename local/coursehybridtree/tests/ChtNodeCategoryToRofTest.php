@@ -10,13 +10,13 @@ ok_contains(
         "UP1-PROG39308",
         function ($expected, $value) { return ($expected === $value->code); },
         $node->listChildren(),
-        "UP1-PROG39308 is a child of this category"
+        "UP1-PROG39308 is a ROF child of this category"
 );
 ok_contains(
         "UP1-PROG9490",
         function ($expected, $value) { return ($expected === $value->code); },
         $node->listChildren(),
-        "UP1-PROG39308 is a child of this category"
+        "UP1-PROG39308 is a ROF child of this category"
 );
 ok(2, '===', count($node->listChildren()), "# children");
 

@@ -69,12 +69,14 @@ class ChtNodeCategory extends ChtNode
         }
         $this->children = array();
         if ($this->hasRofChildren()) {
-            $this->addRofChildren();
-            $this->addCourseChildren();
+            $courses = courselist_cattools::get_descendant_courses($this->id);
+            list($rofcourses, ) = courselist_roftools::split_courses_from_rof($courses, $this->component);
+            $this->addRofChildren('/' . $this->id, $rofcourses);
+            $this->addCourseChildren($this->id);
         } else {
             $this->addCategoryChildren();
             // if it contains directly courses (rare)...
-            $this->addCourseChildren();
+            $this->addCourseChildren($this->id);
         }
         return $this->children;
     }
@@ -108,43 +110,4 @@ class ChtNodeCategory extends ChtNode
             }
         }
     }
-
-    /**
-     * add direct courses children (case category level=4)
-     */
-    private function addCourseChildren() {
-        $courses = courselist_cattools::get_descendant_courses($this->id);
-        list($rofcourses, $catcourses) = courselist_roftools::split_courses_from_rof($courses, $this->component);
-        /** @TODO factorize this result ? */
-        foreach ($catcourses as $crsid) {
-// echo "crsid = $crsid \n";
-            $this->children[] = ChtNodeCourse::buildFromCourseId($crsid)
-                ->setParent($this);
-        }
-        
-    }
-
-    /**
-     * add Rof children (general case)
-     */
-    private function addRofChildren() {
-        $courses = courselist_cattools::get_descendant_courses($this->id);
-        list($rofcourses, $catcourses) = courselist_roftools::split_courses_from_rof($courses, $this->component);
-        /** @TODO factorize this result ? */
-        $parentRofpath = '/' . $this->id;
-        $targetRofDepth = 2;
-        $potentialNodes = array();
-
-        foreach ($rofcourses as $crsid => $rofpathid) {
-            $potentialNodePath = array_slice($this->pathArray($rofpathid), 0, $targetRofDepth);
-            // faut-il vérifier le matching sur $parentRofPath ?  il me semble que c'est inutile
-            $potentialNode = $potentialNodePath[$targetRofDepth - 1];
-            $potentialNodes[] = $potentialNode;
-        }
-        foreach (array_unique($potentialNodes) as $rofid) {
-            $this->children[] = ChtNodeRof::buildFromRofId($rofid)
-                    ->setParent($this);
-        }
-    }
-
 }
