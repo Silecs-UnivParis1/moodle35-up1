@@ -19,9 +19,10 @@ class ChtNodeCourse extends ChtNode
      * @return ChtNodeCourse
      */
     static function buildFromCourse($record) {
-        /**
-         * @todo check and fix this
-         */
+        if (empty($record->id)) {
+            // Cannot build node from an empty record.
+            return null;
+        }
         $new = new self;
         $new->name = $record->fullname;
         $new->code = $record->idnumber;
