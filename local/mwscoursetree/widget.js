@@ -98,8 +98,8 @@
                     },
                     autoEscape: false, // allow HTML labels
                     autoOpen: false,
-                    openedIcon: "<img style='margin-top: -4px' src='" + M.util.image_url('t/expanded', 'core') + "'>",
-                    closedIcon: "<img style='margin-top: -4px' src='" + M.util.image_url('t/collapsed', 'core') + "'>",
+                    openedIcon: $("<img style='margin-top: -4px' src='" + M.util.image_url('t/expanded', 'core') + "'>"),
+                    closedIcon: $("<img style='margin-top: -4px' src='" + M.util.image_url('t/collapsed', 'core') + "'>"),
                     slide: false, // turn off the animation
                     dragAndDrop: false
                 });
