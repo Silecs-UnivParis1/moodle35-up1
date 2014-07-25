@@ -134,12 +134,16 @@ abstract class ChtNode
             /* @var $node ChtNode */
             $children[] = array(
                 'id' => $node->serialize(),
-                'label' => ($this->info ? $node->flag . '[' . $node->id . ' ' . $node->code . '] ' : '') . $node->name,
+                'label' => ($this->info ? $node->flag . '[' . $node->id . ' ' . $node->code . '] ' : '') . $node->getLabel(),
                 'load_on_demand' => ( ! ($node instanceof ChtNodeCourse) ),
                 'depth' => $node->getDepth(),
             );
         }
         return $children;
+    }
+
+    protected function getLabel() {
+        return '<span class="coursetree-dir">' . htmlspecialchars($this->name) . '</span>';
     }
 
     /**

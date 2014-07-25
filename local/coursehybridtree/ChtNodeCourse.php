@@ -1,4 +1,6 @@
 <?php
+require_once dirname(__DIR__) . '/up1_courselist/Courselist_format.php';
+
 class ChtNodeCourse extends ChtNode
 {
     //private $id; // integer ID from the course DB.
@@ -65,5 +67,13 @@ class ChtNodeCourse extends ChtNode
          * @todo
          */
         return $this->children;
+    }
+
+    protected function getLabel() {
+        static $courseformatter = null;
+        if (!$courseformatter) {
+            $courseformatter = new courselist_format('tree');
+        }
+        return $courseformatter->format_entry($this->id);
     }
 }
