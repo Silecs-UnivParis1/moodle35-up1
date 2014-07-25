@@ -134,7 +134,8 @@ abstract class ChtNode
             /* @var $node ChtNode */
             $children[] = array(
                 'id' => $node->serialize(),
-                'label' => ($this->info ? $node->flag . '[' . $node->id . ' ' . $node->code . '] ' : '') . $node->getLabel(),
+                'label' => ($this->info ? "<span class=\"coursetree-info\">{$node->flag} [id={$node->id} {$node->code}] </span>" : '')
+                    . $node->getLabel(),
                 'load_on_demand' => ( ! ($node instanceof ChtNodeCourse) ),
                 'depth' => $node->getDepth(),
             );
