@@ -65,12 +65,10 @@ ok(null, '!==', $child4->findChild("UP1-PROG25562"), "Level 5 child2");
 //print_r($child4);
 
 echo "\nSous-catégories\n";
-/*
 $cat5 = ChtNodeCategory::buildFromCategoryId(5);
 ok(null, '!==', $cat5->findChildById(6), "cat6 child of cat5 (exists)");
 ok('ChtNodeCategory', '===', get_class($cat5->findChildById(6)), "cat6 child of cat5 (class)");
 ok(4, '===', count($cat5->listChildren()), "4 children in cat5");
-*/
 
 $cat29 = ChtNodeCategory::buildFromCategoryId(29);
 $children = $cat29->listChildren();
