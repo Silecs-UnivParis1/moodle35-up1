@@ -74,13 +74,14 @@
             $('.coursetree').each(function(){
                 var $tree = $(this);
                 var rootNode = $tree.data('root');
-                if (rootNode) {
-                    rootNode = '?node=' + rootNode;
-                } else {
-                    rootNode = '';
-                }
                 $tree.tree({
-                    dataUrl: rootUrl + 'service-children.php' + rootNode,
+                    dataUrl: function(node) {
+                        var result = {
+                            "url": rootUrl + 'service-children.php',
+                            "data": { "node": (node ? $(node).attr('id') : rootNode) }
+                        };
+                        return result;
+                    },
                     onAppendLi: function(node, $li) {
                         if (!node.load_on_demand && !('is_open' in node) && node.children.length === 0) {
                             var $name = $li.find('.jqtree-title:first').first().find('.coursetree-name').first();
