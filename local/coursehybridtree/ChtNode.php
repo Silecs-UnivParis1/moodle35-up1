@@ -178,7 +178,7 @@ abstract class ChtNode
      */
     function findChildById($id) {
         foreach ($this->listChildren() as $child) {
-            if ($child->id === $id) {
+            if ($child->id == $id) {
                 return $child;
             }
         }
