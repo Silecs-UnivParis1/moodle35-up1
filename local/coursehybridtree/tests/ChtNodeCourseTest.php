@@ -24,3 +24,5 @@ ok('/cat1/01/PROG-1/123', '===', $node->getPseudopath(), "pseudopath");
 
 $children = $node->listChildren();
 ok(0, '===', count($children), "children count");
+
+echo "Done\n";

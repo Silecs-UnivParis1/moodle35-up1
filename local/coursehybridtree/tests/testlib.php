@@ -22,8 +22,8 @@ function ok($expected, $cmp, $tested, $msg) {
     } else {
         die(
                 " \033[31m*** $msg ERROR\033[0m"
-                . "\n\t\033[31mExpected:\033[0m " . print_r($expected, true)
-                . "\n\t\033[31mResult:\033[0m [" . print_r($tested, true) . "]\n"
+                . "\n\t\033[31mExpected:\033[0m « " . print_r($expected, true) . " »" . (is_string($cmp) ? " $cmp" : '')
+                . "\n\t\033[31mResult:\033[0m   « " . print_r($tested, true) . " »\n"
         );
     }
 }
@@ -54,8 +54,8 @@ function ok_contains($expected, $cmp, array $tested, $msg) {
     } else {
         die(
                 " \033[31m*** $msg ERROR\033[0m"
-                . "\n\t\033[31mExpected contains:\033[0m " . print_r($expected, true)
-                . "\n\t\033[31mResult:\033[0m [" . print_r($tested, true) . "]\n"
+                . "\n\t\033[31mExpected contains:\033[0m « " . print_r($expected, true) . " »"
+                . "\n\t\033[31mResult:\033[0m            « " . print_r($tested, true) . " »\n"
         );
     }
 }

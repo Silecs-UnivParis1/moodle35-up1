@@ -52,3 +52,5 @@ ok('/cat4/cat5/cat10/cat11/02:UP1-PROG39308/UP1-PROG24870', '===', $node6->getAb
 ok($node5->getDepth() + 1, '===', $node6->getDepth(), "depth");
 ok($node5->getAbsoluteDepth() + 1, '===', $node6->getAbsoluteDepth(), "abs depth");
 ok('/02/UP1-PROG39308/UP1-PROG24870', '===', $node6->getRofPathId(), "rofpathid");
+
+echo "Done\n";

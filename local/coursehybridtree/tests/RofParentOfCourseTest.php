@@ -9,3 +9,5 @@ ok(1, '<=', count($node->listChildren()), "Count of children");
 $children = $node->listChildren();
 ok('ChtNodeCourse', '===', get_class($children[0]), "First child is a course");
 //print_r($node);
+
+echo "Done\n";
