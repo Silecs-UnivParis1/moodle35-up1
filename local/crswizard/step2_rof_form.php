@@ -178,7 +178,8 @@ class course_wizard_step2_rof_form extends moodleform {
 
         $datefermeture = 'up1datefermeture';
         $mform->addElement('date_selector', $datefermeture, get_string('up1datefermeture', 'local_crswizard'));
-        $mform->setDefault($datefermeture, time());
+        $fin_semestre = strtotime(date('m') <= 6 ? "July 31" : "next year January 31");
+        $mform->setDefault($datefermeture, $fin_semestre);
 
         $mform->addElement('header', 'URL', 'Souhaitez-vous utiliser une URL pérenne ?');
         $mform->setExpanded('URL');
