@@ -122,7 +122,7 @@ switch ($stepin) {
             if ($wizardcase == 2) {
                  $SESSION->wizard['form_step2']['item'] = wizard_get_array_item($_POST['item']);
                  $SESSION->wizard['form_step2']['all-rof'] = wizard_get_rof();
-                 $SESSION->wizard['form_step2']['complement'] = $_POST['complement'];
+                 $SESSION->wizard['form_step2']['complement'] = trim($_POST['complement']);
             }
             redirect($CFG->wwwroot . '/local/crswizard/index.php?stepin=' . $stepgo);
         } else {
