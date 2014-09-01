@@ -106,6 +106,10 @@ switch ($stepin) {
 
         $data = $editform->get_data();
         if ($data){
+            $data->fullname = trim($data->fullname);
+            if (isset($data->shortname)) {
+                $data->shortname = trim($data->shortname);
+            }
             $SESSION->wizard['form_step' . $stepin] = (array) $data;
             if ($wizardcase == 2) {
                  $SESSION->wizard['form_step2']['item'] = wizard_get_array_item($_POST['item']);

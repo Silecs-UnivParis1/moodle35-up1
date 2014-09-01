@@ -155,6 +155,10 @@ class course_wizard_step2_form extends moodleform {
     }
 
     public function validation($data, $files) {
+        if (array_key_exists('shortname', $data)) {
+            $data['shortname'] = trim($data['shortname']);
+        }
+        $data['fullname'] = trim($data['fullname']);
         $errors = parent::validation($data, $files);
         if (empty($errors)) {
             $this->validation_shortname($data['shortname'], $errors);
