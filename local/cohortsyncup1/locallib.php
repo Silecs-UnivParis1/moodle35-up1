@@ -260,6 +260,7 @@ function sync_cohorts_from_users($timelast=0, $limit=0, $verbose=0)
 {
     global $CFG, $DB;
 
+    update_period($verbose);
     add_to_log(0, 'local_cohortsyncup1', 'syncFromUsers:begin', '', "since $timelast");
     $ws_userGroupsAndRoles = get_config('local_cohortsyncup1', 'ws_userGroupsAndRoles');
     // $ws_userGroupsAndRoles = 'http://ticetest.univ-paris1.fr/web-service-groups/userGroupsAndRoles';
@@ -339,7 +340,7 @@ function remove_memberships($userid, $memberof) {
     $cnt = 0;
 
     $sql = "SELECT cm.cohortid, c.up1key FROM {cohort_members} cm "
-        . "INNER JOIN {cohort} c ON (c.id = cm.cohortid) WHERE (cm.userid=? AND c.component='local_cohortsyncup1')";
+        . "INNER JOIN {cohort} c ON (c.id = cm.cohortid) WHERE (cm.userid=? AND c.component='local_cohortsyncup1' AND c.up1key != '')";
     $res = $DB->get_records_sql_menu($sql, array($userid));
     foreach ($res as $cohortid => $up1key) {
         if ( ! in_array($up1key, $memberof) ) {
