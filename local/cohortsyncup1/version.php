@@ -10,14 +10,15 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2014052200;        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2014090200;        // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2012061700;        // Requires this Moodle version
 $plugin->component = 'local_cohortsyncup1';       // Full name of the plugin (used for diagnostics)
 
 $plugin->cron      = 0;
-$plugin->maturity  = MATURITY_BETA;
+$plugin->maturity  = MATURITY_RC;
 $plugin->release   = 'TODO';
 
 $plugin->dependencies = array(
     'auth_ldapup1' => 2013101700,
+    'local_mwsgroups' => 2014090200,
 );

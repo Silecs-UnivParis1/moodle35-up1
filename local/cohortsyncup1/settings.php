@@ -35,7 +35,7 @@ if (has_capability('moodle/site:config', context_system::instance())) {
     $cohortPeriod = new admin_setting_configtext(
             'cohort_period',
             'Cohorts implicit period (year)',
-            'Période implicite pour la période ou année, ex. 2013',
+            'Période implicite pour la période ou année, ex. 2014. Indiquer la valeur "0" (zéro) pour désactiver l\'annualisation',
             '',
             PARAM_NOTAGS);
     $cohortPeriod->plugin = 'local_cohortsyncup1';

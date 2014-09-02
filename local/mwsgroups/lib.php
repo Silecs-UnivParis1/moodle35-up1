@@ -4,7 +4,7 @@
 /**
  * @package    local
  * @subpackage mwsgroups
- * @copyright  2012-2013 Silecs {@link http://www.silecs.info/societe}
+ * @copyright  2012-2014 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -156,16 +156,31 @@ function groupKeyToCategory($key) {
  * @return array( string => boolean)
  */
 function groupYearlyPredicate() {
-    return array(
-        'structures' => false,
-        'affiliation' => false,
-        'diploma' => true,
-        'gpelp' => true,
-        'gpetp' => true,
-        'elp' => true,
-        'other' => false,
-        null => false
-    );
+    $curyear = get_config('local_cohortsyncup1', 'cohort_period');
+    if ($curyear == '0') { // l'annualisation ne doit pas etre appliquée
+        $groupYearly = array(
+            'structures' => false,
+            'affiliation' => false,
+            'diploma' => false,
+            'gpelp' => false,
+            'gpetp' => false,
+            'elp' => false,
+            'other' => false,
+            null => false
+        );
+    } else {
+        $groupYearly = array(
+            'structures' => false,
+            'affiliation' => false,
+            'diploma' => true,
+            'gpelp' => true,
+            'gpetp' => true,
+            'elp' => true,
+            'other' => false,
+            null => false
+        );
+    }
+    return $groupYearly;
 }
 
 
