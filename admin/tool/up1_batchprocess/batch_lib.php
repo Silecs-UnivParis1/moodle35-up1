@@ -158,7 +158,7 @@ function get_courses_batch_search($criteria, $sort='fullname ASC', $page=0, $rec
                 . "JOIN {role_assignments} ra ON (context.id = ra.contextid) "
                 . "JOIN {user} u ON (u.id = ra.userid)";
         if (!empty($criteria->enrolledexact)) {
-            $searchcond[] = 'u.username = :uname';
+            $searchcond[] = "(u.username = :uname AND ra.roleid $inSql)";
             $params['uname'] = $criteria->enrolledexact;
         } else {
             $searchcond[] = '('
