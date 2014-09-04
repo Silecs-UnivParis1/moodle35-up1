@@ -22,6 +22,7 @@ $u_g->usermaxrows = $maxrowsfor['users'];
 $u_g->groupmaxrows = $maxrowsfor['groups'];
 $u_g->filterstudent = $filterstudent;
 $u_g->filtergroupcat = $filtergroupcat;
+$u_g->archives = false;
 $res = $u_g->search();
 
 if (empty($callback)) {

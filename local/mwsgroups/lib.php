@@ -42,6 +42,11 @@ class mws_search_groups
     public $filtergroupcat = '';
 
     /**
+     * @var Include obsolete cohorts
+     */
+    public $archives = true;
+
+    /**
      * Emulates wsgroups "search" action from Moodle data (???)
      *
      * @return array array('users' => $users, 'groups' => $groups)
@@ -105,6 +110,9 @@ class mws_search_groups
         }
         $sql = "SELECT id, name, idnumber, description, descriptionformat FROM {cohort} WHERE "
             . "( name LIKE ? OR idnumber LIKE ? ) AND (" . join(' OR ', $cwhere) . ')' ;
+        if (!$this->archives) {
+            $sql .= " AND up1key <> '' ";
+        }
         // echo $sql . " <br />\n" ; //DEBUG
         $records = $DB->get_records_sql($sql, array($ptoken, $ptoken), 0, $this->groupmaxrows);
         $groups = array();
