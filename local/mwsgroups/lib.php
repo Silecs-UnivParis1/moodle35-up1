@@ -47,14 +47,11 @@ class mws_search_groups
     public $archives = true;
 
     /**
-     * Emulates wsgroups "search" action from Moodle data (???)
+     * List the users matching the criteria
      *
-     * @return array array('users' => $users, 'groups' => $groups)
+     * @return array users
      */
-    public function search() {
-        if ($this->groupmaxrows > MWS_SEARCH_MAXROWS || $this->groupmaxrows == 0) {
-            $this->groupmaxrows = MWS_SEARCH_MAXROWS;
-        }
+    public function search_users() {
         if ($this->usermaxrows > MWS_SEARCH_MAXROWS || $this->usermaxrows == 0) {
             $this->usermaxrows = MWS_SEARCH_MAXROWS;
         }
@@ -62,21 +59,32 @@ class mws_search_groups
         $search_u = new mws_search_users();
         $search_u->maxrows = $this->usermaxrows;
         $search_u->filterstudent = $this->filterstudent;
-        $users  = $search_u->search($this->token);
+        return $search_u->search($this->token);
+    }
+
+    /**
+     * List the groups matching the criteria
+     *
+     * @return array groups
+     */
+    public function search_groups() {
+        if ($this->groupmaxrows > MWS_SEARCH_MAXROWS || $this->groupmaxrows == 0) {
+            $this->groupmaxrows = MWS_SEARCH_MAXROWS;
+        }
 
         if ($this->filtergroupcat == '') {
-            $groups = $this->search_groups();
+            $groups = $this->search_groups_all();
         } else {
             $groups = $this->search_groups_category($this->filtergroupcat);
         }
-        return array('users' => $users, 'groups' => $groups);
+        return $groups;
     }
 
     /**
      * search groups according to filters
      * @return array
      */
-    protected function search_groups() {
+    protected function search_groups_all() {
         $wherecat = self::categoryToWhere();
 
         $res = array();
@@ -173,7 +181,7 @@ function mws_search($token, $usermaxrows, $groupmaxrows, $filterstudent='both', 
     $s->groupmaxrows = $groupmaxrows;
     $s->filterstudent = $filterstudent;
     $s->filtergroupcat = filtergroupcat;
-    return $s->search();
+    return array('users' => $s->search_users(), 'groups' => $s->search_groups());
 }
 
 /**

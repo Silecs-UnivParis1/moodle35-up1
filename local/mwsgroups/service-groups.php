@@ -23,7 +23,10 @@ $u_g->groupmaxrows = $maxrowsfor['groups'];
 $u_g->filterstudent = $filterstudent;
 $u_g->filtergroupcat = $filtergroupcat;
 $u_g->archives = false;
-$res = $u_g->search();
+$res = array(
+    'users'  => $u_g->search_users(),
+    'groups' => $u_g->search_groups(),
+);
 
 if (empty($callback)) {
     header('Content-Type: application/json; charset="UTF-8"');
