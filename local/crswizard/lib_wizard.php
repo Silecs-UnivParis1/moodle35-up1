@@ -258,7 +258,7 @@ function wizard_get_course_list_teacher() {
         $periodes = $DB->get_records('course_categories', array(), 'sortorder ASC');
         foreach ($courses as $course) {
             $coursecontext = context_course::instance($course->id);
-            if ( has_capability('moodle/course:update', $coursecontext, $USER->id) ) {
+            if ( has_capability('local/crswizard:duplicate', $coursecontext, $USER->id) ) {
                 $path = substr($periodes[$course->category]->path, 1);
 
                 if (strstr($path, '/')) {

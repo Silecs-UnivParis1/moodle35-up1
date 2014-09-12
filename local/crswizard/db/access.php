@@ -75,4 +75,15 @@ $capabilities = array(
             'manager'        => CAP_ALLOW
         )
     ),
+    'local/crswizard:duplicate' => array(
+        'riskbitmask'  => 0,
+        'captype'      => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes'   => array(
+            'student'        => CAP_PREVENT,
+            'teacher'        => CAP_PREVENT,
+            'editingteacher' => CAP_ALLOW,
+            'manager'        => CAP_ALLOW
+        )
+    ),
 );
