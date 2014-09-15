@@ -17,7 +17,8 @@ require_once(__DIR__ . '/batch_libactions.php');
 
 global $DB, $PAGE;
 
-$action = optional_param('action', '', PARAM_ALPHA);
+
+$actionchecks = optional_param('actioncheck', array(), PARAM_RAW);
 $coursesid = optional_param_array('c', array(), PARAM_INT);  // which courses to act on
 $page      = optional_param('page', 0, PARAM_INT);     // which page to show
 $perpage   = optional_param('perpage', 100, PARAM_INT); // how many per page
@@ -32,18 +33,19 @@ $preview = array();
 $regexp = '';
 $replace = '';
 $confirm = false;
+$msg = ''; //flash message for action diagnostics
 
-if ($action) {
+foreach ($actionchecks as $action) {
     $courses = $DB->get_records_list('course', 'id', $coursesid);
     switch ($action) {
         case 'prefix':
             $prefix = optional_param('batchprefix', '', PARAM_RAW);
-            batchaction_prefix($courses, $prefix, true);
+            $msg .= batchaction_prefix($courses, $prefix, false) . "<br />\n";
             break;
 
         case 'suffix':
             $suffix = optional_param('batchsuffix', '', PARAM_RAW);
-            batchaction_suffix($courses, $suffix, true);
+            $msg .= batchaction_suffix($courses, $suffix, false) . "<br />\n";
             break;
 
         case 'regexp':
@@ -52,7 +54,7 @@ if ($action) {
             $confirm = optional_param('batchconfirm', '', PARAM_BOOL);
             if ($regexp) {
                 if ($confirm) {
-                    batchaction_regexp($courses, $regexp, $replace, true);
+                    $msg .= batchaction_regexp($courses, $regexp, $replace, true) . "<br />\n";
                 } else {
                     foreach ($courses as $course) {
                         $preview[$course->id] = preg_replace('/' . $regexp . '/', $replace, $course->fullname);
@@ -62,35 +64,35 @@ if ($action) {
             break;
 
         case 'close':
-            batchaction_visibility($courses, 0, false);
+            $msg .= batchaction_visibility($courses, 0, false) . "<br />\n";
             break;
 
         case 'open':
-            batchaction_visibility($courses, 1, false);
+            $msg .= batchaction_visibility($courses, 1, false) . "<br />\n";
             break;
 
        case 'substitute':
            $rolefrom = optional_param('batchsubstfrom', '', PARAM_INT);
            $roleto = optional_param('batchsubstto', '', PARAM_INT);
-           batchaction_substitute($courses, $rolefrom, $roleto, false);
+           $msg .= batchaction_substitute($courses, $rolefrom, $roleto, false) . "<br />\n";
            break;
 
         case 'archdate':
             $isodate = optional_param('batcharchdate', '', PARAM_RAW);
             $tsdate = isoDateToTs($isodate);
             //** @todo valider la date **
-            batchaction_archdate($courses, $tsdate, false);
+            $msg .= batchaction_archdate($courses, $tsdate, false) . "<br />\n";
             break;
 
         case 'disableenrols':
-            batchaction_disable_enrols($courses, false);
+            $msg .= batchaction_disable_enrols($courses, false) . "<br />\n";
             break;
       
         case 'backup':
-            $msg = batchaction_backup($courses, false);            
+            $msg .= batchaction_backup($courses, false) . "<br />\n";
             break;
     }
-}
+} // foreach (actionchecks)
 
 $form = new course_batch_search_form();
 $data = $form->get_data();
@@ -108,6 +110,10 @@ admin_externalpage_setup('coursebatchactions', '', array(), $CFG->wwwroot . '/ad
 $settingsnode = $PAGE->settingsnav->find_active_node();
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string("coursebatchactions", 'tool_up1_batchprocess'));
+
+echo $OUTPUT->box_start('boxaligncenter generalbox');
+echo $msg;
+echo $OUTPUT->box_end();
 
 if (empty($courses)) {
     if (is_array($courses)) {
@@ -152,24 +158,29 @@ if (empty($courses)) {
             <fieldset><legend><?php echo get_string('actions'); ?></legend>
                 <ul>
                     <li>
-                        <button name="action" value="close"><?php echo get_string('close', 'tool_up1_batchprocess'); ?></button>
+                        <input type="checkbox" name="actioncheck[]" value="close" />
+                            <?php echo get_string('close', 'tool_up1_batchprocess'); ?>
                     </li>
                     <li>
-                        <button name="action" value="open"><?php echo get_string('open', 'tool_up1_batchprocess'); ?></button>
+                        <input type="checkbox" name="actioncheck[]" value="open" />
+                            <?php echo get_string('open', 'tool_up1_batchprocess'); ?>
                     </li>
                     <li>
+                        <input type="checkbox" name="actioncheck[]" value="prefix">
                         <input type="text" name="batchprefix" />
-                        <button name="action" value="prefix"><?php echo get_string('prefix', 'tool_up1_batchprocess'); ?></button>
+                        <?php echo get_string('prefix', 'tool_up1_batchprocess'); ?>
                     </li>
                     <li>
+                        <input type="checkbox" name="actioncheck[]" value="suffix">
                         <input type="text" name="batchsuffix" />
-                        <button name="action" value="suffix"><?php echo get_string('suffix', 'tool_up1_batchprocess'); ?></button>
+                        <?php echo get_string('suffix', 'tool_up1_batchprocess'); ?>
                     </li>
                     <li>
+                        <input type="checkbox" name="actioncheck[]" value="regexp" />
                         s/<input type="text" name="batchregexp" value="<?php echo htmlspecialchars($regexp); ?>" />/
                         <input type="text" name="batchreplace" value="<?php echo htmlspecialchars($replace); ?>" />/
-                        <button name="action" value="regexp">Regexp</button>
-                        <?php if ($action === 'regexp') { ?>
+                        Regexp
+                        <?php if (in_array('regexp', $actionchecks)) { ?>
                         <label>
                             <input type="checkbox" name="batchconfirm" value="1" />
                             <?php echo get_string('confirm'); ?>
@@ -177,24 +188,27 @@ if (empty($courses)) {
                         <?php } ?>
                     </li>
                     <li>
+                        <input type="checkbox" name="actioncheck[]" value="substitute" />
                         <?php
                         $roles = get_assignableroles();
                         echo "Substituer " . html_select('batchsubstfrom', $roles) . " par " . html_select('batchsubstto', $roles) ;
-                        echo '<button name="action" value="substitute">' . 'Substituer' . '</button>';
                         ?>
                     </li>
                     <li>
+                        <input type="checkbox" name="actioncheck[]" value="archdate">
                         <input type="text" value="<?php echo isoDate(); ?>" name="batcharchdate" />
-                        <button name="action" value="archdate">Date archivage</button>
+                        Date archivage
                     </li>
                     <li>
-                        <button name="action" value="disableenrols">Désactiver les inscriptions</button>
+                        <input type="checkbox" name="actioncheck[]" value="disableenrols" />
+                        Désactiver les inscriptions
                     </li>
                     <li>
-                        <button name="action" value="backup">Archiver</button>
-                        <?php echo " dans " . get_config('backup', 'backup_auto_destination'); ?>
+                        <input type="checkbox" name="actioncheck[]" value="backup" />
+                        <?php echo "Archiver dans " . get_config('backup', 'backup_auto_destination'); ?>
                     </li>                    
                 </ul>
+                <input type="submit" name="Exec" value="Exécuter" />
             </fieldset>
         </div>
     </form>

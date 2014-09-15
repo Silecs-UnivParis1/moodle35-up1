@@ -29,11 +29,13 @@ global $redirectUrl, $DB, $CFG;
         // $course->shortname = $prefix . $course->shortname;
         $DB->update_record('course', $course);
      }
+    $msg = count($courses) . " cours préfixés.";
     if ($redirect) {
         redirect($redirectUrl);
         exit();
         }
     }
+    return $msg;
 }
 
 /**
@@ -51,11 +53,13 @@ global $redirectUrl, $DB, $CFG;
         // $course->shortname = $course->shortname . $suffix;
         $DB->update_record('course', $course);
      }
+    $msg = count($courses) . " cours suffixés.";
     if ($redirect) {
         redirect($redirectUrl);
         exit();
         }
     }
+    return $msg;
 }
 
 /**
@@ -73,10 +77,12 @@ global $redirectUrl, $DB, $CFG;
         // $course->shortname = preg_replace('/' . $regexp . '/', $replace, $course->shortname);
         $DB->update_record('course', $course);
     }
+    $msg = count($courses) . " renommés par expression rationnelle.";
     if ($redirect) {
         redirect($redirectUrl);
         exit();
     }
+    return $msg;
 }
 
 /**
@@ -87,16 +93,17 @@ global $redirectUrl, $DB, $CFG;
 function batchaction_visibility($courses, $visible, $redirect) {
 global $redirectUrl, $DB, $CFG;
 
+$visibility = array(0 => 'fermé', 1 => 'ouvert');
     foreach ($courses as $course) {
         $course->visible = $visible;
         $DB->update_record('course', $course);
     }
-    $msg = "Mise à jour de " . count($courses) . " cours." ;
-    /** @todo flash message */
+    $msg = "Mise à jour de " . count($courses) . " cours en <b>" . $visibility[$visible] . "</b>." ;
     if ($redirect) {
         redirect($redirectUrl);
         exit();
     }
+    return $msg;
 }
 
 
@@ -122,11 +129,11 @@ global $redirectUrl, $DB, $CFG, $USER;
         }
     }
     $msg = "$modifiedroles substitutions dans " . count($courses) . " cours." ;
-    /** @todo flash message */
     if ($redirect) {
         redirect($redirectUrl);
         exit();
     }
+    return $msg;
 }
 
 
@@ -143,11 +150,11 @@ global $redirectUrl, $DB, $CFG;
         up1_meta_set_data($course->id, 'datearchivage', $tsdate);
     }
     $msg = "Mise à jour de " . count($courses) . " cours." ;
-    /** @todo flash message */
     if ($redirect) {
         redirect($redirectUrl);
         exit();
     }
+    return $msg;
 }
 
 /**
@@ -173,11 +180,11 @@ global $redirectUrl, $DB, $CFG;
         }
     }
     $msg = "Désactivation de $cnt méthodes d'inscription dans " . count($courses) . " cours.";
-    /** @todo flash message */
     if ($redirect) {
         redirect($redirectUrl);
         exit();
     }
+    return $msg;
 }
 
 /**
@@ -220,7 +227,6 @@ global $redirectUrl, $CFG, $USER;
         $bc->destroy();
     }
     $msg = "Création de $cnt archives de cours (mbz) dans $dir.";
-    /** @todo flash message */
     if ($redirect) {
         redirect($redirectUrl);
         exit();
