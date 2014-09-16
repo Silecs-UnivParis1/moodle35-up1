@@ -262,23 +262,3 @@ function isoDateToTs($date) {
 function isoDate() {
     return date('Y-m-d');
 }
-
-/*
- * returns a list of roles assignable in a course context, for substitution (dropdown list)
- */
-function get_assignableroles() {
-    global $DB;
-    $assignableroles = array_values(get_roles_for_contextlevels(CONTEXT_COURSE));
-    $sql = 'SELECT id, name FROM {role} WHERE id IN (' . implode(', ', $assignableroles) . ')';
-    $menuroles = $DB->get_records_sql_menu($sql);
-    return $menuroles;
-}
-
-function html_select($name, $array) {
-    $res = '<select name="' . $name . '">';
-    foreach ($array as $key => $value) {
-        $res .= '<option value="' . $key . '">' . $value . '</option>';
-    }
-    $res .= '</select>';
-    return $res;
-}

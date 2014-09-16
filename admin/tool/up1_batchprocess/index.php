@@ -14,9 +14,8 @@ require_once($CFG->dirroot . '/course/lib.php');
 require_once(__DIR__ . '/batch_form.php');
 require_once(__DIR__ . '/batch_lib.php');
 require_once(__DIR__ . '/batch_libactions.php');
-
+require_once(__DIR__ . '/locallib.php');
 global $DB, $PAGE;
-
 
 $actionchecks = optional_param('actioncheck', array(), PARAM_RAW);
 $coursesid = optional_param_array('c', array(), PARAM_INT);  // which courses to act on
@@ -94,6 +93,8 @@ foreach ($actionchecks as $action) {
     }
 } // foreach (actionchecks)
 
+
+
 $form = new course_batch_search_form();
 $data = $form->get_data();
 $totalcount = 0;
@@ -159,27 +160,28 @@ if (empty($courses)) {
                 <ul>
                     <li>
                         <input type="checkbox" name="actioncheck[]" value="close" />
-                            <?php echo get_string('close', 'tool_up1_batchprocess'); ?>
+                        Fermer
                     </li>
                     <li>
                         <input type="checkbox" name="actioncheck[]" value="open" />
-                            <?php echo get_string('open', 'tool_up1_batchprocess'); ?>
+                        Ouvrir
                     </li>
-                    <li>
+
+                    <li style="margin-top:1ex">
                         <input type="checkbox" name="actioncheck[]" value="prefix">
-                        <input type="text" name="batchprefix" />
-                        <?php echo get_string('prefix', 'tool_up1_batchprocess'); ?>
+                        Préfixer avec
+                        <input type="text" name="batchprefix" size="50" value="<?php echo default_prefix(); ?> "/>
                     </li>
                     <li>
                         <input type="checkbox" name="actioncheck[]" value="suffix">
-                        <input type="text" name="batchsuffix" />
-                        <?php echo get_string('suffix', 'tool_up1_batchprocess'); ?>
+                        Suffixer avec
+                        <input type="text" name="batchsuffix" size="50" />
                     </li>
                     <li>
                         <input type="checkbox" name="actioncheck[]" value="regexp" />
-                        s/<input type="text" name="batchregexp" value="<?php echo htmlspecialchars($regexp); ?>" />/
-                        <input type="text" name="batchreplace" value="<?php echo htmlspecialchars($replace); ?>" />/
-                        Regexp
+                        Renommer par Regexp
+                        s/<input type="text" name="batchregexp" size="40" value="<?php echo htmlspecialchars($regexp); ?>" />/
+                        <input type="text" name="batchreplace" size="40" value="<?php echo htmlspecialchars($replace); ?>" />/
                         <?php if (in_array('regexp', $actionchecks)) { ?>
                         <label>
                             <input type="checkbox" name="batchconfirm" value="1" />
@@ -187,17 +189,20 @@ if (empty($courses)) {
                         </label>
                         <?php } ?>
                     </li>
-                    <li>
+
+                    <li style="margin-top:1ex">
                         <input type="checkbox" name="actioncheck[]" value="substitute" />
                         <?php
                         $roles = get_assignableroles();
-                        echo "Substituer " . html_select('batchsubstfrom', $roles) . " par " . html_select('batchsubstto', $roles) ;
+                        $default = default_subst_roles();
+                        echo "Substituer " . html_select('batchsubstfrom', $roles, $default['from']);
+                        echo " par " . html_select('batchsubstto', $roles, $default['to']) ;
                         ?>
                     </li>
                     <li>
                         <input type="checkbox" name="actioncheck[]" value="archdate">
+                        Archiver en date du
                         <input type="text" value="<?php echo isoDate(); ?>" name="batcharchdate" />
-                        Date archivage
                     </li>
                     <li>
                         <input type="checkbox" name="actioncheck[]" value="disableenrols" />
