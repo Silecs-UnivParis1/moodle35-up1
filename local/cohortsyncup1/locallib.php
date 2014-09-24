@@ -9,6 +9,7 @@
  */
 
 require_once($CFG->dirroot . '/cohort/lib.php');
+require_once($CFG->dirroot . '/local/cohortsyncup1/libwsgroups.php');
 require_once($CFG->dirroot . '/local/cohortsyncup1/lib.php');
 
 /**
@@ -63,30 +64,6 @@ function safe_delete_cohort($cohortid) {
         cohort_delete_cohort($cohort);
         return true;
     }
-}
-
-
-/**
- * Get data from webservice - a wrapper around curl_exec
- * @param string $webservice URL of the webservice
- * @return array($curlinfo, $data)
- */
-function get_ws_data($webservice) {
-    $wstimeout = 5;
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $wstimeout);
-    curl_setopt($ch, CURLOPT_URL, $webservice);
-    $data = json_decode(curl_exec($ch));
-    // $data = array( stdClass( $key => '...', $name => '...', $modifyTimestamp => 'ldapTime', $description => '...')
-
-    $curlinfo = curl_getinfo($ch);
-    if ($data === null) {
-        $dump = var_export($curlinfo, true);
-        throw new coding_exception("webservice does NOT work", $dump);
-    }
-    curl_close($ch);
-    return array($curlinfo, $data);
 }
 
 /**
@@ -216,35 +193,6 @@ function process_cohort($cohort, $verbose, $ldaptimelast) {
             return 'noop';
         }
     }
-}
-
-
-/**
- * Debug / display results of webservice
- * @global type $CFG
- * @global type $DB
- * @param integer $verbose
- */
-function display_cohorts_all_groups($verbose=2)
-{
-    global $CFG, $DB;
-    $ws_allGroups = get_config('local_cohortsyncup1', 'ws_allGroups');
-    // $ws_allGroups = 'http://ticetest.univ-paris1.fr/wsgroups/allGroups';
-    $count = 0;
-    list($curlinfo, $data) = get_ws_data($ws_allGroups, 'ws_allGroups');
-
-    if ($data) {
-        progressBar($verbose, 1, "\nParsing " . count($data) . " cohorts. \n");
-        foreach ($data as $cohort) {
-            $count++;
-            progressBar($verbose, 2, '.');
-            progressBar($verbose, 3, "$count." . $cohort->key . "\n");
-        } // foreach($data)
-        echo "\nAll cohorts parsed.\n";
-    } else {
-        echo "\nUnable to fetch data from: " . $ws_allGroups . "\n" ;
-    }
-    progressBar($verbose, 2, "\n\nCurl diagnostic:\n" . print_r($curlinfo, true));
 }
 
 
@@ -507,12 +455,6 @@ function cohort_statistics_by($field) {
     $sql = "SELECT " . $field .", COUNT(id) AS cnt FROM {cohort} GROUP BY " . $field;
     $res = $DB->get_records_sql_menu($sql);
     return $res;
-}
-
-function progressBar($verb, $verbmin, $text) {
-    if ($verb >= $verbmin) {
-        echo $text;
-    }
 }
 
 /**

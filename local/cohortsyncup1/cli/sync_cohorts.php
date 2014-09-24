@@ -79,7 +79,7 @@ $CFG->debug = DEBUG_NORMAL;
 
 
 if ( $options['testws'] ) {
-    display_cohorts_all_groups($options['verb']);
+    display_all_groups($options['verb']);
     return 0;
 }
 
