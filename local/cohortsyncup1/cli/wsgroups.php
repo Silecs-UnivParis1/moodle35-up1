@@ -63,5 +63,8 @@ if ( $options['displaygroups'] ) {
 if ( $options['related'] ) {
     $rgroups = get_related_groups($options['related']);
     print_r($rgroups);
+    $rcohorts = get_related_cohorts($options['related']);
+    print_r($rcohorts);
+
     return 0;
 }
