@@ -87,8 +87,9 @@ function display_all_groups($verbose=2)
 
 
 /**
- *
- * @param string $key (generally, derived from pogee code) ; ex. "groups-mati0938B05"
+ * get related groups (from the up1 webservice)
+ * @param string $key (generally, derived from Apogee code) ; ex. "groups-mati0938B05"
+ * @return array('sub' => $subgroups, 'super' => $supergroups)
  */
 function get_related_groups($key) {
 
@@ -109,13 +110,38 @@ function get_related_groups($key) {
     return array('sub' => $subgroups, 'super' => $supergroups);
 }
 
-
+/**
+ * get related cohorts : use the previous function get_related_groups()
+ * and postprocess the result to return only the cohorts in local database
+ * @param string $key (generally, derived from Apogee code) ; ex. "groups-mati0938B05"
+ * @return array(associative array)
+ */
 function get_related_cohorts($key) {
+    global $DB;
     $relatedgroups = get_related_groups($key);
 
     $flatrelated = array_merge(array($key), $relatedgroups['sub'], $relatedgroups['super']);
-    var_dump($flatrelated);
+    // var_dump($flatrelated);
 
+    $insql = "('" . join("','" , $flatrelated) . "')";
+    $sql = "SELECT id, name, idnumber, description, descriptionformat, up1category "
+         . "FROM {cohort} WHERE up1key IN " . $insql . " ORDER BY name";
+    $records = $DB->get_records_sql($sql);
+    $groups = array();
+    $order = 0;
+    foreach ($records as $record) {
+        $order++;
+        $size = $DB->count_records('cohort_members', array('cohortid' => $record->id));
+        $groups[] = array(
+                'key' => $record->idnumber,
+                'name' => $record->name,
+                'description' => format_text($record->description, $record->descriptionformat),
+                'category' => $record->up1category,
+                'size' => $size,
+                'order' => $order
+        );
+    }
+    return $groups;
 }
 
 
