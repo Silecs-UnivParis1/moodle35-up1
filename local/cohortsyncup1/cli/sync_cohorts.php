@@ -46,7 +46,6 @@ Options:
 -h, --help            Print out this help
 
 --printlast           Display last syncs (diagnostic)
---testws              Test the webservice (data download), to use with --verb= 1 to 3
 --verb=N              Verbosity (0 to 3), 1 by default
 --check               Performs various checkings on database consistency and display results
 --stats               Display various statistics
@@ -76,12 +75,6 @@ if ( ! empty($options['help']) ) {
 
 // Ensure errors are well explained
 $CFG->debug = DEBUG_NORMAL;
-
-
-if ( $options['testws'] ) {
-    display_all_groups($options['verb']);
-    return 0;
-}
 
 if ( $options['check'] ) {
     check_database($options['verb']);
