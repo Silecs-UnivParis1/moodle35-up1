@@ -116,7 +116,7 @@ class mws_search_groups
         if (!$cwhere) {
             return array();
         }
-        $sql = "SELECT id, name, idnumber, description, descriptionformat FROM {cohort} WHERE "
+        $sql = "SELECT id, name, idnumber, description, descriptionformat, up1category FROM {cohort} WHERE "
             . "( name LIKE ? OR idnumber LIKE ? ) AND (" . join(' OR ', $cwhere) . ')' ;
         if (!$this->archives) {
             $sql .= " AND up1key <> '' ";
@@ -132,7 +132,7 @@ class mws_search_groups
                 'key' => $record->idnumber,
                 'name' => $record->name,
                 'description' => format_text($record->description, $record->descriptionformat),
-                'category' => groupKeyToCategory($record->idnumber),
+                'category' => $record->up1category,
                 'size' => $size,
                 'order' => $order
             );
@@ -196,7 +196,7 @@ function mws_userGroupsId($uid) {
     $user = $DB->get_record('user', array('username' => $uid), 'id', MUST_EXIST);
     // on évite une 2e jointure dans la requête suivante, qui ralentit considérablement
     $groups = array();
-    $sql = "SELECT c.id, c.name, c.idnumber, c.description, c.descriptionformat "
+    $sql = "SELECT c.id, c.name, c.idnumber, c.description, c.descriptionformat, c.up1category "
         . "FROM {cohort} c JOIN {cohort_members} cm ON (cm.cohortid = c.id) "
         . "WHERE userid = ?";
 
@@ -207,7 +207,7 @@ function mws_userGroupsId($uid) {
             'key' => $record->idnumber,
             'name' => $record->name,
             'description' => format_text($record->description, $record->descriptionformat),
-            'category' => groupKeyToCategory($record->idnumber),
+            'category' => $record->up1category,
             'size' => $size
         );
      }
