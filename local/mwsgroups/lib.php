@@ -48,7 +48,7 @@ class mws_search_groups
     public $archives = true;
 
     /**
-     * @var string of semicolumn-delimited codes, ex. "0934B05;0938B05"
+     * @var string of semicolumn-delimited codes, ex. "0934B05,0938B05"
      */
     public $up1code = '';
 
@@ -91,7 +91,7 @@ class mws_search_groups
      * @return array groups
      */
     public function search_related_groups() {
-        $up1codes = explode(';', $this->up1code);
+        $up1codes = explode(',', $this->up1code);
         $groups = array();
 
         foreach ($up1codes as $code) {
