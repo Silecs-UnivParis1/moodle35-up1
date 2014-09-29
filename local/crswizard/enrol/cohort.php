@@ -59,6 +59,16 @@ $myconfig = new my_elements_config();
 $labels = $myconfig->role_cohort;
 $roles = wizard_role($labels);
 
+
+//var_dump($SESSION->wizard['form_step2']['all-rof']);
+$up1codes = array(); // Apogee codes to find related groups and suggest them to user
+if (isset($SESSION->wizard['form_step2']['all-rof'])) {
+    $rattachements = $SESSION->wizard['form_step2']['all-rof'];
+    foreach ($rattachements as $path => $rattachement) {
+        $up1codes[] = $rattachement['object']->code;
+    }
+}
+
 if (isset($SESSION->wizard['form_step5']['groupmsg'])) {
     $msgcohorts = $SESSION->wizard['form_step5']['groupmsg'];
    foreach ($msgcohorts as $role => $msg) {
@@ -114,7 +124,7 @@ jQuery(document).ready(function () {
             nbi = chaine.match(reg);
             return nameg  + ' — ' + nbi +' (' + label + ')';
         },
-        showRelatedGroupsOnEmpty: <?php echo json_encode(array('0934B05','0938B05')); ?>
+        showRelatedGroupsOnEmpty: <?php echo json_encode($up1codes); ?>,
         preSelected: <?php echo wizard_preselected_cohort(); ?>
     });
 
