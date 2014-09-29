@@ -114,6 +114,7 @@ jQuery(document).ready(function () {
             nbi = chaine.match(reg);
             return nameg  + ' — ' + nbi +' (' + label + ')';
         },
+        showRelatedGroupsOnEmpty: <?php echo json_encode(array('0934B05','0938B05')); ?>
         preSelected: <?php echo wizard_preselected_cohort(); ?>
     });
 

@@ -18,6 +18,7 @@
     var defaultSettings = {
         urlGroups: 'http://wsgroups.univ-paris1.fr/search',
         urlUserToGroups: 'http://wsgroups.univ-paris1.fr/userGroupsId',
+        showRelatedGroupsOnEmpty: [], // array of codes, or string separated with , or ;
         minLength: 4,
         wsParams: { maxRows: 10 }, // default parameters for the web service (cf userMaxRows, groupMaxRows)
         moreRows: 50, // when requesting more results, larger than maxRows
@@ -38,6 +39,9 @@
         }
         if (!('groupMaxRows' in settings.wsParams)) {
             settings.wsParams.groupMaxRows = settings.wsParams.maxRows
+        }
+        if (typeof settings.showRelatedGroupsOnEmpty === 'string') {
+            settings.showRelatedGroupsOnEmpty = settings.showRelatedGroupsOnEmpty.split(/[;,]/);
         }
 
         return this.each(function() {
@@ -121,6 +125,21 @@
                 close: function () {},
                 minLength: $this.settings.minLength
             }).data("autocomplete")._renderItem = customRenderItem;
+            if ($this.settings.showRelatedGroupsOnEmpty.length > 0) {
+                var ac = $this.input.data("autocomplete");
+                var showRelatedGroups = function() {
+                    if ($this.input.val() === '' && ac.pending === 0) {
+                        ac.pending++;
+                        ac.element.addClass( "ui-autocomplete-loading" );
+                        ac.cancelSearch = false;
+                        ac.source( { term: '', "up1code": $this.settings.showRelatedGroupsOnEmpty }, ac._response() );
+                    }
+                };
+
+                console.log($this.settings.showRelatedGroupsOnEmpty);
+                $this.input.on('focus', showRelatedGroups);
+                $this.input.on('keyup', showRelatedGroups);
+            }
         },
 
         addSelected: function(field, val) {
@@ -190,16 +209,20 @@
                 if ('groupMaxRows' in wsParams) {
                     wsParams.groupMaxRows++;
                 }
+                if ("up1code" in request) {
+                    wsParams.up1code = request.up1code.join(",");
+                }
                 $.ajax({
                     url: settings.urlGroups,
                     dataType: settings.dataType,
                     data: wsParams,
                     success: function (data) {
                         var groups = sortByCategory(data.groups);
+                        var related = ('related' in data) && data.related;
                         transformGroupItems(groups);
                         transformUserItems(data.users);
                         response($.merge(
-                            $this.prepareList(groups, 'Groupes', function (item) {
+                            $this.prepareList(groups, (related ? 'Groupes suggérés' : 'Groupes'), function (item) {
                                     return { label: $this.groupItemToLabel(item), value: item.key, source: 'groups', pre: item.pre, category: item.category };
                             }, settings.wsParams.groupMaxRows),
                             $this.prepareList(data.users, 'Personnes', function (item) {

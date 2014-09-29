@@ -87,14 +87,14 @@ class mws_search_groups
     }
 
     /**
-     * List the groups matching a course (Apogée) code, or list of codes
+     * List the groups matching a course code (Apogée) or a list of codes
+     *
+     * @param string $up1code
      * @return array groups
      */
-    public function search_related_groups() {
-        $up1codes = explode(',', $this->up1code);
+    static public function search_related_groups($up1code) {
         $groups = array();
-
-        foreach ($up1codes as $code) {
+        foreach (explode(',', $up1code) as $code) {
             $groups = array_merge($groups, get_related_cohorts('groups-mati' . $code));
         }
         return $groups;
