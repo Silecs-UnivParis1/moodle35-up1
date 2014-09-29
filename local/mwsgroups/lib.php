@@ -13,6 +13,7 @@
 define('MWS_SEARCH_MAXROWS', 100);
 
 require __DIR__ . '/lib_users.php';
+require_once($CFG->dirroot . '/local/cohortsyncup1/libwsgroups.php');
 
 class mws_search_groups
 {
@@ -47,6 +48,11 @@ class mws_search_groups
     public $archives = true;
 
     /**
+     * @var string of semicolumn-delimited codes, ex. "0934B05;0938B05"
+     */
+    public $up1code = '';
+
+    /**
      * List the users matching the criteria
      *
      * @return array users
@@ -76,6 +82,20 @@ class mws_search_groups
             $groups = $this->search_groups_all();
         } else {
             $groups = $this->search_groups_category($this->filtergroupcat);
+        }
+        return $groups;
+    }
+
+    /**
+     * List the groups matching a course (Apogée) code, or list of codes
+     * @return array groups
+     */
+    public function search_related_groups() {
+        $up1codes = explode(';', $this->up1code);
+        $groups = array();
+
+        foreach ($up1codes as $code) {
+            $groups = array_merge($groups, get_related_cohorts('groups-mati' . $code));
         }
         return $groups;
     }
