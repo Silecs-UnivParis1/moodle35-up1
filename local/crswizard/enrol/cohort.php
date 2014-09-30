@@ -60,12 +60,14 @@ $labels = $myconfig->role_cohort;
 $roles = wizard_role($labels);
 
 
-//var_dump($SESSION->wizard['form_step2']['all-rof']);
 $up1codes = array(); // Apogee codes to find related groups and suggest them to user
 if (isset($SESSION->wizard['form_step2']['all-rof'])) {
     $rattachements = $SESSION->wizard['form_step2']['all-rof'];
     foreach ($rattachements as $path => $rattachement) {
-        $up1codes[] = $rattachement['object']->code;
+        $up1code = $rattachement['object']->code;
+        if ($up1code != '') {
+            $up1codes[] = $up1code;
+        }
     }
 }
 
