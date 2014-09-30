@@ -8,7 +8,7 @@ $PAGE->set_context(context_system::instance());
 
 $callback = optional_param('callback', '', PARAM_ALPHANUMEXT); // if set, use jsonp instead of json
 
-$up1code = optional_param('up1code', '', PARAM_RAW);
+$up1code = optional_param('up1code', '', PARAM_RAW); // ex. "0934B05,0938B05"
 if ($up1code) {
     $res = array(
         'groups' => mws_search_groups::search_related_groups($up1code),

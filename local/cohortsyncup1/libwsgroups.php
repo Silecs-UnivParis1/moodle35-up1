@@ -116,12 +116,16 @@ function get_related_groups($key) {
  * @param string $key (generally, derived from Apogee code) ; ex. "groups-mati0938B05"
  * @return array(associative array)
  */
-function get_related_cohorts($key) {
+function get_related_cohorts($keys) {
     global $DB;
-    $relatedgroups = get_related_groups($key);
+    $flatrelated = array();
 
-    $flatrelated = array_merge(array($key), $relatedgroups['sub'], $relatedgroups['super']);
-    // var_dump($flatrelated);
+    foreach($keys as $key) {
+        $relatedgroups = get_related_groups($key);
+        $flatrelated = array_merge($flatrelated, array($key), $relatedgroups['sub'], $relatedgroups['super']);
+    }
+    $flatrelated = array_unique($flatrelated);
+    //var_dump($flatrelated);
 
     $insql = "('" . join("','" , $flatrelated) . "')";
     $sql = "SELECT id, name, idnumber, description, descriptionformat, up1category "

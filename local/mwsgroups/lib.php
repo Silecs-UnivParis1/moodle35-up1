@@ -89,14 +89,16 @@ class mws_search_groups
     /**
      * List the groups matching a course code (Apogée) or a list of codes
      *
-     * @param string $up1code
+     * @param string $up1code ex. "0934B05,0938B05"
      * @return array groups
      */
     static public function search_related_groups($up1code) {
         $groups = array();
+        $cohortkeys = array();
         foreach (explode(',', $up1code) as $code) {
-            $groups = array_merge($groups, get_related_cohorts('groups-mati' . $code));
+            $cohortkeys[] = 'groups-mati' . $code;
         }
+        $groups = get_related_cohorts($cohortkeys);
         return $groups;
     }
 
