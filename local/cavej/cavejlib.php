@@ -195,3 +195,48 @@ function cavej_get_categories_whith_courses($categories) {
     $courses = $DB->get_records_sql($sql);
     return $courses;
 }
+
+/**
+ * copie tous les enrolments de type cohort et manual de $oldcourse dans $newcourse
+ * @param object $oldcourse
+ * @param object $newcourse
+ */
+function cavej_enrolment($oldcourse, $newcourse) {
+    global $DB, $CFG;
+    $DB->delete_records('enrol', array('courseid' => $newcourse->id));
+
+    // anciens enrolments
+    $sql = "SELECT * FROM {enrol} WHERE courseid=" . $oldcourse->id . " AND status=0 "
+        . " AND enrol IN ('cohort', 'manual') ORDER BY sortorder";
+    $enrols = $DB->get_records_sql($sql);
+
+    if ($enrols == FALSE || count($enrols)==0) {
+        return 0;
+    }
+    $oldcontext = context_course::instance($oldcourse->id);
+    foreach ($enrols as $enrol) {
+        $enrol->courseid = $newcourse->id;
+        $enrol->timemodified = time();
+        $enrol->timecreated = $enrol->timemodified;
+        $enrol->sortorder = $DB->get_field('enrol', 'COALESCE(MAX(sortorder), -1) + 1', array('courseid' => $newcourse->id));
+        $DB->insert_record('enrol', $enrol);
+        if ($enrol->enrol == 'cohort') {
+            require_once("$CFG->dirroot/enrol/cohort/locallib.php");
+            $trace = new null_progress_trace();
+            enrol_cohort_sync($trace, $newcourse->id);
+        } elseif ($enrol->enrol == 'manual') {
+            require_once("$CFG->dirroot/lib/enrollib.php");
+            $sql = "SELECT * FROM {user_enrolments} WHERE status=0 AND enrolid=" . $enrol->id;
+            $manuals = $DB->get_records_sql($sql);
+            if ($manuals != FALSE && count($manuals)) {
+                foreach ($manuals as $manual) {
+                    $sql = "select roleid from {role_assignments} WHERE userid=".$manual->userid." AND contextid=" . $oldcontext->id;
+                    $roleid = $DB->get_field_sql($sql);
+                    if ($roleid) {
+                        enrol_try_internal_enrol($newcourse->id, $manual->userid, $roleid);
+                    }
+                }
+            }
+        }
+    }
+}
