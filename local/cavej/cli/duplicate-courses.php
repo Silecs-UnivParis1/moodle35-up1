@@ -78,13 +78,15 @@ if ( $options['duplication'] ) {
     $nbcourse = 0;
     if ($oldcourse) {
         foreach ($oldcourse as $course) {
+            $sortname = $course->shortname;
             $newcourse = cavej_duplicate_course($course, $mydup->correspondance[$course->category]);
             if ($newcourse) {
+                cavej_rename_shortname($course, $newcourse, $sortname);
                 cavej_enrolment($course, $newcourse);
                 ++$nbcourse;
-                echo "\n" . $nbcourse . " : Création du cours [".$newcourse->id."] : " . $newcourse->shortname . "\n\n";
+                echo "\n" . $nbcourse . " : Création du cours [".$newcourse->id."] : " . $sortname . "\n\n";
             } else {
-                echo "\n ATTENTION : Problème avec le cours [" . $course->id . "] - " . $course->shortname . "\n\n";
+                echo "\n ATTENTION : Problème avec le cours [" . $course->id . "] - " . $sortname . "\n\n";
             }
         }
     }

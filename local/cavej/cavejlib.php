@@ -240,3 +240,17 @@ function cavej_enrolment($oldcourse, $newcourse) {
         }
     }
 }
+
+/**
+ * patch permettant de modifier les shortname de $oldcourse et $newcourse
+ */
+function cavej_rename_shortname($oldcourse, $newcourse, $shortname) {
+    global $DB;
+    $oldname = $shortname . '-old';
+    $sql = "SELECT count(id) FROM {course} WHERE shortname like ?";
+    $nb = $DB->get_field_sql($sql, array($oldname . "%"));
+    $oldname .= ($nb==0?'':$nb);
+
+    $DB->execute("UPDATE {course} SET shortname = ? WHERE id = ?", array($oldname, $oldcourse->id));
+    $DB->execute("UPDATE {course} SET shortname = ? WHERE id = ?", array($shortname, $newcourse->id));
+}
