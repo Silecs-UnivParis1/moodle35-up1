@@ -2134,6 +2134,9 @@
         <FIELD NAME="component" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Component (plugintype_pluignname) that manages the cohort, manual modifications are allowed only when set to NULL"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="up1category" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="one among structures, affiliation, diploma, gpelp, gpetp, elp"/>
+        <FIELD NAME="up1period" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="year (of the beginning, eg 2014 for 2014-2015)"/>
+        <FIELD NAME="up1key" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="like idnumber if synchro, or empty otherwise"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
