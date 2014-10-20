@@ -65,4 +65,13 @@ if (has_capability('moodle/site:config', context_system::instance())) {
             $etab);
     $cas2_default_etablissement->plugin = 'local_crswizard';
     $settings->add($cas2_default_etablissement);
+
+    //autovalidation permise
+    $autovalidation = new admin_setting_configcheckbox(
+        'course_autovalidation',
+        'Autovalidation possible',
+        'Permet à l\'utilisateur de valider son cours',
+        1);
+    $autovalidation->plugin = 'local_crswizard';
+    $settings->add($autovalidation);
 }
