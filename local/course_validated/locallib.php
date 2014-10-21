@@ -354,9 +354,10 @@ function show_or_hide($show, $hide) {
 
 /**
  * validate a course (set the custom data up1validatedate to time()
- * @param int $crsid identifiant du cours à valider
+ * @param int $crsid id of course to validate
+ * @return boolean
  */
-function validate_course ($crsid) {
+function validate_course($crsid) {
 	global $DB, $USER;
 
 	$iddate = up1_meta_get_id($crsid, 'datevalid');
@@ -368,10 +369,20 @@ function validate_course ($crsid) {
     }
     $DB->update_record('custom_info_data', array('id' => $iddate, 'data' => time()));
     $DB->update_record('custom_info_data', array('id' => $idwho, 'data' => $USER->id));
-    add_to_log($crsid, 'course_validated', 'validate', '/local/course_validated/index.php', 'course validated by user ' . $USER->id);
+    add_to_log($crsid, 'course_validated', 'validate', '/local/course_validated/index.php', 
+            'course validated by user ' . $USER->id);
+    send_notification_validation($crsid);
+    return true;
+}
 
-
-    // Validation Notification
+/**
+ * send an internal message when a course has been validated
+ * @param int $crsid id of validated course
+ * @return boolean
+ */
+function send_notification_validation($crsid) {
+    global $DB;
+    
     $msg = message_notification_validation($crsid);
     $summary = $DB->get_field('crswizard_summary', 'txt', array('courseid' => $crsid)); //récapitulatif
     $DB->delete_records('crswizard_summary', array('courseid' => $crsid));
@@ -406,7 +417,11 @@ function validate_course ($crsid) {
     return true;
 }
 
-
+/**
+ * compose the validation notification message
+ * @param int $crsid
+ * @return array $res = array('subject' => '...', 'body' => '...')
+ */
 function message_notification_validation ($crsid) {
     global $CFG;
     $site  = get_site();
