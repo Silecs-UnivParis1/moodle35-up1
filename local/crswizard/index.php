@@ -239,10 +239,29 @@ switch ($stepin) {
         $PAGE->requires->js_init_code(file_get_contents(__DIR__ . '/js/include-for-confirm.js'));
         break;
     case 8:
+        $autovalidation = false;
+        if (isset($SESSION->wizard['form_step3']['autovalidation'])) {
+            $autovalidation = true;
+        }
         $corewizard = new wizard_core($SESSION->wizard, $USER);
         $errorMsg = $corewizard->create_course_to_validate();
+
+        $nbsum = $DB->count_records('crswizard_summary', array('courseid' => $corewizard->course->id));
+        if ($nbsum > 0) {
+            $DB->delete_records('crswizard_summary', array('courseid' => $corewizard->course->id));
+        }
+
+        $recap = $corewizard->get_recapitulatif_demande();
+        if ($autovalidation == false) {
+            $record = new stdClass;
+            $record->courseid = $corewizard->course->id;
+            $record->txt = $recap;
+            $record->html = '';
+            $DB->insert_record('crswizard_summary', $record, false);
+        }
+
         // envoi message
-        $messages = $corewizard->get_messages();
+        $messages = $corewizard->get_messages($autovalidation);
         $remarques = '';
         if (isset($SESSION->wizard['form_step7']['remarques']) && $SESSION->wizard['form_step7']['remarques'] != '') {
             $remarques  .= "\n\n\n---------------\n"
@@ -251,17 +270,6 @@ switch ($stepin) {
             $remarques  .= "\n\n---------------\n\n";
         }
 
-        $nbsum = $DB->count_records('crswizard_summary', array('courseid' => $corewizard->course->id));
-        if ($nbsum > 0) {
-            $DB->delete_records('crswizard_summary', array('courseid' => $corewizard->course->id));
-        }
-
-        $recap = $corewizard->get_recapitulatif_demande();
-        $record = new stdClass;
-        $record->courseid = $corewizard->course->id;
-        $record->txt = $recap;
-        $record->html = '';
-        $DB->insert_record('crswizard_summary', $record, false);
 
         $messages['mgvalidator'] .= $remarques . $recap;
         $messages['mgcreator'] .= $remarques . $recap;
@@ -271,7 +279,11 @@ switch ($stepin) {
             $messages['mgcreator'] .= "\n\n\nErreur lors de la demande :\n" . $errorMsg;
         }
         // envoi des notification - messagerie interne
-        $corewizard->send_message_notification($corewizard->course->id, $messages['mgcreator'], $messages['mgvalidator']);
+        if ($autovalidation == true) {
+            $corewizard->send_message_autovalidation($corewizard->course->id, $messages['mgcreator']);
+        } else {
+            $corewizard->send_message_notification($corewizard->course->id, $messages['mgcreator'], $messages['mgvalidator']);
+        }
 
         unset($SESSION->wizard);
         $msgredirect = get_string('msgredirect', 'local_crswizard');

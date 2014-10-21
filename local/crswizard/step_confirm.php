@@ -136,6 +136,11 @@ class course_wizard_step_confirm extends moodleform {
                 $mform->setType('validator', PARAM_TEXT);
                 $mform->setConstant('validator' , fullname($validator));
             }
+        } elseif (!empty($SESSION->wizard['form_step3']['autovalidation'])) {
+            $mform->addElement('header', 'validators', get_string('selectedvalidator', 'local_crswizard') . ' : aucun');
+            $mform->addElement('text', 'validator', 'Autovalidation', 'size="60"');
+            $mform->setType('validator', PARAM_TEXT);
+            $mform->setConstant('validator' , 'Je suis responsable de cet enseignement');
         }
 
         if (isset($SESSION->wizard['form_step4']['all-users']) && is_array($SESSION->wizard['form_step4']['all-users'])) {

@@ -102,9 +102,10 @@ class wizard_core {
     /**
      * créé la partie variable (selon validateur ou créateur du message de
      * notification envoyé à la création du cours
+     * @param bool $autovalidation
      * @return array array("mgvalidator" => $mgv, "mgcreator" => $mgc);
      */
-    public function get_messages() {
+    public function get_messages($autovalidation) {
         global $CFG;
         $urlguide = $CFG->wwwroot .'/guide';
         $urlvalidator = $CFG->wwwroot .'/local/course_validated/index.php';
@@ -128,20 +129,26 @@ class wizard_core {
 
         $mgc = 'Bonjour,' . "\n\n";
         $mgc .= 'Vous venez de créer l\'espace de cours "' . $nomcours . '" sur la plateforme '. $CFG->wwwroot . "\n\n";
-        if (count($idval)) {
-            $mgc .= 'Votre demande a été transmise à ' . $idval['fullname'] . ', ainsi qu\'aux gestionnaires de '
-            . 'la plateforme pour approbation, avant son ouverture aux étudiants';
+        if ($autovalidation == false) {
+            if (count($idval)) {
+                $mgc .= 'Votre demande a été transmise à ' . $idval['fullname'] . ', ainsi qu\'aux gestionnaires de '
+                . 'la plateforme pour approbation, avant son ouverture aux étudiants';
+            } else {
+                $mgc .=  'Votre demande a été transmise aux gestionnaires de '
+                . 'la plateforme pour approbation, avant son ouverture aux étudiants.';
+            }
         } else {
-            $mgc .=  'Votre demande a été transmise aux gestionnaires de '
-            . 'la plateforme pour approbation, avant son ouverture aux étudiants.';
+            $mgc .= 'Votre cours n\'est pas encore ouvert aux étudiants';
         }
         $mgc .= "\n\n";
         $mgc .= 'Notez cependant que toutes les personnes auxquelles vous avez attribué '
             . 'des droits de contribution ont d\'ores et déjà la possibilité de s\'approprier ce nouvel espace de cours : '
             . 'personnaliser le texte de présentation, organiser et nommer à leur convenance '
             . 'les différentes sections, déposer des documents, etc.' . "\n\n";
-        $mgc .= 'Vous trouverez à cette adresse ' . $urlguide . ' des informations sur le processus d\'approbation des espaces '
-            . 'nouvellement créés.' . "\n\n";
+        if ($autovalidation == false) {
+            $mgc .= 'Vous trouverez à cette adresse ' . $urlguide . ' des informations sur le processus d\'approbation des espaces '
+                . 'nouvellement créés.' . "\n\n";
+        }
         $mgc .= 'N\'hésitez pas à contacter l\'un des membres de l\'équipe du service TICE :' . "\n";
         $mgc .= '- si vous souhaitez participer à l\'une des sessions de prise en mains régulièrement organisées ;' . "\n";
         $mgc .= '- si vous rencontrez une difficulté ou si vous constatez une anomalie de fonctionnement.' . "\n\n";
@@ -270,6 +277,15 @@ class wizard_core {
     private function set_metadata_cycle_life() {
         $this->mydata->profile_field_up1avalider = 1;
         $this->mydata->profile_field_up1datevalid = 0;
+
+        $form3 = $this->formdata['form_step3'];
+        // si autoevaluation
+        if (isset($form3['autovalidation'])) {
+            $this->mydata->profile_field_up1avalider = 0;
+            $this->mydata->profile_field_up1approbateureffid = $this->user->id;
+            $this->mydata->profile_field_up1datevalid = time();
+        }
+
         $this->mydata->profile_field_up1datedemande = time();
         $this->mydata->profile_field_up1demandeurid = $this->user->id;
         $this->mydata->profile_field_up1approbateurpropid = wizard_get_approbateurpropid();
@@ -750,6 +766,35 @@ class wizard_core {
         }
 
         // copie au demandeur
+        $eventdata->userto = $this->user;
+        $subject = $this->get_email_subject($idcourse, 'Création');
+        $eventdata->subject = $subject;
+        $eventdata->fullmessage = $mgc;
+        $eventdata->smallmessage = $mgc; // USED BY DEFAULT !
+        $res = message_send($eventdata);
+    }
+
+    /**
+    * envoie un message uniquement au créateur
+    * @param int $idcourse : identifiant du cours créé
+    * @param string $mgc destiné au demandeur
+    */
+    function send_message_autovalidation($idcourse, $mgc) {
+        $userfrom = new object();
+        static $supportuser = null;
+        if (!empty($supportuser)) {
+            $userfrom = $supportuser;
+        } else {
+            $userfrom = $this->user;
+        }
+
+        $subject = $this->get_email_subject($idcourse, $typeMessage);
+
+        $eventdata = new object();
+        $eventdata->component = 'moodle';
+        $eventdata->name = 'courserequested';
+        $eventdata->userfrom = $userfrom;
+        $eventdata->fullmessageformat = FORMAT_PLAIN;   // text format
         $eventdata->userto = $this->user;
         $subject = $this->get_email_subject($idcourse, 'Création');
         $eventdata->subject = $subject;

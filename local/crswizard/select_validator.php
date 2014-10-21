@@ -15,6 +15,8 @@ $systemcontext   = context_system::instance();
 
 wizard_require_permission('creator', $USER->id);
 
+$autovalidation = get_config('local_crswizard','course_autovalidation');
+
 $PAGE->set_context($systemcontext);
 $PAGE->set_url('/local/crswizard/index.php');
 $PAGE->set_title('Select validator');
@@ -35,6 +37,18 @@ echo '<form action="' . $CFG->wwwroot . '/local/crswizard/index.php" method="pos
 <div class="fitem">
 <fieldset class="clearfix" id="categoryheader">
     <legend class="ftoggler" ><?php echo get_string('selectedvalidator', 'local_crswizard');?></legend>
+    <?php
+        if ($autovalidation == 1) {
+            echo '<div class="fitem fitem_fcheckbox"><div class="fitemtitle">'
+                . '<label for="id_autovalidation">Je suis responsable de cet enseignement</label></div>'
+                . '<div class="felement fcheckbox"><span>'
+                . '<input type="checkbox" name="autovalidation" id="id_autovalidation" ';
+                if (isset($SESSION->wizard['form_step3']['autovalidation'])) {
+                    echo ' checked="checked" ';
+                }
+                echo '/></span></div></div>';
+        }
+    ?>
     <div class="fcontainer clearfix">
         <br/>
         <div id="user-select">
