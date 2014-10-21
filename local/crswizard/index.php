@@ -283,6 +283,14 @@ switch ($stepin) {
         break;
 }
 
+$PAGE->requires->js_init_code('
+    $(":submit").each(function() {
+        $(this).replaceWith(
+            $(this).clone().prop("type", "button").on("click", function() { $(this).closest("form").submit(); })
+        );;
+    });
+');
+
 $straddnewcourse = get_string("addnewcourse");
 $PAGE->navbar->add($straddnewcourse);
 
