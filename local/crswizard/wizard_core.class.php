@@ -780,6 +780,7 @@ class wizard_core {
     * @param string $mgc destiné au demandeur
     */
     function send_message_autovalidation($idcourse, $mgc) {
+        global $DB;
         $userfrom = new object();
         static $supportuser = null;
         if (!empty($supportuser)) {
@@ -788,7 +789,7 @@ class wizard_core {
             $userfrom = $this->user;
         }
 
-        $subject = $this->get_email_subject($idcourse, $typeMessage);
+        $subject = $this->get_email_subject($idcourse, 'Création');
 
         $eventdata = new object();
         $eventdata->component = 'moodle';
@@ -801,6 +802,19 @@ class wizard_core {
         $eventdata->fullmessage = $mgc;
         $eventdata->smallmessage = $mgc; // USED BY DEFAULT !
         $res = message_send($eventdata);
+
+        // envoi à helpdesk_user si définit dans crswizard.setting
+        $helpuser = get_config('local_crswizard', 'helpdesk_user');
+        if (isset($helpuser)) {
+            $userid = $DB->get_field('user', 'id', array('username' => $helpuser));
+            if ($userid) {
+                $mgccopie = 'Pour information : ' . "\n\n" . $mgc;
+                $eventdata->fullmessage = $mgccopie;
+                $eventdata->smallmessage = $mgccopie; // USED BY DEFAULT !
+                $eventdata->userto = $userid;
+                $res = message_send($eventdata);
+            }
+        }
     }
 
     //fonctions spécifiques update_course
