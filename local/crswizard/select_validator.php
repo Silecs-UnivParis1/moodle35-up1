@@ -23,12 +23,17 @@ $PAGE->set_title('Select validator');
 $PAGE->requires->js(new moodle_url('/local/jquery/jquery.js'), true);
 $PAGE->requires->js(new moodle_url('/local/jquery/jquery-ui.js'), true);
 $PAGE->requires->js(new moodle_url('/local/widget_teachersel/teachersel.js'), true);
+$PAGE->requires->js_init_code(file_get_contents(__DIR__ . '/js/include-for-validator.js'));
 $PAGE->requires->css(new moodle_url('/local/crswizard/css/crswizard.css'));
 
 echo $OUTPUT->header();
 echo $OUTPUT->box(get_string('wizardcourse', 'local_crswizard'), 'titlecrswizard');
 echo $OUTPUT->box(get_string('selectvalidator', 'local_crswizard'), 'titlecrswizard');
-echo $OUTPUT->box(get_string('bockhelpE3validator', 'local_crswizard'), '');
+if ($autovalidation == 1) {
+    echo $OUTPUT->box(get_string('bockhelpE3autovalidator', 'local_crswizard'), '');
+} else {
+    echo $OUTPUT->box(get_string('bockhelpE3validator', 'local_crswizard'), '');
+}
 
 
 echo '<form action="' . $CFG->wwwroot . '/local/crswizard/index.php" method="post" class="mform">';
@@ -39,6 +44,7 @@ echo '<form action="' . $CFG->wwwroot . '/local/crswizard/index.php" method="pos
     <legend class="ftoggler" ><?php echo get_string('selectedvalidator', 'local_crswizard');?></legend>
     <?php
         if ($autovalidation == 1) {
+            echo '<div class="fcontainer clearfix">Si vous êtes le responsable éditorial de l\'EPI, cochez la cas si dessous.</div>';
             echo '<div class="fitem fitem_fcheckbox"><div class="fitemtitle">'
                 . '<label for="id_autovalidation">Je suis responsable de cet enseignement</label></div>'
                 . '<div class="felement fcheckbox"><span>'
@@ -47,6 +53,8 @@ echo '<form action="' . $CFG->wwwroot . '/local/crswizard/index.php" method="pos
                     echo ' checked="checked" ';
                 }
                 echo '/></span></div></div>';
+            echo '<div class="fcontainer clearfix">Si vous créez cet EPI pour quelqu\'un d\'autre ou si vous êtes chargé de TD'
+                . ', veuillez rechercher le responsable de l\'enseignement puis l\'ajouter en approbateur sélectionné en cliquant sur le symbole +</div>';
         }
     ?>
     <div class="fcontainer clearfix">
