@@ -225,6 +225,14 @@ switch ($stepin) {
         break;
 }
 
+$PAGE->requires->js_init_code('
+    $(":submit").each(function() {
+        $(this).replaceWith(
+            $(this).clone().prop("type", "button").on("click", function() { $(this).closest("form").submit(); })
+        );;
+    });
+');
+
 $streditcoursesettings = get_string("editcoursesettings");
 $PAGE->navbar->add($streditcoursesettings);
 

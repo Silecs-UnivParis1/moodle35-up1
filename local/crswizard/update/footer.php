@@ -7,11 +7,18 @@ if ($SESSION->wizard['wizardcase'] == 3) {
 $stepin = $SESSION->wizard['navigation']['stepin'];
 $stepnext = $SESSION->wizard['navigation']['suite'];
 
+$PAGE->requires->js_init_code('
+    $(":submit").each(function() {
+        $(this).replaceWith(
+            $(this).clone().prop("type", "button").on("click", function() { $(this).closest("form").submit(); })
+        );;
+    });
+');
 ?>
 <div style="margin:50px; clear:both; text-align: center;">
     <input type="hidden" name="stepin" value="<?php echo $stepin; ?>"/>
     <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>"/>
-
+    <input type="hidden" name="step" value=""/>
     <div class="buttons">
         <span class="previousstage">
             <?php
