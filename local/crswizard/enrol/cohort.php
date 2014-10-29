@@ -64,7 +64,10 @@ $up1codes = array(); // Apogee codes to find related groups and suggest them to 
 if (isset($SESSION->wizard['form_step2']['all-rof'])) {
     $rattachements = $SESSION->wizard['form_step2']['all-rof'];
     foreach ($rattachements as $path => $rattachement) {
-        $up1code = $rattachement['object']->code;
+        $up1code = '';
+        if (isset($rattachement['object']->code)) {
+            $up1code = $rattachement['object']->code;
+        }
         if ($up1code != '') {
             $up1codes[] = $up1code;
         }
