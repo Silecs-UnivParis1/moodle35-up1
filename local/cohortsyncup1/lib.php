@@ -58,7 +58,13 @@ function get_equivalent_cohorts($old_idnumbers) {
                 $res['unchanged'][] = $idnumber;
             }
             else {
-                $potidnumber = cohort_raw_idnumber($idnumber) . '-' . $curyear;  // potential idnumber
+                $raw = cohort_raw_idnumber($idnumber);
+                $rawNew = $DB->get_field('up1_migrate_cohort_idnumber', 'new', array('old' => $raw));
+                if ($rawNew) {
+                    echo "$raw has changed code, it is now $rawNew\n";
+                    $raw = $rawNew;
+                }
+                $potidnumber = $raw . '-' . $curyear; // potential idnumber
                 if ( $DB->record_exists('cohort', array('idnumber' => $potidnumber)) ) {
                     $res['new'][] = $potidnumber;
                 } else {
