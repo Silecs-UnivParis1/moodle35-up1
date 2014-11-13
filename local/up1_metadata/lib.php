@@ -50,10 +50,11 @@ function up1_meta_html_multi($courseid, $field, $error=false, $prefix = '') {
     if (count($items) == 0) {
         return '—';
     }
+    $first = reset($items);
     if (count($items) == 1) {
-        return '<span>' . $prefix . $items[0] . '</span>';
+        return '<span>' . $prefix . $first . '</span>';
     }
-    $brief = $prefix . $items[0] . ' +';
+    $brief = $prefix . $first . ' +';
     $long = $prefix . join(', ' . $prefix, $items);
     return '<span title="' . $long . '">' . $brief . '</span>';
 }
