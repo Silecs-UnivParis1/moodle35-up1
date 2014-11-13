@@ -47,6 +47,7 @@
         $.ajax({
             'url': rootUrl + 'list.php',
             'type': 'GET',
+            dataType: "jsonp",
             data: criteria
         }).done(function(html) {
             $elem.html(html).find('table').dataTable(config);

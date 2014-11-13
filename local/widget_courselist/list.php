@@ -10,6 +10,7 @@ $perpage = 10;
 $search = new stdClass();
 
 $format = optional_param('format', 'table', PARAM_ALPHA);
+$callback = optional_param('callback', '', PARAM_ALPHANUMEXT); // if set, use jsonp instead of json
 $search->search          = optional_param('search', '', PARAM_RAW_TRIMMED);
 $search->startdateafter  = optional_param('startdateafter', '', PARAM_RAW_TRIMMED);
 $search->startdatebefore = optional_param('startdatebefore', '', PARAM_RAW_TRIMMED);
@@ -45,4 +46,11 @@ if (!empty($_GET['custom'])) {
 
 $PAGE->set_context(context_system::instance());
 
-echo widget_courselist_query($format, $search);
+$res = widget_courselist_query($format, $search);
+
+if (empty($callback)) {
+    echo $res;
+} else {
+    echo $callback . '(' . json_encode($res) . ');';
+}
+
