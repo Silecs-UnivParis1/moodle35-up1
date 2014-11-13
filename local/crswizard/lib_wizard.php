@@ -713,6 +713,21 @@ function wizard_role($labels) {
 }
 
 /**
+ * Construit le tableau des enseignants sélectionnés
+ * @return array
+ */
+function normalize_enrolment_users($tabUsers) {
+    if (isset($tabUsers['responsable_epi'])) {
+      foreach ($tabUsers['responsable_epi'] as $u) {
+	if (!isset($tabUsers['editingteacher']))
+	  $tabUsers['editingteacher'] = array();
+	$tabUsers['editingteacher'][] = $u;
+      }
+    }
+    return $tabUsers;
+}
+
+/**
  * Inscrit des utilisateurs à un cours sous le rôle sélectionné
  * @param int $courseid identifiant du cours
  * @param array $tabUsers array[rolename]=>array(iduser)
@@ -804,7 +819,7 @@ function wizard_get_enrolement_users() {
 function wizard_enrolement_user() {
     global $DB, $USER;
     $list = array();
-    $code = 'editingteacher';
+    $code = 'responsable_epi';
     $user = $DB->get_record('user', array('username' => $USER->username));
     $list[$code][$user->username] = $user;
     return $list;
@@ -1266,7 +1281,8 @@ class my_elements_config {
     );
     public $role_teachers = array(
         'editingteacher' => 'editingteacher',
-        'teacher' => 'noeditingteacher'
+        'teacher' => 'noeditingteacher',
+	'responsable_epi' => 'responsable_epi',
     );
     public $role_cohort = array(
         'student' => 'student',

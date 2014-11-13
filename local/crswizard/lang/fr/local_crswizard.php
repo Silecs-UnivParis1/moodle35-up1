@@ -149,7 +149,8 @@ $string['coursesettingshelp'] = 'Les dates ci-dessous sont purement informatives
     . 'et à la fin de la période d\'enseignement.';
 $string['coursestartdate'] = 'Date de début : ';
 $string['coursesummary'] = 'Texte de présentation : ';
-$string['editingteacher'] = 'Enseignant';
+$string['editingteacher'] = "Enseignant éditeur";
+$string['responsable_epi'] = "Enseignant responsable EPI";
 $string['enrolcohorts'] = 'Étape 5 - inscription des groupes étudiants';
 $string['enrolkey'] = 'Clé d\'inscription';
 $string['enrolteachers'] = 'Étape 4 - désignation des contributeurs enseignants';

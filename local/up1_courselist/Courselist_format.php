@@ -24,6 +24,7 @@ class courselist_format {
     private $footer;
 
     private $role;
+    private $responsable;
     private $courseboard; /** bool : only if supervalidator */
 
     /**
@@ -75,6 +76,7 @@ EOL;
         }
 
         $this->role = $DB->get_record('role', array('shortname' => 'editingteacher'));
+        $this->responsable = $DB->get_record('role', array('shortname' => 'responsable_epi'));
         // disabled for complete compatibility with filter cache, which cannot depend upon user
         // $this->courseboard = has_capability('local/crswizard:supervalidator', context_system::instance());
         $this->courseboard = false;
@@ -179,12 +181,26 @@ EOL;
     public function format_teachers($dbcourse, $class, $number=1) {
         $context = context_course::instance($dbcourse->id);
         $teachers = get_role_users($this->role->id, $context);
+        $responsables = get_role_users($this->responsable->id, $context);
+        
+        $titleteachers = array();
+        foreach ($responsables as $e) { 
+           $titleteachers[$e->id] = 'Responsable EPI ' . fullname($e);
+        }
+        foreach ($teachers as $e) { 
+           if (!isset($titleteachers[$e->id]))
+              $titleteachers[$e->id] = 'Enseignant éditeur ' . fullname($e); 
+        }
 
-        $dispteachers = array_slice($teachers, 0, $number);
-        $headteachers = join(', ', array_map('fullname', $dispteachers)) . (count($teachers) > $number ? ', …' : '');
-        $titleteachers = join(', ', array_map('fullname', $teachers));
+        if (!$responsables) {
+	   $responsables = $teachers;
+	}
+
+        $dispteachers = array_slice($responsables, 0, $number);
+        $headteachers = join(', ', array_map('fullname', $dispteachers)) . (count($responsables) > $number ? ', …' : '');
+
         $fullteachers = '<' . $this->cellelem . ' class="' . $class . '">'
-                . '<span style="cursor: default;" title="' . $titleteachers . '">'
+                . '<span style="cursor: default;" title="' . join(', ', $titleteachers) . '">'
                 . $headteachers
                 . '</span>'
                 . '</' . $this->cellelem . '>';

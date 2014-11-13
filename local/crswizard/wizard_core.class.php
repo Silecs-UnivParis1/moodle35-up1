@@ -74,6 +74,7 @@ class wizard_core {
         // inscrire des enseignants
         if (isset($this->formdata['form_step4']['user']) && count($this->formdata['form_step4']['user'])) {
             $tabUser = $this->formdata['form_step4']['user'];
+	    $tabUser = normalize_enrolment_users($tabUser);
             myenrol_teacher($course->id, $tabUser);
         }
 
