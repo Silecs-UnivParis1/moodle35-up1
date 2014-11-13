@@ -59,10 +59,15 @@ function get_equivalent_cohorts($old_idnumbers) {
             }
             else {
                 $raw = cohort_raw_idnumber($idnumber);
-                $rawNew = $DB->get_field('up1_migrate_cohort_idnumber', 'new', array('old' => $raw));
-                if ($rawNew) {
-                    echo "$raw has changed code, it is now $rawNew\n";
-                    $raw = $rawNew;
+                $tablemigrate = "up1_migrate_cohort_idnumber";
+                if ($DB->get_manager()->table_exists($tablemigrate) ) {
+                    $rawNew = $DB->get_field($tablemigrate, 'new', array('old' => $raw));
+                    if ($rawNew) {
+                        echo "$raw has changed code, it is now $rawNew\n";
+                        $raw = $rawNew;
+                    }
+                } else {
+                    echo "Warning: table $tablemigrate does not exist.";
                 }
                 $potidnumber = $raw . '-' . $curyear; // potential idnumber
                 if ( $DB->record_exists('cohort', array('idnumber' => $potidnumber)) ) {
