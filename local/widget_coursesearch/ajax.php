@@ -2,8 +2,8 @@
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/course/lib.php');
-require_once($CFG->dirroot . '/course/batch_form.php');
-require_once($CFG->dirroot . '/course/batch_lib.php');
+require_once($CFG->dirroot . '/admin/tool/up1_batchprocess/batch_form.php');
+require_once($CFG->dirroot . '/admin/tool/up1_batchprocess/batch_lib.php');
 require_once $CFG->dirroot . '/local/up1_courselist/courselist_tools.php';
 
 global $PAGE;
