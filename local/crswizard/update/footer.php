@@ -8,11 +8,16 @@ $stepin = $SESSION->wizard['navigation']['stepin'];
 $stepnext = $SESSION->wizard['navigation']['suite'];
 
 $PAGE->requires->js_init_code('
-    $(":submit").each(function() {
-        $(this).replaceWith(
-            $(this).clone().prop("type", "button").on("click", function() { $(this).closest("form").submit(); })
-        );;
-    });
+var globalFormLock = true;
+$("form").submit(function(e) {
+    if (globalFormLock) { e.preventDefault(); } else { return true };
+});
+$(":submit").on("click", function(e) {
+    // mouse || focus on submit button
+    if (e.clientX > 0 || e.clientY > 0 | $(e.currentTarget).is(":submit:focus")) {
+        globalFormLock = false;
+    }
+});
 ');
 ?>
 <div style="margin:50px; clear:both; text-align: center;">
