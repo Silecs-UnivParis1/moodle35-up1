@@ -465,7 +465,7 @@ function get_list_category($idcategory) {
     $selected = $DB->get_record('course_categories', array('id' => $idcategory));
     $tabidpath = explode('/', $selected->path);
     if (count($tabidpath) < 4) {
-        throw new Exception("Wrong category with path {$selected->path}");
+        throw new Exception("Wrong category [ $idcategory ] with path [ {$selected->path} ]");
     }
     $tabcategory = array();
     /**
