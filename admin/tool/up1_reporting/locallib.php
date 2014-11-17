@@ -16,9 +16,10 @@ require_once($CFG->dirroot . '/local/up1_courselist/courselist_tools.php');
 /**
  * prepare table content to be displayed : UFR | course count | student count | teacher count
  * @param int $parentcat parent category id
+ * @param bool $ifzero whether we display the row if #courses == 0
  * @return array of array of strings (html) to be displayed by html_writer::table()
  */
-function report_base_counts($parentcat) {
+function report_base_counts($parentcat, $ifzero=false) {
     global $DB;
 
     $teachroles = array('editingteacher' => 'Enseignants', 'teacher' => 'Autres intervenants' );
@@ -26,12 +27,14 @@ function report_base_counts($parentcat) {
 
     foreach ($componentcats as $catid => $ufrname) {
         $courses = courselist_cattools::get_descendant_courses($catid);
-        $result[] = array(
-            $ufrname,
-            count($courses),
-            count_roles_from_courses(array('student' => "Étudiants"), $courses),
-            count_roles_from_courses($teachroles, $courses),
-        );
+        if ( $ifzero || count($courses) > 0) {
+            $result[] = array(
+                $ufrname,
+                count($courses),
+                count_roles_from_courses(array('student' => "Étudiants"), $courses),
+                count_roles_from_courses($teachroles, $courses),
+            );
+        }
     }
     return $result;
 }

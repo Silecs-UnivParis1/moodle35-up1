@@ -174,9 +174,10 @@ function cat_tree_compute_total($records) {
 /**
  * display the html table for categories (level=3,4) counts - see
  * @param type $parentid
+ * @param bool $ifzero whether we display the row if #courses == 0
  * @return type
  */
-function cat_tree_display_table($parentid) {
+function cat_tree_display_table($parentid, $ifzero=false) {
 
     $table = new html_table();
     $table->head = array('id', 'UFR / Diplômes', 'Espaces de cours', 'Cohortes', 
@@ -198,16 +199,18 @@ function cat_tree_display_table($parentid) {
             $cellstyle = "b";
             $indent = '';
         }
-        $tablecontent[] = array(
-            $catid,
-            $indent . html_writer::tag($cellstyle, $coursecount->name),
-            html_writer::tag($cellstyle, $coursecount->count),
-            html_writer::tag($cellstyle, $totalcohorts[$catid]->count),
-            html_writer::tag($cellstyle, $totalstudents[$catid]->count),
-            html_writer::tag($cellstyle, $totalstudentsrec[$catid]->count),
-            html_writer::tag($cellstyle, $totalteachers[$catid]->count),
-            html_writer::tag($cellstyle, $totalteachersrec[$catid]->count),
-        );
+        if ($ifzero || $coursecount->count > 0) {
+            $tablecontent[] = array(
+                $catid,
+                $indent . html_writer::tag($cellstyle, $coursecount->name),
+                html_writer::tag($cellstyle, $coursecount->count),
+                html_writer::tag($cellstyle, $totalcohorts[$catid]->count),
+                html_writer::tag($cellstyle, $totalstudents[$catid]->count),
+                html_writer::tag($cellstyle, $totalstudentsrec[$catid]->count),
+                html_writer::tag($cellstyle, $totalteachers[$catid]->count),
+                html_writer::tag($cellstyle, $totalteachersrec[$catid]->count),
+            );
+        }
     }
     $table->data = $tablecontent;
     return html_writer::table($table);
