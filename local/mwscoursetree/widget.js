@@ -78,7 +78,8 @@
                             "url": rootUrl + 'service-children.php',
                             "data": {
                                 "node": (node ? $(node).attr('id') : rootNode),
-                                "debug": $tree.data('debug')
+                                "debug": $tree.data('debug'),
+                                "stats": $tree.data('stats'),
                             }
                         };
                         return result;

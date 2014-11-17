@@ -13,10 +13,9 @@ class CourseHybridTree
      * Return a new instance of one of the ChtNode*.
      *
      * @param string $node
-     * @param bool $debug whether we display debug information before the entry name
      * @return ChtNode
      */
-    static public function createTree($node, $debug=false) {
+    static public function createTree($node) {
         $m = array();
         if (preg_match('#/cat(\d+)$#', $node, $m)) {
             // root node, given through a category
@@ -30,7 +29,6 @@ class CourseHybridTree
         } else {
             die('{label: "An error occured: wrong node request"}');
         }
-        $node->debug = $debug;
         return $node;
     }
 }

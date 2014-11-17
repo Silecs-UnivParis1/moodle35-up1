@@ -8,10 +8,13 @@ $PAGE->set_context(context_system::instance());
 
 $node = optional_param('node', '/cat0', PARAM_RAW);
 $debug = optional_param('debug', false, PARAM_BOOL);
+$stats = optional_param('stats', false, PARAM_BOOL);
 
 $tree = CourseHybridTree::createTree($node);
 $tree->debug = $debug;
-if (!$tree) {
+$tree->stats = $stats;
+
+if (! $tree) {
     die("Node '$node' not found!");
 }
 

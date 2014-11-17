@@ -11,6 +11,7 @@ abstract class ChtNode
     public $name;
     public $code; // generally, Moodle idnumber
     public $debug = false; // boolean, display debug information at the beginning of each label
+    public $stats = false; // boolean, display statistics information next to each entry (manager reporting)
 
     protected $flag = '(N) ';
     protected $component; // '00' or "composante" coded on 2 digits (01 to 37 ...)
@@ -67,6 +68,7 @@ abstract class ChtNode
 
     public function setParent($parent) {
         $this->debug = $parent->debug;
+        $this->stats = $parent->stats;
     }
 
     /**
@@ -157,8 +159,10 @@ abstract class ChtNode
 
     protected function getLabel() {
         $res =  '<span class="coursetree-dir">' . htmlspecialchars($this->name) . '</span>' ;
-        foreach (array_values($this->getStats()) as $column) {
-            $res .= '<span class="coursetree-stats"> ' . $column .' </span>';
+        if ($this->stats) {
+            foreach (array_values($this->getStats()) as $column) {
+                $res .= '<span class="coursetree-stats"> ' . $column .' </span>';
+            }
         }
         return $res;
     }
