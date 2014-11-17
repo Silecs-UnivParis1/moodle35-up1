@@ -158,7 +158,7 @@ abstract class ChtNode
     }
 
     /**
-     * simple echo method
+     * simple echo method for CLI
      * @param boolean $printPath
      */
     function toPrint($printPath=false) {

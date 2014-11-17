@@ -65,6 +65,9 @@ class ChtNodeCategory extends ChtNode
         return $this;
     }
 
+    /**
+     * @return array of ChtNode
+     */
     function listChildren() {
         if ($this->children !== null) {
             return $this->children;

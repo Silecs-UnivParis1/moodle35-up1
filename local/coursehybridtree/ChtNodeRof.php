@@ -1,6 +1,7 @@
 <?php
 
 require_once($CFG->dirroot . "/local/roftools/roflib.php");
+require_once($CFG->dirroot . '/admin/tool/up1_reporting/locallib.php');
 
 class ChtNodeRof extends ChtNode
 {
