@@ -83,6 +83,15 @@ class ChtNodeCategory extends ChtNode
     }
 
     /**
+     * list all the *descendant* courses (not only direct children)
+     * @return array($courseid)
+     */
+    function listDescendantCourses() {
+        $courses = courselist_cattools::get_descendant_courses($this->id);
+        return $courses;
+    }
+
+    /**
      * @return boolean If True, children will be found through ROF instead of Moodle Cat.
      */
     private function hasRofChildren() {

@@ -97,6 +97,15 @@ class ChtNodeRof extends ChtNode
     }
 
     /**
+     * list all the *descendant* courses (not only direct children)
+     * @return array($courseid)
+     */
+    function listDescendantCourses() {
+        $courses = courselist_roftools::get_courses_from_parent_rofpath($this->getRofPathId());
+        return array_keys($courses);
+    }
+
+    /**
      * @return boolean
      */
     private function isHybrid() {

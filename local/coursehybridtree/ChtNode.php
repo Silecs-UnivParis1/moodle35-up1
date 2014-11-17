@@ -101,6 +101,12 @@ abstract class ChtNode
      */
     abstract function listChildren();
 
+     /**
+     * list all the *descendant* courses (not only direct children)
+     * @return array($courseid)
+     */
+    abstract function listDescendantCourses();
+
     /**
      * Serialize.
      *

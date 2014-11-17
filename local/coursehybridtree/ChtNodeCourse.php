@@ -70,6 +70,14 @@ class ChtNodeCourse extends ChtNode
         return $this->children;
     }
 
+     /**
+     * list all the *descendant* courses (not only direct children), itself included
+     * @return array($courseid)
+     */
+    function listDescendantCourses() {
+        return array($this->id);
+    }
+
     protected function getLabel() {
         static $courseformatter = null;
         if (!$courseformatter) {
