@@ -7,6 +7,7 @@ global $PAGE, $OUTPUT;
 require_login();
 
 $node = optional_param('node', '/cat0', PARAM_RAW);
+$debug = optional_param('debug', false, PARAM_BOOL);
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url('/local/mwscoursetree/widget-demo.php');
@@ -31,7 +32,7 @@ echo "Vous pouvez modifier la racine en ajoutant à l'URL <b>?node=/cat1</b> par
 
 <script type="text/javascript" src="<?php echo new moodle_url('/local/mwscoursetree/widget.js'); ?>"></script>
 <!--div class="coursetree" data-root="</cat0" data-title="1"></div-->
-<div class="coursetree" data-root="<?php echo $node; ?>" data-title="1"></div>
+<div class="coursetree" data-root="<?php echo $node; ?>" data-title="1" data-debug="<?php echo $debug ?>"></div>
 
 <?php
 

@@ -10,9 +10,9 @@ abstract class ChtNode
 {
     public $name;
     public $code; // generally, Moodle idnumber
+    public $debug = false; // boolean, display debug information at the beginning of each label
 
     protected $flag = '(N) ';
-    protected $info = true; // prefix label with additional information for debugging
     protected $component; // '00' or "composante" coded on 2 digits (01 to 37 ...)
     protected $path;
     protected $absolutePath;
@@ -63,6 +63,10 @@ abstract class ChtNode
      */
     function setAbsolutePath($path) {
         $this->absolutePath = $path;
+    }
+
+    public function setParent($parent) {
+        $this->debug = $parent->debug;
     }
 
     /**

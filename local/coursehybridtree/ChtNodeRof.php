@@ -54,6 +54,7 @@ class ChtNodeRof extends ChtNode
      * @return \ChtNodeCategory
      */
     function setParent($parent) {
+        parent::setParent($parent);
         $this->component = $parent->getComponent();
         $suffix = '/' . $this->id;
         if ($parent instanceof ChtNodeCategory) {
@@ -62,7 +63,6 @@ class ChtNodeRof extends ChtNode
         }
         $this->path = $parent->getPath() . $suffix;
         $this->absolutePath = $parent->getAbsolutePath() . $suffix;
-        $this->component = $parent->getComponent();
         return $this;
     }
 

@@ -76,7 +76,10 @@
                     dataUrl: function(node) {
                         var result = {
                             "url": rootUrl + 'service-children.php',
-                            "data": { "node": (node ? $(node).attr('id') : rootNode) }
+                            "data": {
+                                "node": (node ? $(node).attr('id') : rootNode),
+                                "debug": $tree.data('debug')
+                            }
                         };
                         return result;
                     },

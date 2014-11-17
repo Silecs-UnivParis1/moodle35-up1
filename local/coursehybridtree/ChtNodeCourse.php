@@ -40,6 +40,7 @@ class ChtNodeCourse extends ChtNode
      * @return \ChtNodeCourse
      */
     function setParent($parent=null) {
+        parent::setParent($parent);
         if ($parent) {
             $this->path = $parent->getPath() . '/' . $this->id;
             $this->absolutePath = $parent->getAbsolutePath() . '/' . $this->id;

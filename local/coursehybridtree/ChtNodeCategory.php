@@ -56,6 +56,7 @@ class ChtNodeCategory extends ChtNode
      * @return \ChtNodeCategory
      */
     function setParent($parent) {
+        parent::setParent($parent);
         $this->path = $parent->getPath() . '/cat' . $this->id;
         $this->absolutePath = $parent->getAbsolutePath() . '/cat' . $this->id;
         if ($parent->getAbsoluteDepth() != 2) {
