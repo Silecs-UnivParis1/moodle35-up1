@@ -148,7 +148,7 @@ EOL;
         return $this->footer;
     }
 
-    private function format_name($dbcourse, $class) {
+    public function format_name($dbcourse, $class) {
         global $OUTPUT;
         $urlCourse = new moodle_url('/course/view.php', array('id' => $dbcourse->id));
         $crsname = get_course_display_name_for_list($dbcourse); // could be completed with ROF $name ?
