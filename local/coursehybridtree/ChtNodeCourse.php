@@ -79,10 +79,20 @@ class ChtNodeCourse extends ChtNode
     }
 
     protected function getLabel() {
+        global $DB;
         static $courseformatter = null;
         if (!$courseformatter) {
             $courseformatter = new courselist_format('tree');
         }
-        return $courseformatter->format_entry($this->id);
+        $course = $DB->get_record('course', array('id' => (int) $this->id));
+
+        $teachers = $courseformatter->format_teachers($course, 'coursetree-teachers');
+        $icons = $courseformatter->format_icons($course, 'coursetree-icons');
+        $crslink = $courseformatter->format_name($course, 'coursetree-name');
+        $res = '';
+        foreach (array_values($this->getStats()) as $column) {
+            $res .= '<span class="coursetree-stats"> ' . $column .' </span>';
+        }
+        return $crslink . $teachers . $icons . $res;
     }
 }

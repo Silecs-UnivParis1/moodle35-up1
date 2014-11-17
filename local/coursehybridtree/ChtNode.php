@@ -142,10 +142,12 @@ abstract class ChtNode
         $children = array();
         foreach ($this->listChildren() as $node) {
             /* @var $node ChtNode */
+            $info = ($this->debug ?
+                    "<span class=\"coursetree-info\">{$node->flag} [id={$node->id} {$node->code}] </span>"
+                    : '');
             $children[] = array(
                 'id' => $node->serialize(),
-                'label' => ($this->info ? "<span class=\"coursetree-info\">{$node->flag} [id={$node->id} {$node->code}] </span>" : '')
-                    . $node->getLabel(),
+                'label' => $info . $node->getLabel(),
                 'load_on_demand' => ( ! ($node instanceof ChtNodeCourse) ),
                 'depth' => $node->getDepth(),
             );
@@ -154,7 +156,27 @@ abstract class ChtNode
     }
 
     protected function getLabel() {
-        return '<span class="coursetree-dir">' . htmlspecialchars($this->name) . '</span>';
+        $res =  '<span class="coursetree-dir">' . htmlspecialchars($this->name) . '</span>' ;
+        foreach (array_values($this->getStats()) as $column) {
+            $res .= '<span class="coursetree-stats"> ' . $column .' </span>';
+        }
+        return $res;
+    }
+
+    /**
+     * provides entries statistics, for each node of the tree
+     * @return type
+     */
+    protected function getStats() {
+        $teachroles = array('editingteacher' => 'Enseignants', 'teacher' => 'Autres intervenants' );
+
+        $courses = $this->listDescendantCourses();
+        $res = array(
+            'Cours' => count($courses),
+            'Étudiants' => count_roles_from_courses(array('student' => "Étudiants"), $courses),
+            'Enseignants' => count_roles_from_courses($teachroles, $courses),
+        );
+        return $res;
     }
 
     /**
