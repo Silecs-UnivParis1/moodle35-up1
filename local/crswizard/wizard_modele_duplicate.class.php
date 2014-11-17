@@ -145,8 +145,8 @@ class wizard_modele_duplicate {
         $course->startdate = $this->mydata->startdate;
         $course->summary       = $this->mydata->summary_editor['text'];
         $course->summaryformat = $this->mydata->summary_editor['format'];
-
-
+        $course->timecreated = time();
+        $course->timemodified = $course->timecreated;
 
         // Set shortname and fullname back.
         $DB->update_record('course', $course);
