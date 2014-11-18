@@ -54,10 +54,10 @@ function count_roles_from_courses($roles, $courses) {
         $dbrole = $DB->get_record('role', array('shortname' => $role));
         foreach ($courses as $courseid) {
             $context = context_course::instance($courseid);
-            $roleusers = get_role_users($dbrole->id, $context);
-            $res += count($roleusers);
+            // $roleusers = get_role_users($dbrole->id, $context);
+            $res += count_role_users($dbrole->id, $context);
             // $res2 = count_role_users($dbrole->id, $context);
-            /** GA @todo why? apparently, this gives a false number (always < $res) */
+            /** GA @todo why? apparently, count_role_users gives a number always < count(get_roles_users) */
         }
     }
     return $res;
