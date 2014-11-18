@@ -25,7 +25,12 @@ class courselist_cattools {
     public static function get_component_from_category($catid) {
         global $DB;
         $idnumber = $DB->get_field('course_categories', 'idnumber', array('id' => $catid), MUST_EXIST);
-        return substr($idnumber, 2, 2); // ex. '4:05/Masters' -> '05'
+        $split = explode('/', $idnumber);
+        if (isset($split[2])) {
+            return $split[2];
+        } else {
+           return '00';
+        }
     }
 
     /**
