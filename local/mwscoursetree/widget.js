@@ -90,10 +90,10 @@
                             var $info = $('.jqtree-title > .coursetree-info:first', $li).first();
                             setTimeout(function(){ // trick to wait for the CSS to be applied
                                 var lineWidth = $li.width();
-                                var teachersWidth = $('.jqtree-title > .coursetree-teachers:first', $li).first().width();
-                                var iconsWidth = $('.jqtree-title > .coursetree-icons:first', $li).first().width();
+                                var spansWidth = 0;
+                                $('.jqtree-title > span:not(.coursetree-name)', $li).each(function() { spansWidth += $(this).width(); });
                                 $name.width(function(i,w){
-                                    return (lineWidth - teachersWidth - iconsWidth - 30 - ($info ? $info.width() : 0)); // 20px margin-right
+                                    return (lineWidth - spansWidth - 30 - ($info ? $info.width() : 0)); // 20px margin-right
                                 });
                             }, 0);
                         }
@@ -109,8 +109,12 @@
             $(window).resize(function () {
                 $('.coursetree-name').each(function() {
                     var n = $(this);
-                    var w = n.closest('.jqtree-title').parent().width() - n.siblings('.coursetree-teachers').first().width() - n.siblings('.coursetree-icons').first().width() - 20;
-                    $(this).width(w);
+                    var title = n.closest('.jqtree-title');
+                    var $info = title.find('.coursetree-info:first').first();
+                    var spansWidth = 0;
+                    n.nextAll().each(function() { spansWidth += $(this).width(); });
+                    var w = title.parent().width() - spansWidth - 30 - ($info ? $info.width() : 0);
+                    n.width(w);
                 });
             });
         });
