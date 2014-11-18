@@ -46,6 +46,8 @@ abstract class ChtNode
 
     /**
      * Path from the root of the tree.
+     *
+     * @return string
      */
     function getPath() {
         return $this->path;
@@ -53,6 +55,8 @@ abstract class ChtNode
 
     /**
      * Path from the root of Moodle (not internal to Moodle).
+     *
+     * @return string
      */
     function getAbsolutePath() {
         return $this->absolutePath;
@@ -60,12 +64,16 @@ abstract class ChtNode
 
     /**
      * set absolute path ; FOR TESTING AND DEBUGGING ONLY
+     *
      * @param string $path
      */
     function setAbsolutePath($path) {
         $this->absolutePath = $path;
     }
 
+    /*
+     * @param ChtNode $parent
+     */
     public function setParent($parent) {
         $this->debug = $parent->debug;
         $this->stats = $parent->stats;
@@ -73,6 +81,8 @@ abstract class ChtNode
 
     /**
      * The part of the absolute path from the last Moodle category (included).
+     *
+     * @return string
      */
     function getPseudopath() {
         $arrAbsolutePath = $this->pathArray($this->absolutePath);
@@ -91,8 +101,10 @@ abstract class ChtNode
     }
 
     /**
-     * This helper function returns a "clean" simple array from a path
+     * This helper function returns a "clean" simple array of "dirs" in a path
+     *
      * @param string $path "/comp1/comp2/comp3..."
+     * @return array ["comp1", "comp2", "comp3"]
      */
     function pathArray($path) {
         return array_values(array_filter(explode('/', $path)));
@@ -105,6 +117,7 @@ abstract class ChtNode
 
      /**
      * list all the *descendant* courses (not only direct children)
+     *
      * @return array($courseid)
      */
     abstract function listDescendantCourses();
@@ -127,7 +140,7 @@ abstract class ChtNode
      * Return a new instance from a plain object.
      *
      * @param Stdclass $data
-     * @return \static
+     * @return ChtNode
      */
     static public function unserialize($data) {
         $new = new static;
@@ -157,6 +170,9 @@ abstract class ChtNode
         return $children;
     }
 
+    /*
+     * @return string
+     */
     protected function getLabel() {
         $res =  '<span class="coursetree-dir">' . htmlspecialchars($this->name) . '</span>' ;
         if ($this->stats) {

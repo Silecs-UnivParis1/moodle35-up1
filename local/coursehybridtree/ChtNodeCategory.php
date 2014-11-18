@@ -12,12 +12,20 @@ class ChtNodeCategory extends ChtNode
     //private $id; // Moodle id from course_categories
     protected $flag = '(C) ';
 
+    /**
+     * @param int $catid
+     * @return ChtNodeCategory
+     */
     static function buildFromCategoryId($catid) {
         global $DB;
         $record = $DB->get_record('course_categories', array('id' => (int) $catid));
         return self::buildFromCategory($record);
     }
 
+    /**
+     * @param StdClass $record DB record of a category
+     * @return ChtNodeCategory
+     */
     static function buildFromCategory($record) {
         if (empty($record->id)) {
             // Cannot build node from an empty record.
