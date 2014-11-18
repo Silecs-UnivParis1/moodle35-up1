@@ -12,17 +12,21 @@ class CourseHybridTree
     /**
      * Return a new instance of one of the ChtNode*.
      *
-     * @param string $node
+     * @param string $nodename
      * @return ChtNode
      */
-    static public function createTree($node) {
+    static public function createTree($nodename) {
         $m = array();
-        if (preg_match('#/cat(\d+)$#', $node, $m)) {
+        if ($nodename === '/cat0') {
+            $node = ChtNodeCategory::buildFromCategoryId(
+                get_config('local_crswizard','cas2_default_etablissement')
+            );
+        } else if (preg_match('#/cat(\d+)$#', $nodename, $m)) {
             // root node, given through a category
             $node = ChtNodeCategory::buildFromCategoryId($m[1]);
-        } else if (preg_match('/^{/', $node)) {
+        } else if (preg_match('/^{/', $nodename)) {
             // inside node (non-root), given through serialized attributes
-            $attributes = json_decode($node);
+            $attributes = json_decode($nodename);
             $class = $attributes->class;
             unset($attributes->class);
             $node = $class::unserialize($attributes);
