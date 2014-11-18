@@ -11,12 +11,20 @@ $debug = optional_param('debug', false, PARAM_BOOL);
 $stats = optional_param('stats', false, PARAM_BOOL);
 
 $tree = CourseHybridTree::createTree($node);
-$tree->debug = $debug;
-$tree->stats = $stats;
-
-if (! $tree) {
-    die("Node '$node' not found!");
-}
 
 header('Content-Type: application/json; charset="UTF-8"');
-echo json_encode($tree->listJqtreeChildren());
+if (!$tree) {
+    $error = array(
+        array(
+            "id" => "err" . $node,
+            "label" => "Erreur de chargement de '$node'...",
+            "load_on_demand" => 0,
+            "depth" => 1,
+        )
+    );
+    echo json_encode($error);
+} else {
+    $tree->debug = $debug;
+    $tree->stats = $stats;
+    echo json_encode($tree->listJqtreeChildren());
+}
