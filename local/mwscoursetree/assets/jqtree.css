@@ -159,17 +159,25 @@ ul.jqtree-tree .jqtree-moving > .jqtree-element .jqtree-title {
 li:not(.jqtree-folder) .jqtree-title {
    border-bottom: 1px dashed #ECECEC;
 }
+.jqtree-title > .coursetree-dir,
 .jqtree-title > .coursetree-name {
-   width: 60%;
-   display: inline-block;
+    display: inline-block;
+    padding: 0;
+    border-left: 0;
+    border-right: 0;
 }
 .jqtree-title > .coursetree-teachers {
-   width: 230px;
-   display: inline-block;
+    width: 230px;
+    display: inline-block;
 }
 .jqtree-title > .coursetree-icons {
-   width: 80px;
-   display: inline-block;
-   text-align: right;
+    width: 80px;
+    display: inline-block;
+    text-align: right;
 }
 
+.jqtree-title > .coursetree-stats > * {
+    width: 6ex;
+    display: inline-block;
+    text-align: right;
+}

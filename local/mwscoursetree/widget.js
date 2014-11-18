@@ -85,15 +85,14 @@
                         return result;
                     },
                     onCreateLi: function(node, $li) {
-                        if (!node.load_on_demand && !('is_open' in node) && node.children.length === 0) {
-                            var $name = $li.find('.jqtree-title:first').first().find('.coursetree-name').first();
-                            var $info = $('.jqtree-title > .coursetree-info:first', $li).first();
+                        var $name = $li.find('.jqtree-title:first').first().children('.coursetree-name, .coursetree-dir').first();
+                        if (!$name.attr('width')) {
                             setTimeout(function(){ // trick to wait for the CSS to be applied
                                 var lineWidth = $li.width();
                                 var spansWidth = 0;
-                                $('.jqtree-title > span:not(.coursetree-name)', $li).each(function() { spansWidth += $(this).width(); });
+                                $name.siblings('span').each(function() { spansWidth += $(this).outerWidth(); });
                                 $name.width(function(i,w){
-                                    return (lineWidth - spansWidth - 30 - ($info ? $info.width() : 0)); // 20px margin-right
+                                    return (lineWidth - spansWidth - 30); // 20px margin-right
                                 });
                             }, 0);
                         }
@@ -106,16 +105,17 @@
                     dragAndDrop: false
                 });
             });
+
+            function resizenameColumn() {
+                var $name = $(this);
+                var title = $name.closest('.jqtree-title');
+                var spansWidth = 0;
+                $name.siblings('span').each(function() { spansWidth += $(this).outerWidth(); });
+                var w = title.parent().width() - spansWidth - 30;
+                $name.width(w);
+            }
             $(window).resize(function () {
-                $('.coursetree-name').each(function() {
-                    var n = $(this);
-                    var title = n.closest('.jqtree-title');
-                    var $info = title.find('.coursetree-info:first').first();
-                    var spansWidth = 0;
-                    n.nextAll().each(function() { spansWidth += $(this).width(); });
-                    var w = title.parent().width() - spansWidth - 30 - ($info ? $info.width() : 0);
-                    n.width(w);
-                });
+                $('.coursetree-name, .coursetree-dir').each(resizenameColumn);
             });
         });
     }
