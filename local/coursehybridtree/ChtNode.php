@@ -118,7 +118,7 @@ abstract class ChtNode
      /**
      * list all the *descendant* courses (not only direct children)
      *
-     * @return array($courseid)
+     * @return array of courseid
      */
     abstract function listDescendantCourses();
 

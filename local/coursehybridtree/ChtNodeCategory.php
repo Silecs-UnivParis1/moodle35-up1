@@ -95,7 +95,8 @@ class ChtNodeCategory extends ChtNode
 
     /**
      * list all the *descendant* courses (not only direct children)
-     * @return array($courseid)
+     *
+     * @return array of courseid
      */
     function listDescendantCourses() {
         $courses = courselist_cattools::get_descendant_courses($this->id);
