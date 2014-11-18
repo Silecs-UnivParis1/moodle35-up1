@@ -11,6 +11,7 @@ abstract class ChtNode
     public $name;
     public $code; // generally, Moodle idnumber
     public $debug = false; // boolean, display debug information at the beginning of each label
+    public $debugmsg = array(); // array of debugging messages for this node
     public $stats = false; // boolean, display statistics information next to each entry (manager reporting)
 
     protected $flag = '(N) ';
@@ -170,12 +171,17 @@ abstract class ChtNode
             $info = ($this->debug ?
                     "<span class=\"coursetree-info\">{$node->flag} [id={$node->id} {$node->code}] </span>"
                     : '');
-            $children[] = array(
+            $child = array(
                 'id' => $node->serialize(),
                 'label' => $info . $node->getLabel(),
                 'load_on_demand' => ( ! ($node instanceof ChtNodeCourse) ),
                 'depth' => $node->getDepth(),
             );
+            if ($this->debug) {
+                $node->debugmsg[] = "pseudopath=" . $node->getPseudopath();
+                $child['debugmsg'] = $node->debugmsg;
+            }
+            $children[] = $child;
         }
         return $children;
     }
