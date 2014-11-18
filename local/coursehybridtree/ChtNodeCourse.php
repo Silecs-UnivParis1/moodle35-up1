@@ -86,11 +86,13 @@ class ChtNodeCourse extends ChtNode
         }
         $course = $DB->get_record('course', array('id' => (int) $this->id));
         $crslink = $courseformatter->format_name($course, 'coursetree-name');
-        $entrycomplement = '';
+
         if ($this->stats) {
+            $entrycomplement = '<span class="coursetree-stats">';
             foreach (array_values($this->getStats()) as $column) {
-                $entrycomplement .= '<span class="coursetree-stats"> ' . $column .' </span>';
+                $entrycomplement .= '<span>' . $column .' </span> ';
             }
+            $entrycomplement .= '</span>';
         } else {
             $teachers = $courseformatter->format_teachers($course, 'coursetree-teachers');
             $icons = $courseformatter->format_icons($course, 'coursetree-icons');

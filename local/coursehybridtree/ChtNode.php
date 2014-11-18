@@ -186,9 +186,11 @@ abstract class ChtNode
     protected function getLabel() {
         $res =  '<span class="coursetree-dir">' . htmlspecialchars($this->name) . '</span>' ;
         if ($this->stats) {
+            $res .= '<span class="coursetree-stats">';
             foreach (array_values($this->getStats()) as $column) {
-                $res .= '<span class="coursetree-stats"> ' . $column .' </span>';
+                $res .= '<span>' . $column .' </span> ';
             }
+            $res .= '</span>';
         }
         return $res;
     }
