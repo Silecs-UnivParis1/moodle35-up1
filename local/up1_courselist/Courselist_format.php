@@ -148,6 +148,11 @@ EOL;
         return $this->footer;
     }
 
+    /**
+     * @param StdClass $dbcourse
+     * @param string $class
+     * @return string HTML
+     */
     public function format_name($dbcourse, $class) {
         global $OUTPUT;
         $urlCourse = new moodle_url('/course/view.php', array('id' => $dbcourse->id));
