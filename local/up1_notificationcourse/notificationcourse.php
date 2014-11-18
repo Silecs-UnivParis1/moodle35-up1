@@ -63,10 +63,13 @@ $PAGE->requires->css(new moodle_url('/local/up1_notificationcourse/notificationc
 $recipicents = '';
 $students = array();
 
-// le groupmode
-$groupmode = groups_get_activity_groupmode($cm);
-
-if ($groupmode == 0) {
+$allstudent = TRUE;
+if (!empty($CFG->enablegroupmembersonly)) {
+    if ($cm->groupmembersonly == 1) {
+        $allstudent = FALSE;
+    }
+}
+if ($allstudent) {
     // pas de groupe, envoyé à tous les étudiants
     $students = get_users_from_course($course, 'student');
     $recipicents = get_label_destinataire(count($students), $cm->groupingid, $msgbodyinfo);
