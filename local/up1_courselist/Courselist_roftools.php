@@ -54,18 +54,26 @@ class courselist_roftools {
     public static function split_courses_from_rof($courses, $component) {
         $rofcourses = array();
         $catcourses = array();
-        foreach ($courses as $crsid) {
-            $rofpathids = up1_meta_get_text($crsid, 'rofpathid', false);
-            if ($rofpathids) {
-                $arrofpathids = explode(';', $rofpathids);
-                foreach ($arrofpathids as $rofpathid) {
-                    if (courselist_roftools::rofpath_match_component($rofpathid, $component)) {
-                        $rofcourses[$crsid] = $rofpathid;
-                        break; // exit foreach
+        if ($component != "00") {
+            foreach ($courses as $crsid) {
+                $rofpathids = up1_meta_get_text($crsid, 'rofpathid', false);
+                if ($rofpathids) {
+                    $arrofpathids = explode(';', $rofpathids);
+                    $found = false;
+                    foreach ($arrofpathids as $rofpathid) {
+                        if (courselist_roftools::rofpath_match_component($rofpathid, $component)) {
+                            $found = true;
+                            $rofcourses[$crsid] = $rofpathid;
+                            break; // exit foreach
+                        }
                     }
+                    if (!$found) {
+                        throw new Exception("Incohérence du ROF dans split_courses_from_rof()");
+                        print_r($arrofpathids); die("\nCourseId: $crsid\nComponent: $component");
+                    }
+                } else {
+                    $catcourses[$crsid] = $crsid;
                 }
-            } else {
-                $catcourses[$crsid] = $crsid;
             }
         }
         return array($rofcourses, $catcourses);
