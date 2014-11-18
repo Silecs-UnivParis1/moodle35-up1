@@ -177,7 +177,11 @@ li:not(.jqtree-folder) .jqtree-title {
 }
 
 .jqtree-title > .coursetree-stats > * {
-    width: 6ex;
+    width: 12ex;
     display: inline-block;
     text-align: right;
+}
+
+.tree-external-headers .coursetree-name {
+    margin-left: 20px; /* trick to align columns */
 }

@@ -72,6 +72,10 @@
             $('.coursetree').each(function(){
                 var $tree = $(this);
                 var rootNode = $tree.data('root');
+                if ($tree.data('stats')) {
+                    $tree.before('<div class="tree-external-headers"><span class="jqtree-title"><span class="coursetree-name"> </span><span class="coursetree-stats"><span>Cours</span><span>Étudiants</span><span>Enseignants</span></span></span></div>')
+                    $(".tree-external-headers .coursetree-name").each(resizenameColumn);
+                }
                 $tree.tree({
                     dataUrl: function(node) {
                         var result = {
