@@ -27,7 +27,7 @@ class courselist_cattools {
         $idnumber = $DB->get_field('course_categories', 'idnumber', array('id' => $catid), MUST_EXIST);
         $split = explode('/', $idnumber);
         if (isset($split[2])) {
-            return $split[2];
+            return $split[2]; // ex. "4:2012-2013/UP1/04/Licences" -> "04"
         } else {
            return '00';
         }
