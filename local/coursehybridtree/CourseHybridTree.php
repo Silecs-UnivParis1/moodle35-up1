@@ -21,9 +21,12 @@ class CourseHybridTree
             $node = ChtNodeCategory::buildFromCategoryId(
                 get_config('local_crswizard','cas2_default_etablissement')
             );
-        } else if (preg_match('#/cat(\d+)$#', $nodename, $m)) {
+        } else if (preg_match('#^/cat(\d+)$#', $nodename, $m)) {
             // root node, given through a category
             $node = ChtNodeCategory::buildFromCategoryId($m[1]);
+        } else if (preg_match('#^/cat\d+/.+$#', $nodename, $m)) {
+            // root node, given through a path
+            $node = ChtNodeRof::buildFromPath($nodename);
         } else if (preg_match('/^{/', $nodename)) {
             // inside node (non-root), given through serialized attributes
             $attributes = json_decode($nodename);

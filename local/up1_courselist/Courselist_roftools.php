@@ -40,7 +40,7 @@ class courselist_roftools {
             $res = $DB->get_records_sql_menu($sql, array($fieldid, '%' . $rofpath . '%'));
         } else {
             $sql .= " (data LIKE ? OR data LIKE ?)";
-            $res = $DB->get_records_sql_menu($sql, array($fieldid, '%' . $rofpath, $rofpath . ';%' ));
+            $res = $DB->get_records_sql_menu($sql, array($fieldid, '%' . $rofpath, '%' . $rofpath . ';%' ));
         }
         //var_dump($res);
         // 2nd step : filter the results to keep only matching rofpaths
