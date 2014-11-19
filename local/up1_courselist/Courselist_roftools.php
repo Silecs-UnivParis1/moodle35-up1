@@ -18,7 +18,12 @@ require_once($CFG->dirroot.'/course/lib.php');
 class courselist_roftools {
 
     /**
-     * return all courses rattached to the given rofpath ; only this rofpath in the returned course value
+     * Return all courses rattached to the given rofpath.
+     * In case of multiple rattachements, only the matching rofpathid is returned.
+     *
+     * When recursive, only one matching course can be returned (indexed by courseId): the last one!
+     * @todo Check unicity/recursive
+     *
      * @global moodle_database $DB
      * @param string $rofpath ex. "/02/UP1-PROG39308/UP1-PROG24870"
      * @param boolean $recursive
@@ -29,14 +34,20 @@ class courselist_roftools {
         // 1st step : find the matching courses
         $fieldid = $DB->get_field('custom_info_field', 'id', array('objectname' => 'course', 'shortname' => 'up1rofpathid'), MUST_EXIST);
         $sql = "SELECT objectid, data FROM {custom_info_data} "
-                . "WHERE objectname='course' AND fieldid=? AND data RLIKE ?";
-        $res = $DB->get_records_sql_menu($sql, array($fieldid, $rofpath . ($recursive ? '' : '(;|$)')));
+                . "WHERE objectname='course' AND fieldid=? AND ";
+        if ($recursive) {
+            $sql .= "data LIKE ?";
+            $res = $DB->get_records_sql_menu($sql, array($fieldid, '%' . $rofpath . '%'));
+        } else {
+            $sql .= " (data LIKE ? OR data LIKE ?)";
+            $res = $DB->get_records_sql_menu($sql, array($fieldid, '%' . $rofpath, $rofpath . ';%' ));
+        }
         //var_dump($res);
         // 2nd step : filter the results to keep only matching rofpaths
         $rofcourses = array();
         foreach ($res as $crsid => $rofpathids) {
             foreach (explode(';', $rofpathids) as $rofpathid) {
-                if (strstr($rofpathid, $rofpath)) {
+                if (strpos($rofpathid, $rofpath) !== false) {
                     $rofcourses[$crsid] = $rofpathid;
                 }
             }
