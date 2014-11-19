@@ -127,8 +127,10 @@ class ChtNodeCategory extends ChtNode
 // TODO verbose mode?
 // echo "cat = $category->id  n = $n  crs=" . join(', ', $courses) . "\n";
             if ($n >= 1) {
+                $this->addDebugMessage("addCategoryChildren() PARENT {$category->id}");
                 $this->children[] = ChtNodeCategory::buildFromCategory($category)
-                    ->setParent($this);
+                    ->setParent($this)
+                    ->addDebugMessage("addCategoryChildren() CHILD {$category->id}");
             }
         }
     }

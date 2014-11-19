@@ -11,7 +11,6 @@ abstract class ChtNode
     public $name;
     public $code; // generally, Moodle idnumber
     public $debug = false; // boolean, display debug information at the beginning of each label
-    public $debugMessages = array(); // array of debugging messages for this node
     public $stats = false; // boolean, display statistics information next to each entry (manager reporting)
 
     protected $flag = '(N) ';
@@ -20,6 +19,8 @@ abstract class ChtNode
     protected $absolutePath;
 
     protected $id;
+
+    private $debugMessages = array(); // array of debugging messages for this node
 
     /**
      * @var array children nodes
@@ -74,10 +75,21 @@ abstract class ChtNode
 
     /*
      * @param ChtNode $parent
+     * @return ChtNode chainable
      */
     public function setParent($parent) {
         $this->debug = $parent->debug;
         $this->stats = $parent->stats;
+        return $this;
+    }
+
+    /*
+     * @param string $msg
+     * @return ChtNode chainable
+     */
+    public function addDebugMessage($msg) {
+        $this->debugMessages[] = $msg;
+        return $this;
     }
 
     /**
@@ -276,8 +288,10 @@ abstract class ChtNode
             }
         }
         foreach (array_unique($potentialNodes) as $rofid) {
+            $this->addDebugMessage("addRofChildren() PARENT $rofid");
             $this->children[] = ChtNodeRof::buildFromRofId($rofid)
-                    ->setParent($this);
+                    ->setParent($this)
+                    ->addDebugMessage("addRofChildren() CHILD ($rofid)");
         }
     }
 
@@ -288,12 +302,15 @@ abstract class ChtNode
      */
     protected function addCourseChildren($courses) {
         foreach ($courses as $crsid => $data) {
+            $this->addDebugMessage("addCourseChildren() PARENT $crsid");
             if (is_object($data)) {
                 $this->children[] = ChtNodeCourse::buildFromCourse($data)
-                ->setParent($this);
+                    ->setParent($this)
+                    ->addDebugMessage("addCourseChildren() CHILD ({$data->id})");
             } else {
                 $this->children[] = ChtNodeCourse::buildFromCourseId($crsid)
-                    ->setParent($this);
+                    ->setParent($this)
+                    ->addDebugMessage("addCourseChildren() CHILD {$crsid}");
             }
         }
     }
