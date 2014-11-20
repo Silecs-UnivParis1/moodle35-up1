@@ -37,7 +37,7 @@ class tinymce_pdw extends editor_tinymce_plugin {
         $rowsnumber = $this->count_button_rows($params);
         if ($rowsnumber > 1) {
             $this->add_button_before($params, 1, 'pdw_toggle', '');
-            $params['pdw_toggle_on'] = 1;
+            $params['pdw_toggle_on'] = 0;
             $params['pdw_toggle_toolbars'] = join(',', range(2, $rowsnumber));
 
             // Add JS file, which uses default name.
