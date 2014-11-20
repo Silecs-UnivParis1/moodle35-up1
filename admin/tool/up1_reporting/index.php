@@ -38,6 +38,8 @@ $periodes = get_parentcat();
 if ($parentcat == 0 || array_key_exists($parentcat, $periodes) == FALSE) {
     $parentcat = get_config('local_crswizard','cas2_default_etablissement');
 }
+global $DB;
+$grandparentcat = $DB->get_field('course_categories', 'parent', array('id' => $parentcat));
 
 
 // Main page parameters: parentcat, display mode (compact/complet)
@@ -51,9 +53,31 @@ $displaymode = array(true => 'Compact', false => 'Complet');
 echo "<span>Affichage actuel : " . $displaymode[$displaycompact] . "</span> <br />";
 $paramsurl = new moodle_url($url, array('compact' => ! $displaycompact, 'period' => $parentcat));
 echo $OUTPUT->single_button($paramsurl, $displaymode[ ! $displaycompact], 'get');
+?>
+
+<h2>Statistiques présentées selon l'arbre hybride Catégories / ROF</h2>
+
+<style type="text/css">
+.jqtree-hidden {
+    display: inherit;
+}
+</style>
+
+<script type="text/javascript" src="<?php echo new moodle_url('/local/mwscoursetree/widget.js'); ?>"></script>
+<div class="coursetree" data-root="<?php echo "/cat" . $grandparentcat; ?>" data-title="1" data-stats="1" data-debug="0"></div>
+
+<?php
+
+echo "<h2>Statistiques par UFR</h2>\n";
+echo "<p>Note : pour les étudiants et les enseignants, les comptages sont faits au niveau de chaque cours, puis totalisés par Composante.</p>";
+
+$table = new html_table();
+$table->head = array('UFR', 'Espaces de cours', 'Étudiants inscrits', 'Enseignants inscrits');
+$table->data = report_base_counts($parentcat, ! $displaycompact);
+echo html_writer::table($table);
 
 
-echo "<h2>Comptages par catégories - niveaux 3 et 4</h2>\n";
+echo "<h2>Statisitiques par catégories - niveaux 3 et 4</h2>\n";
 echo "<p>Note : pour les étudiants et les enseignants, les comptages sont dédoublonnés au niveau le plus bas (4 = niveau-LMD)
       puis pour le regroupement par Composante (niveau 3), les deux informations sont affichées : inscrits totalisés,
       et inscrits dédoublonnés.</p>";
@@ -61,12 +85,5 @@ echo "<p>Note : pour les étudiants et les enseignants, les comptages sont dédo
 echo cat_tree_display_table($parentcat, ! $displaycompact);
 
 
-echo "<h2>Comptages par UFR</h2>\n";
-echo "<p>Note : pour les étudiants et les enseignants, les comptages sont faits au niveau de chaque cours, puis totalisés par Composante.</p>";
-
-$table = new html_table();
-$table->head = array('UFR', 'Espaces de cours', 'Étudiants inscrits', 'Enseignants inscrits');
-$table->data = report_base_counts($parentcat, ! $displaycompact);
-echo html_writer::table($table);
 
 echo $OUTPUT->footer();
