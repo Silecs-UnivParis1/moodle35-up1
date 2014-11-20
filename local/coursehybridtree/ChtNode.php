@@ -268,14 +268,12 @@ abstract class ChtNode
         $targetRofDepth = count(explode('/', $parentRofpath));
         $potentialNodes = array();
 
-        foreach ($rofcourses as $rofpathid) {
-            /**
-             * On ne filtre pas par parentrofpath ?
-             */
-            $potentialNodePath = array_slice($this->pathArray($rofpathid), 0, $targetRofDepth);
-            if (isset($potentialNodePath[$targetRofDepth - 1])) {
-                $potentialNode = $potentialNodePath[$targetRofDepth - 1];
-                $potentialNodes[] = $potentialNode;
+        foreach ($rofcourses as $rofpathids) {
+            foreach ($rofpathids as $rofpathid) {
+                $potentialNodePath = array_slice($this->pathArray($rofpathid), 0, $targetRofDepth);
+                if (isset($potentialNodePath[$targetRofDepth - 1])) {
+                    $potentialNodes[] = $potentialNodePath[$targetRofDepth - 1];
+                }
             }
         }
         foreach (array_unique($potentialNodes) as $rofid) {

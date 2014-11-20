@@ -26,15 +26,16 @@ class courselist_roftools {
      *
      * @global moodle_database $DB
      * @param string $rofpath ex. "/02/UP1-PROG39308/UP1-PROG24870"
-     * @param boolean $recursive
-     * @return array assoc-array(crsid => rofpathid) ; in case of multiple rattachements, only the matching rofpathid is returned
+     * @param boolean $recursive True by default.
+     * @return array assoc-array(crsid => [rofpathids...])
      */
     public static function get_courses_from_parent_rofpath($rofpath, $recursive = true) {
         global $DB;
         // 1st step : find the matching courses
         $fieldid = $DB->get_field('custom_info_field', 'id', array('objectname' => 'course', 'shortname' => 'up1rofpathid'), MUST_EXIST);
-        $sql = "SELECT objectid, data FROM {custom_info_data} "
-                . "WHERE objectname='course' AND fieldid=? AND ";
+        $sql = "SELECT objectid AS courseid, data AS rofpathids"
+                . " FROM {custom_info_data} "
+                . " WHERE objectname='course' AND fieldid=? AND ";
         if ($recursive) {
             $sql .= "data LIKE ?";
             $res = $DB->get_records_sql_menu($sql, array($fieldid, '%' . $rofpath . '%'));
@@ -42,23 +43,24 @@ class courselist_roftools {
             $sql .= " (data LIKE ? OR data LIKE ?)";
             $res = $DB->get_records_sql_menu($sql, array($fieldid, '%' . $rofpath, '%' . $rofpath . ';%' ));
         }
-        //var_dump($res);
         // 2nd step : filter the results to keep only matching rofpaths
         $rofcourses = array();
         foreach ($res as $crsid => $rofpathids) {
-            foreach (explode(';', $rofpathids) as $rofpathid) {
-                if (strpos($rofpathid, $rofpath) !== false) {
-                    $rofcourses[$crsid] = $rofpathid;
-                }
-            }
+            $rofcourses[$crsid] = array_filter(
+                    explode(';', $rofpathids),
+                    function ($rowrofpathid) use ($rofpath) { return (strpos($rowrofpathid, $rofpath) !== false); }
+            );
         }
         //var_dump($rofcourses);
         return $rofcourses;
     }
 
     /**
-     * split courses as 2 arrays : the ones with a ROF rattachement (rofcourses), and the ones without (catcourses)
-     * @param array $courses array of course objects (from DB)
+     * Split courses (output of courselist_cattools::get_descendant_courses) as 2 arrays :
+     *  rofcourses: courses with a ROF rattachement matching $component, as [courseId => [rofpathids...]]
+     * catcourses: courses without this, as [courseId => courseId].
+     *
+     * @param array $courses array of course ID (from DB)
      * @param string $component '01' to ... '99'
      * @return array array($rofcourses, $catcourses)
      */
@@ -69,20 +71,19 @@ class courselist_roftools {
             foreach ($courses as $crsid) {
                 $rofpathids = up1_meta_get_text($crsid, 'rofpathid', false);
                 if ($rofpathids) {
-                    $arrofpathids = explode(';', $rofpathids);
-                    $found = false;
-                    foreach ($arrofpathids as $rofpathid) {
-                        if (courselist_roftools::rofpath_match_component($rofpathid, $component)) {
-                            $found = true;
-                            $rofcourses[$crsid] = $rofpathid;
-                            break; // exit foreach
-                        }
-                    }
-                    if (!$found) {
+                    $matchingRofpathids = array_filter(
+                            explode(';', $rofpathids),
+                            function ($rofpathid) use ($component) {
+                                return courselist_roftools::rofpath_match_component($rofpathid, $component);
+                            }
+                    );
+                    if ($matchingRofpathids) {
+                        $rofcourses[$crsid] = $matchingRofpathids;
+                    } else {
                         throw new Exception("Incohérence du ROF dans split_courses_from_rof()");
                         print_r($arrofpathids); die("\nCourseId: $crsid\nComponent: $component");
                     }
-                } else {
+                } else { // no rofpathid
                     $catcourses[$crsid] = $crsid;
                 }
             }

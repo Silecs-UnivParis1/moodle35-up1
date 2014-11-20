@@ -96,7 +96,7 @@ class ChtNodeRof extends ChtNode
         $this->addCourseChildren(courselist_roftools::get_courses_from_parent_rofpath($this->getRofPathId(), false));
         
         // ROF entries are sorted using their name, to cope with eg. "semestre N" 
-        usort($this->children, function ($a, $b) {
+        usort($this->children, function ($a, $b) { // compare nodes : Courses last, else by name
             $dira = (int) ($a instanceof ChtNodeCourse);
             $dirb = (int) ($b instanceof ChtNodeCourse);
             if ($dira === $dirb) {
