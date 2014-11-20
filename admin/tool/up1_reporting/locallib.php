@@ -19,7 +19,7 @@ require_once($CFG->dirroot . '/local/up1_courselist/courselist_tools.php');
  * @param bool $ifzero whether we display the row if #courses == 0
  * @return array of array of strings (html) to be displayed by html_writer::table()
  */
-function report_base_counts($parentcat, $ifzero=false) {
+function report_base_counts($parentcat, $ifzero=true) {
     global $DB;
 
     $teachroles = array('editingteacher' => 'Enseignants', 'teacher' => 'Autres intervenants' );
@@ -70,7 +70,7 @@ function count_roles_from_courses($roles, $courses) {
 function get_parentcat() {
     global $DB;
     $parentcat = array();
-    $sql = "select id, idnumber from {course_categories} where idnumber like '2:%' order by idnumber";
+    $sql = "SELECT id, idnumber FROM {course_categories} WHERE idnumber LIKE '2:%' ORDER BY idnumber";
     $period = $DB->get_records_sql_menu($sql);
     foreach ($period as $id => $idnumber) {
         $parentcat[$id] = substr($idnumber, 2);
