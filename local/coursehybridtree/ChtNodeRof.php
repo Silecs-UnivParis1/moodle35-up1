@@ -94,6 +94,17 @@ class ChtNodeRof extends ChtNode
         $this->children = array();
         $this->addRofChildren($this->getRofPathId(), courselist_roftools::get_courses_from_parent_rofpath($this->getRofPathId()));
         $this->addCourseChildren(courselist_roftools::get_courses_from_parent_rofpath($this->getRofPathId(), false));
+        
+        // ROF entries are sorted using their name, to cope with eg. "semestre N" 
+        usort($this->children, function ($a, $b) {
+            $dira = (int) ($a instanceof ChtNodeCourse);
+            $dirb = (int) ($b instanceof ChtNodeCourse);
+            if ($dira === $dirb) {
+                return strcmp(strtolower($a->name), strtolower($b->name));
+            } else {
+                return ($dira < $dirb ? -1 : 1);
+            }
+        } );
         return $this->children;
     }
 

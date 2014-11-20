@@ -169,15 +169,6 @@ abstract class ChtNode
     public function listJqtreeChildren() {
         $children = array();
         $nodeChildren = $this->listChildren();
-        usort($nodeChildren, function ($a, $b) {
-            $dira = (int) ($a instanceof ChtNodeCourse);
-            $dirb = (int) ($b instanceof ChtNodeCourse);
-            if ($dira === $dirb) {
-                return strcmp($a->name, $b->name);
-            } else {
-                return ($dira < $dirb ? -1 : 1);
-            }
-        } );
         foreach ($nodeChildren as $node) {
             /* @var $node ChtNode */
             $info = ($this->debug ?
