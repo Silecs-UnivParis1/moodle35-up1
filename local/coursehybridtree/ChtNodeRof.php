@@ -105,6 +105,18 @@ class ChtNodeRof extends ChtNode
                 return ($dira < $dirb ? -1 : 1);
             }
         } );
+
+        if ($this->getAbsoluteDepth() > 7) {
+            foreach ($this->children as $pos => $child) {
+                if ($child instanceof ChtNodeRof) {
+                    $subchildren = $child->listChildren();
+                    if (count($subchildren) === 1 && $subchildren[0] instanceof ChtNodeCourse) {
+                        $this->children[$pos] = $subchildren[0];
+                    }
+                }
+            }
+        }
+
         return $this->children;
     }
 
