@@ -109,6 +109,13 @@
                     dragAndDrop: false
                 });
             });
+            $('.coursetree').on("mouseover", ".jqtree-title", function() {
+                $(this).css("border-top", "1px dotted blue")
+                    .css("border-bottom", "1px dotted blue");
+            }).on("mouseleave", ".jqtree-title", function() {
+                $(this).css("border-top", "1px solid transparent")
+                    .css("border-bottom", "1px solid transparent");
+            });;
 
             function resizenameColumn() {
                 var $name = $(this);
