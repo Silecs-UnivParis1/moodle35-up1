@@ -13,7 +13,12 @@ $stats= optional_param('stats', false, PARAM_BOOL);
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url('/local/mwscoursetree/widget-demo.php');
 $PAGE->set_title("Démo de l'arbre des cours");
+
+// Usage inside Moodle
 $PAGE->requires->js(new moodle_url('/local/mwscoursetree/widget.js'), true);
+// Outside Moodle, use a script tag
+//<script type="text/javascript" src="....../local/mwscoursetree/widget.js"></script>
+
 $PAGE->set_pagelayout('admin');
 
 echo $OUTPUT->header();
@@ -31,7 +36,6 @@ echo "Vous pouvez préciser les paramètres <b>debug=0|1</b> (infos complémenta
 }
 </style>
 
-<script type="text/javascript" src="<?php echo new moodle_url('/local/mwscoursetree/widget.js'); ?>"></script>
 <!--div class="coursetree" data-root="</cat0" data-title="1"></div-->
 <div class="coursetree" data-root="<?php echo $node; ?>" data-title="1" data-stats="<?php echo $stats; ?>" data-debug="<?php echo $debug ?>"></div>
 

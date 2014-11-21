@@ -7,7 +7,7 @@
     var ieWait = 2; // number of scripts, for IE < 9
 
     if (window.jQuery === undefined) {
-        loadJs(rootUrl + "../jquery/jquery.js");
+        loadJs(rootUrl + "../jquery/jquery.js", false);
         loadJs(rootUrl + "assets/tree.jquery.js", true);
     } else if (window.jQuery.fn.tree === undefined) {
         ieWait--;
@@ -31,7 +31,7 @@
         script_tag.setAttribute("type","text/javascript");
         script_tag.setAttribute("src", url);
         (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(script_tag);
-        if (last !== undefined) {
+        if (last) {
             if (script_tag.readyState) { // IE < 9
                 script_tag.onreadystatechange = function () {
                     if (this.readyState === 'complete' || this.readyState === 'loaded') {
@@ -52,9 +52,6 @@
                     if (this.readyState === 'complete' || this.readyState === 'loaded') {
                         script_tag.onreadystatechange = null; // bug IE8
                         ieWait--;
-                        if (ieWait === 0) {
-                            onLoadFinished();
-                        }
                     }
                 };
             }
@@ -73,7 +70,10 @@
                 var $tree = $(this);
                 var rootNode = $tree.data('root');
                 if ($tree.data('stats')) {
-                    $tree.before('<div class="tree-external-headers"><span class="jqtree-title"><span class="coursetree-name"> </span><span class="coursetree-stats"><span>Cours</span><span>Étudiants</span><span>Enseignants</span></span></span></div>')
+                    $tree.before('<div class="tree-external-headers">\
+<span class="jqtree-title">\
+<span class="coursetree-name"> </span><span class="coursetree-stats"><span>Cours</span><span>Étudiants</span><span>Enseignants</span>\
+</span></span></div>');
                     $(".tree-external-headers .coursetree-name").each(resizenameColumn);
                 }
                 $tree.tree({
