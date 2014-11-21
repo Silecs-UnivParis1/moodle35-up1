@@ -41,14 +41,19 @@ echo '<form action="' . $CFG->wwwroot . '/local/crswizard/index.php" method="pos
 
 <div class="fitem">
 <fieldset class="clearfix" id="categoryheader">
-    <legend class="ftoggler" ><?php echo get_string('selectedvalidator', 'local_crswizard');?></legend>
+    <div class="fcontainer clearfix">
+        <br/>
+        <div id="user-select">
+            <div class="widgetselect-panel-left">
+                <h3><?php echo get_string('findvalidator', 'local_crswizard'); ?></h3>
+
     <?php
         if ($autovalidation == 1) {
             echo '<div class="fcontainer clearfix">Si vous êtes le responsable éditorial de l\'EPI, cochez la cas si dessous.</div>';
             echo '<div class="fitem fitem_fcheckbox"><div class="fitemtitle">'
-                . '<label for="id_autovalidation">Je suis responsable de cet enseignement</label></div>'
+                . '<span for="id_autovalidation">Je suis responsable de cet enseignement</span></div>'
                 . '<div class="felement fcheckbox"><span>'
-                . '<input type="checkbox" name="autovalidation" id="id_autovalidation" ';
+                . '<input type="checkbox" style="margin-top: 9px;" name="autovalidation" id="id_autovalidation" ';
                 if (isset($SESSION->wizard['form_step3']['autovalidation'])) {
                     echo ' checked="checked" ';
                 }
@@ -57,11 +62,8 @@ echo '<form action="' . $CFG->wwwroot . '/local/crswizard/index.php" method="pos
                 . ', veuillez rechercher le responsable de l\'enseignement puis l\'ajouter en approbateur sélectionné en cliquant sur le symbole +</div>';
         }
     ?>
-    <div class="fcontainer clearfix">
-        <br/>
-        <div id="user-select">
-            <div class="widgetselect-panel-left">
-                <h3><?php echo get_string('findvalidator', 'local_crswizard'); ?></h3>
+
+
                 <input type="text" class="user-selector" name="something" data-inputname="teacher" size="50"
                     placeholder="<?php echo s(get_string('validatorname', 'local_crswizard')); ?>" />
             </div>

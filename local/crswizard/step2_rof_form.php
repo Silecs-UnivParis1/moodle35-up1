@@ -22,8 +22,6 @@ class course_wizard_step2_rof_form extends moodleform {
         $editoroptions = $this->_customdata['editoroptions'];
 
         $bockhelpE2 = get_string('bockhelpE2Rof1', 'local_crswizard');
-        $bockhelpE2 .= '&nbsp;«&nbsp;<span class="collapsed">&nbsp;+&nbsp;</span>&nbsp;»&nbsp;et&nbsp;«&nbsp;<span class="expanded">&nbsp;-&nbsp;&nbsp;</span>&nbsp;»&nbsp;';
-        $bockhelpE2 .= get_string('bockhelpE2Rof2', 'local_crswizard');
         $mform->addElement('html', html_writer::tag('div', $bockhelpE2, array('class' => 'fitem')));
 
 /// form definition with new course defaults
@@ -89,7 +87,15 @@ class course_wizard_step2_rof_form extends moodleform {
         $rofseleted = '<div class="by-widget"><h3>Rechercher un élément pédagogique</h3>'
             . '<div class="item-select ' . $classreadonly . '" id="choose-item-select"></div>'
             . '</div>'
-            . '<div class="block-item-selected">'
+            . '<div class="block-item-selected" style="position: relative">'
+            . '<div style="position: absolute; bottom: 0;">'
+	    . "  Un même espace de cours peut être rattaché à"
+	    . "  plusieurs niveaux sans limite de nombre"
+	    . "  <br>Exemples : <div class='indented-block-top'>"
+	    . "      M1 et M2 histoire, M2 géographie"
+	    . "      <br>CM et TD"
+	    . "      <br>Licence et Bi-licence</div>"
+	    . "</div>"
             . '<h3>Éléments pédagogiques sélectionnés</h3>'
             . '<div id="items-selected">'
             . '<div id="items-selected1"><span>' . get_string('rofselected1', 'local_crswizard') . '</span></div>'
@@ -102,6 +108,7 @@ class course_wizard_step2_rof_form extends moodleform {
         $mform->addElement('html', $rofseleted);
 
         $mform->addElement('header', 'general', get_string('generalinfoblock', 'local_crswizard'));
+	$mform->setExpanded('general');
         $coursegeneralhelp = get_string('coursegeneralhelpRof', 'local_crswizard');
         $mform->addElement('html', html_writer::tag('div', $coursegeneralhelp, array('class' => 'fitem')));
 
@@ -136,6 +143,7 @@ class course_wizard_step2_rof_form extends moodleform {
         $mform->setType('summary_editor', PARAM_RAW);
 
         $mform->addElement('header', 'parametre', get_string('coursesettingsblock', 'local_crswizard'));
+	$mform->setExpanded('parametre');
 
         $coursesettingshelp = get_string('coursesettingshelp', 'local_crswizard');
         $mform->addElement('html', html_writer::tag('div', $coursesettingshelp, array('class' => 'fitem')));

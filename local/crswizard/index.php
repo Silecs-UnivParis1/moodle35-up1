@@ -78,7 +78,7 @@ switch ($stepin) {
         $editform = new course_wizard_step1_form();
         break;
     case 1:
-        $steptitle = "Étape 1 : modalité de création";
+        $steptitle = "Étape 1 : Création de l'EPI";
         $PAGE->requires->js(new moodle_url('/local/jquery/jquery.js'), true);
         $editform = new course_wizard_step_model();
         $data = $editform->get_data();

@@ -52,7 +52,6 @@ if (isset($SESSION->wizard['idcourse'])) {
 }
 echo $OUTPUT->box($titlepage, 'titlecrswizard');
 
-echo $OUTPUT->heading(get_string('blocktitleE5', 'local_crswizard'), 4, '');
 echo $OUTPUT->box(get_string('bockhelpE5', 'local_crswizard'), '');
 
 $myconfig = new my_elements_config();
@@ -85,7 +84,7 @@ if (isset($SESSION->wizard['form_step5']['groupmsg'])) {
 
 echo '<form action="' . $CFG->wwwroot . $SESSION->wizard['wizardurl'] . '" method="post">';
 ?>
-<div class="role">
+<div class="role" style="display: none">
     <h3><?php echo get_string('role', 'local_crswizard');?></h3>
     <select name="role" size="1" id="group-role">
         <?php
@@ -105,6 +104,10 @@ echo '<form action="' . $CFG->wwwroot . $SESSION->wizard['wizardurl'] . '" metho
         <h3><?php echo get_string('findcohort', 'local_crswizard'); ?></h3>
         <input type="text" class="group-selector" name="something" data-inputname="group" size="50"
                placeholder="<?php echo s(get_string('cohortname', 'local_crswizard')); ?>" />
+        <div>Recherchez un groupe d'étudiant et cliquez sur + pour l'ajouter aux Groupes sélectionnés
+         <p>N'inscrivez <u>que</u> les étudiants devant participer à votre cours - et non ceux du diplôme ou de l'UFR. 
+         <br>Vous pourrez paramétrer d'autres types d'accès à l'étape suivante.
+        </div>
     </div>
     <div class="widgetselect-panel-left">
         <h3><?php echo get_string('selectedcohort', 'local_crswizard'); ?></h3>

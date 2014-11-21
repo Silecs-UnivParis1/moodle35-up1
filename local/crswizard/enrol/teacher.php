@@ -26,14 +26,17 @@ $PAGE->requires->css(new moodle_url('/local/crswizard/css/crswizard.css'));
 echo $OUTPUT->header();
 echo $OUTPUT->box(get_string('wizardcourse', 'local_crswizard'), 'titlecrswizard');
 echo $OUTPUT->box(get_string('enrolteachers', 'local_crswizard'), 'titlecrswizard');
-echo $OUTPUT->heading(get_string('blocktitleE4', 'local_crswizard'), 4, '');
 echo $OUTPUT->box(get_string('bockhelpE4', 'local_crswizard'), '');
 
 echo '<form action="' . $CFG->wwwroot . '/local/crswizard/index.php" method="post">';
 ?>
 
+<br/>
+<div id="user-select">
+    <div class="widgetselect-panel-left">
+
 <div class="role">
-<h3><?php echo get_string('role', 'local_crswizard');?></h3>
+<h3>Choisir un rôle</h3>
 	<select name="role" size="1" id="roleteacher">
         <?php
 		$myconfig = new my_elements_config();
@@ -41,20 +44,18 @@ echo '<form action="' . $CFG->wwwroot . '/local/crswizard/index.php" method="pos
         $roles = wizard_role($labels);
         foreach ($roles as $r) {
             $label = $r['name'];
-            if (array_key_exists($r['shortname'], $labels)) {
-                $label = $labels[$r['shortname']];
-            }
-            echo '<option value="' . s($r['shortname']) . '">' . format_string(get_string($label, 'local_crswizard')) . '</option>';
+            echo '<option value="' . s($r['shortname']) . '">' . format_string($label) . '</option>';
         }
         ?>
 	</select>
 </div>
-<br/>
-<div id="user-select">
-    <div class="widgetselect-panel-left">
+
         <h3><?php echo get_string('findteacher', 'local_crswizard'); ?></h3>
         <input type="text" class="user-selector" name="something" data-inputname="teacher" size="50"
                placeholder="<?php echo s(get_string('teachername', 'local_crswizard')); ?>" />
+
+	  <div>Recherchez l'utilisateur auquel vous souhaitez attribuer ce rôle<br>
+				puis cliquez sur + pour l'ajouter aux Enseignants sélectionnés </div>
     </div>
     <div class="widgetselect-panel-right">
         <h3><?php echo get_string('selectedteacher', 'local_crswizard'); ?></h3>

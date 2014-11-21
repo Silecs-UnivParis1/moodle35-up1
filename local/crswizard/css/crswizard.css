@@ -60,3 +60,17 @@ div#fitem_id_selm2 {
     padding-top: 4px;
     padding-bottom: 4px;
 }
+
+.indented-block-top {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.fake-fitemtitle {
+    display: inline-block;
+    width: 20em;
+}
+
+.jsenabled .collapsible-actions {
+    display: none;
+}

@@ -21,9 +21,7 @@ class course_wizard_step_model extends moodleform {
         $mform->setType('stepin', PARAM_INT);
         $mform->setConstant('stepin', 1);
 
-        $mform->addElement('html', html_writer::tag('div', get_string('blocHelp1SModel', 'local_crswizard'), array('class' => 'fitem')));
-
-        $mform->addElement('header', 'general', "Vous souhaitez créer un nouvel espace :");
+        $mform->addElement('header', 'general', "Vous souhaitez");
 
         $course_model = wizard_get_course_model_list();
         if (count($course_model)) {
@@ -31,11 +29,11 @@ class course_wizard_step_model extends moodleform {
             $course_summary = $course_model['model_summary'];
             if (count($course_model_list)) {
                 $m1array = array();
-                $m1array[] = $mform->CreateElement('radio', 'modeletype', '', 'à partir du modèle', 'selm1');
-                $m1array[] = $mform->CreateElement('select', 'selm1', '', $course_model_list);
+                $m1array[] = $mform->CreateElement('radio', 'modeletype', '', '<span class="fake-fitemtitle">Créer un nouvel EPI</span>', 'selm1');
+                $m1array[] = $mform->CreateElement('select', 'sEPIelm1', '', $course_model_list);
                 $m1array[] = $mform->CreateElement('select', 'course_summary', '',  $course_summary, array('class' => 'cache'));
 
-                $mform->addGroup($m1array, 'm1array', "", array(' : ', ' '), false);
+                $mform->addGroup($m1array, 'm1array', "", array(' '), false);
                 $mform->disabledIf('selm1', 'modeletype', 'neq', 'selm1');
             }
         } else {
@@ -45,7 +43,8 @@ class course_wizard_step_model extends moodleform {
         $course_list_teacher = wizard_get_course_list_teacher();
         if (count($course_list_teacher)) {
             if (count($course_list_teacher)) {
-                $mform->addElement('radio', 'modeletype', '', 'par duplication et réinitialisation de l\'espace', 'selm2');
+                $mform->addElement('radio', 'modeletype', '', "<span class='fake-fitemtitle'>Dupliquer l'un de vos EPI</span>"
+				   . "<div class='indented-block-top' style='margin-left: 0.5em;'>" . get_string('blocHelp1SModel', 'local_crswizard') . "</div>", 'selm2');
                 $mform->addElement('select', 'selm2', '', $course_list_teacher,  array(
                     'class' => 'transformIntoSubselects boitex',
                 ));

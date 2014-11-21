@@ -18,34 +18,20 @@ $string['crswizard:rofreferenceeditor'] = 'Modifier les rattachements au ROF d\'
 $string['crswizard:hybridattachment'] = 'Ajouter/modifier des rattachements au ROF dans cours hybrides';
 $string['crswizard:duplicate'] = 'Dupliquer le cours avec l\'assistant.';
 
-$string['blocHelp1SModel'] = '<p>Trois modèles d\'EPI à aménager selon vos '
-    . 'besoins vous sont proposés :</p>'
-    . '<ul><li>EPI d\'enseignement avec une présentation thématique ou chronologique</li>'
-    . '<li>EPI d\'enseignement avec une présentation par typologie de documents</li>'
-    . '<li>EPI portail de diplôme</li></ul>'
-    . '<p>Vous pouvez aussi dupliquer et adapter un EPI existant dans lequel '
-    . 'vous êtes enseignant. Dans ce cas, les contenus seront conservés mais '
-    . 'pas les participants ni leurs contributions.</p>';
+$string['blocHelp1SModel'] = 'Vos contenus (textes, documents, fichiers audio-visuels...) sont conservés. ' .
+  '<br>Les activités (forums, devoirs...) sont remises à zéro. ' .
+  '<br>Vos participants sont conservés et les cohortes sont annualisées.';
+$string['blocTitleS1'] = "<h2 class='crswizardWarning'>Bienvenue, laissez-vous guider par l'Assistant de création</h2>";
+$string['blocIntroS1'] = "Vous souhaitez créer un EPI pour : ";
 $string['blocHelloS1'] = '<p>Bienvenue dans l\'assistant de création d\'espace de cours. '
     . 'Laissez-vous guider et définissez en quelques étapes les caractéristiques, les contributeurs '
     . 'et le public visé de votre EPI (Espace Pédagogique Interactif).</p>'
     . '<p>Pour commencer, choisissez si votre espace :'
     .'<ul><li>concerne un élément pédagogique de l\'offre de formation (diplôme, enseignement, groupe de TD, etc.)</li>'
     . '<li>ou répond à un autre besoin (projet particulier, formation pour les personnels, etc.).</li></ul></p>';
-$string['bockhelpE2'] = '<p>Cette étape fondamentale vous permet de situer votre espace dans l\'organisation générale des EPI.<br/>'
-    . 'Il est important de bien réfléchir aux informations que vous allez compléter ci-dessous, car '
-    . 'elles ont une incidence sur la facilité avec laquelle vos étudiants retrouveront votre espace de cours.<br/>'
-    . 'Notez que si votre espace doit être rattaché à plusieurs composantes / services, il vous sera '
-    . 'possible de le spécifier à l\'étape suivante.</p>';
-$string['bockhelpE2Rof1'] = '<p>Cette étape fondamentale vous permet de situer votre espace dans l\'organisation générale des EPI.<br/>'
-    . 'Il est important de bien réfléchir aux informations que vous allez compléter ci-dessous, car '
-    . 'elles ont une incidence sur la facilité avec laquelle vos étudiants retrouveront votre espace de cours.</p>'
-    . '<ol><li>Sélectionnez en premier lieu la période concernée et l\'établissement.</li>'
-    .'<li>Recherchez l\'élément pédagogique pour lequel vous souhaitez créer l\'espace en parcourant '
-    . 'l\'offre de formation (composante, type de diplôme, diplôme, semestre, UE, enseignement, etc.). Les symboles';
-$string['bockhelpE2Rof2'] = 'vous permettent de développer / réduire les niveaux de l\'arborescence.</li>'
-    . '<li>Cliquez sur le symbole « + » pour définir l\'élément pédagogique comme rattachement de référence.</li></ol>'
-    . '<p>Renouvelez cette opération (phases 1 à 3) si vous souhaitez rattacher l\'espace à d\'autres éléments pédagogiques.</p>';
+$string['bockhelpE2'] = "<h2 class='crswizardWarning'>Attention : le rattachement détermine l'intitulé de votre espace de cours et sa position dans l'index des EPI de l'UFR.</h2>";
+$string['bockhelpE2Rof1'] = "<h2 class='crswizardWarning'>Attention : le rattachement détermine l'intitulé de votre espace de cours et sa position dans l’index des EPI de l'UFR.</h2>";
+$string['bockhelpE2Rof2'] = '';
 $string['bockhelpE3'] = '<p>Vous avez défini à l\'étape précédente le rattachement principal de votre espace '
     . 'de cours.<br/>Si ce dernier s\'adresse aux étudiants d\'une autre composante et/ou inscrits '
     . 'à un autre niveau de diplôme, il vous est possible de le spécifier ci-dessous.</p>';
@@ -61,53 +47,22 @@ $string['bockhelpE3validator'] = '<p>Toute demande de création d\'espace de cou
     . 'ou son identifiant Paris 1 ou le couple Prénom Nom. Notez que vous ne pouvez pas vous '
     . 'désigner comme approbateur de l\'espace que vous êtes entrain de créer.</li>'
     . '<li>Cliquez sur le symbole « + » pour désigner cet utilisateur comme approbateur de cet espace.</li></ol>';
-$string['bockhelpE3autovalidator'] = '<p>Toute demande de création d\'espace de cours fait l\'objet d’une modération. '
-    . 'Notez qu\'il vous sera possible de désigner les enseignants contributeurs et d\'inscrire les '
-    . 'groupes d\'étudiants aux étapes suivantes.</p>'
-    .'<p><b>Cas 1</b> : Si vous êtes l\'enseignant responsable du diplôme, de l\'UE ou de l\'élément '
-    . 'pédagogique pour lequel vous créez cet espace, cochez la case "Je suis responsable de cet enseignement (ne renseignez pas d\'approbateur).<br/>'
-    . '<b>Cas 2</b> : Si vous n\'êtes pas responsable de l\'élément pédagogique concerné (chargé de TD par '
-    . 'exemple), désignez un enseignant chargé d\'approuver la création de l\'espace (en général le '
-    . 'responsable du diplôme, de l\'UE ou de l\'enseignement pour lequel cet espace est créé).</p>'
-    . '<ol><li>Recherchez l\'utilisateur dans l\'annuaire de l\'université, en saisissant, par exemple, son nom '
-    . 'ou son identifiant Paris 1 ou le couple Prénom Nom. Notez que vous ne pouvez pas vous '
-    . 'désigner comme approbateur de l\'espace que vous êtes entrain de créer.</li>'
-    . '<li>Cliquez sur le symbole « + » pour désigner cet utilisateur comme approbateur de cet espace.</li></ol>'
-    . '<p><strong>NB : </strong>L\'approbateur est la personne qui assume la résponsabilité éditoriale de l\'EPI et valide son rattachement.</p>';
-$string['bockhelpE4'] = '<p>Cette étape vous permet d\'attribuer à des enseignants des droits de '
-    . 'contribution sur cet espace de cours. Il vous sera possible d\'inscrire les groupes d\'étudiants à '
-    . 'l\'étape suivante.</p><ol><li>Sélectionnez en premier lieu le rôle à attribuer à l’utilisateur :'
-    . '<ul><li>« Enseignant » : ajout d\'activités et de ressources, notation des devoirs ;</li>'
-    . '<li>« Enseignant non éditeur » : consultation des ressources, notation des devoirs.</li></ul></li>'
-    . '<li>Recherchez ensuite cet utilisateur dans l\'annuaire de l\'université, en saisissant, par exemple, '
-    . 'son nom ou son identifiant Paris 1 ou le couple Prénom Nom</li>'
-    . '<li>Cliquez sur le symbole « + » pour ajouter cet utilisateur comme contributeur de cet espace.</li></ol></p>'
-    . '<p>Notez qu\'il vous est par défaut attribué le rôle « Enseignant ». Si vous n\'êtes pas destiné à '
-    . 'être contributeur de cet espace, veillez à supprimer votre nom de la liste des utilisateurs sélectionnés (symbole X).</p>';
-$string['bockhelpE5'] = '<p>Cette étape vous permet de sélectionner les groupes d\'utilisateurs qui auront le '
-    . 'droit d\'accéder à cet espace de cours. Si vous ne trouvez pas le groupe d\'utilisateurs '
-    . 'recherché, notez que vous avez la possibilité de définir une clé d\'inscription à l\'étape suivante.</p>'
-    . '<ol><li>Sélectionnez en premier lieu le rôle à attribuer au(x) groupe(s) d\'utilisateurs :'
-    . '<ul><li>« Etudiant » : consultation des ressources, participation aux activités ;</li>'
-    . '<li>« Visiteur anonyme » : consultation des ressources uniquement.</li></ul></li>'
-    . '<li>Recherchez ensuite le groupe d\'utilisateurs dans l\'annuaire de l\'université, en saisissant, '
-    . 'par exemple, son intitulé ou une partie de son intitulé ou le nom d\'un étudiant appartenant à ce groupe.</li>'
-    . '<li>Cliquez sur le symbole « + » pour inscrire ce groupe d\'utilisateurs à cet espace.</li></ol>';
-$string['bockhelpE6'] = '<p>Si vous n\'avez trouvé aucun groupe d\'utilisateurs à l\'étape précédente, vous '
-    . 'avez la possibilité de communiquer à vos étudiants un code (appelé « clé d\'inscription ») leur '
-    . 'permettant de s\'inscrire eux-mêmes à l\'espace de cours lors de leur premier accès.<br/>'
-    . 'Conseil : prenez note des clés d\'inscription que vous aurez définies à cette étape et conservez-les précieusement.</p>';
-$string['bockhelpE6cleu'] = 'Attention : renseignez le champ « clé d\'inscription » pour que la clé soit créée et sélectionnez, '
-    . 'puis activez à minima une date de début, à partir de laquelle vos étudiants pourront eux-mêmes s\'inscrire à cet espace. '
-    . 'Définissez et activez une date de fin si vous souhaitez que la clé d\'inscription ne soit disponible que pendant une période déterminée.';
-$string['bockhelpE6clev'] = 'Attention : renseignez le champ « clé d\'inscription » pour que la clé soit créée et sélectionnez, '
-    . 'puis activez à minima une date de début, à partir de laquelle vos visiteurs anonymes pourront eux-mêmes s\'inscrire à cet espace. '
-    . 'Définissez et activez une date de fin si vous souhaitez que la clé d\'inscription ne soit disponible que pendant une période déterminée.';
-$string['bockhelpE7p1'] ='<p>En cliquant sur le bouton « Terminer », vous finaliserez votre demande et déclencherez : '
-    . '<ul><li>la création de cet espace, qui sera pour l\'instant masqué à vos étudiants, </li>'
-    . '<li>la transmission de cette demande -pour approbation- à l\'utilisateur '
-    . 'que vous avez désigné et/ou aux modérateurs de la plateforme</li>'
-    . '<li>et l\'envoi d’un courriel récapitulatif de cette demande à l\'adresse : ';
+$string['bockhelpE3autovalidator'] = "<h2 class='crswizardWarning'>NB : L'approbateur est la personne qui assume la responsabilité éditoriale de l'EPI et valide son rattachement</h2>";
+$string['bockhelpE4'] = "<h2 class='crswizardWarning'>NB : Si plusieurs enseignants contribuent à l'EPI, veuillez renseigner soigneusement cette étape.</h2>";
+$string['bockhelpE5'] = "<h2 class='crswizardWarning'>Attention : Cette étape permet <ul> "
+    . "<li>d'autoriser l'accès à l'EPI pour vos groupes d'étudiants participants au cours"
+    . "<li>d'envoyer aux groupes inscrits des annonces et des notifications pas mailing liste"
+    . "<li>de répertorier l'EPI sur la page de chaque étudiant participant afin qu'il y accède directement"
+    . "</ul></h2>";
+$string['bockhelpE6'] = "<h2 class='crswizardWarning'>NB : Les clés sont des mots de passe que vous choisissez librement. "
+  . "<br>Transmettre une clé à un utilisateur lui permet de s'auto-inscrire à l'EPI avec un rôle défini. "
+  . "<br>En cas d'oubli de votre clé, vous pourrez la retrouver sur cette page en activant la case Révéler.";
+$string['bockhelpE6clev'] = "Exemples : Collègue souhaitant visiter l'EPI, auditeur libre, ancien étudiant...";
+$string['bockhelpE6cleu'] = "Exemples : Etudiant UP1 en attente d'inscription pédagogique, étudiants d'une université partenaire, autres situations d'exception diverses "
+  . "<br><u>Définir cette clé est très recommandé.</u>";
+$string['bockhelpE7p1'] = "<h2 class='crswizardWarning'>En cliquant sur le bouton Terminer vous finaliserez la création de votre EPI"
+  . "<br>Affichez le récapitulatif de la demande pour vérifier les éléments que vous avez saisis"
+  . "<br>Vous pourrez modifier à tout moment ces éléments via le menu <i>Navigation > Assistant de création > Paramètres</i></h2>";
 $string['bockhelpE7p2'] = '</li></ul></p>'
     . '<p>Conseil : affichez le récapitulatif de votre demande de manière à vérifier les éléments que vous avez saisis. '
     . 'En cas d\'erreur ou d\'omission, il vous est possible revenir en arrière en cliquant '
@@ -137,11 +92,8 @@ $string['coursegeneralhelp'] = '<p>Le nom complet de l\'espace est affiché en h
     . 'l\'écran), dans le fil d\'Ariane et dans l\'objet de certains courriels. Le texte de présentation '
     . 'est en accès public : il est affiché sur la fiche signalétique de l\'espace accessible à partir '
     . 'de la page d\'accueil de la plateforme et dans les résultats d\'une recherche.</p>';
-$string['coursegeneralhelpRof'] = '<p>Le nom complet de l\'espace est affiché en haut de '
-    . 'chacune des pages du cours et sur la liste des cours.  Il vous est possible, si '
-    . 'vous le jugez nécessaire, de modifier le texte figurant dans la zone « Complément ».<br/>'
-    . 'Le texte de présentation est en accès public : il est affiché sur la fiche signalétique de '
-    . 'l\'espace accessible à partir de la page d\'accueil de la plateforme et dans les résultats d\'une recherche.</p>';
+$string['coursegeneralhelpRof'] = "Si nécessaire, complétez l'intitulé de votre EPI dans le champ vierge."
+    . "Le texte de présentation s'affichera en accès public sur la fiche signalétique de votre cours.";
 $string['coursemodel'] = 'Modèle de création : ';
 $string['courserequestdate'] = 'Date de la demande de création : ';
 $string['coursesettingsblock'] = 'Paramétrage de l\'espace de cours';

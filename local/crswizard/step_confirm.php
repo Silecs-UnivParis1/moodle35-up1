@@ -23,10 +23,8 @@ class course_wizard_step_confirm extends moodleform {
 
         $mform = $this->_form;
         $mgConf1 = get_string('bockhelpE7p1', 'local_crswizard');
-        $mgConf2 = get_string('bockhelpE7p2', 'local_crswizard');
-        $identifValidateurs = $USER->email;
         $mform->addElement('html', html_writer::tag('div',
-            $mgConf1 . $identifValidateurs . $mgConf2, array('class' => 'fitem', 'id' => 'bockhelpE7')));
+            $mgConf1, array('class' => 'fitem', 'id' => 'bockhelpE7')));
 
         $mform->addElement('header', 'resume', get_string('summaryof', 'local_crswizard'));
         $user_name = fullname($USER);
@@ -137,7 +135,7 @@ class course_wizard_step_confirm extends moodleform {
                 $mform->setConstant('validator' , fullname($validator));
             }
         } elseif (!empty($SESSION->wizard['form_step3']['autovalidation'])) {
-            $mform->addElement('header', 'validators', get_string('selectedvalidator', 'local_crswizard') . ' : aucun');
+            $mform->addElement('header', 'validators', get_string('selectedvalidator', 'local_crswizard'));
             $mform->addElement('text', 'validator', 'Autovalidation', 'size="60"');
             $mform->setType('validator', PARAM_TEXT);
             $mform->setConstant('validator' , 'Je suis responsable de cet enseignement');
