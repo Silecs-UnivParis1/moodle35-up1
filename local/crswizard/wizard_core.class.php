@@ -277,18 +277,19 @@ class wizard_core {
     private function set_metadata_cycle_life() {
         $this->mydata->profile_field_up1avalider = 1;
         $this->mydata->profile_field_up1datevalid = 0;
+        $this->mydata->profile_field_up1approbateurpropid = wizard_get_approbateurpropid();
 
         $form3 = $this->formdata['form_step3'];
         // si autoevaluation
         if (isset($form3['autovalidation'])) {
-            $this->mydata->profile_field_up1avalider = 0;
+            $this->mydata->profile_field_up1avalider = 1;
+            $this->mydata->profile_field_up1approbateurpropid = $this->user->id;
             $this->mydata->profile_field_up1approbateureffid = $this->user->id;
             $this->mydata->profile_field_up1datevalid = time();
         }
 
         $this->mydata->profile_field_up1datedemande = time();
         $this->mydata->profile_field_up1demandeurid = $this->user->id;
-        $this->mydata->profile_field_up1approbateurpropid = wizard_get_approbateurpropid();
     }
 
     private function set_param_rof1($rof1) {
