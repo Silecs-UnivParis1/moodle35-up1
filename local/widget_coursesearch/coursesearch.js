@@ -4,32 +4,22 @@
 (function() {
 
     var rootUrl = findScriptUrl('coursesearch.js');
-    var ieWait = 3; // number of scripts, for IE < 9
-
-    var initParams;
-        window.coursesearch = function (params) {
-            initParams = params;
-        };
 
     if (window.jQuery === undefined) {
-        loadJs(rootUrl + "../jquery/jquery.js");
-        loadJs(rootUrl + "../jquery/jquery-ui.js");
-        loadJs(rootUrl + "../jquery/jquery.dataTables.min.js", true);
+        loadJs(rootUrl + "../jquery/jquery.js", true);
+        loadJs(rootUrl + "../jquery/jquery-ui.js", false);
+        loadJs(rootUrl + "../jquery/jquery.dataTables.min.js", false);
     } else {
-        ieWait--;
+        onLoadFinished();
         if (window.jQuery.fn.accordion === undefined) {
             if (window.jQuery.fn.dataTables === undefined) {
-                loadJs(rootUrl + "../jquery/jquery-ui.js");
-                loadJs(rootUrl + "../jquery/jquery.dataTables.min.js", true);
+                loadJs(rootUrl + "../jquery/jquery-ui.js", false);
+                loadJs(rootUrl + "../jquery/jquery.dataTables.min.js", false);
             } else {
-                loadJs(rootUrl + "../jquery/jquery-ui.js", true);
+                loadJs(rootUrl + "../jquery/jquery-ui.js", false);
             }
         } else if (window.jQuery.fn.dataTables === undefined) {
-            ieWait--;
-            loadJs(rootUrl + "../jquery/jquery.dataTables.min.js", true);
-        } else {
-            ieWait = 0;
-            onLoadFinished();
+            loadJs(rootUrl + "../jquery/jquery.dataTables.min.js", false);
         }
     }
 
@@ -56,18 +46,14 @@
         script_tag.setAttribute("type","text/javascript");
         script_tag.setAttribute("src", url);
         (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(script_tag);
-        if (last !== undefined) {
+        if (typeof last !== 'undefined' && last) {
             if (script_tag.readyState) {
                 script_tag.onreadystatechange = function () {
                     if (this.readyState === 'complete' || this.readyState === 'loaded') {
-                        ieWait--;
-                        if (ieWait === 0) {
-                            onLoadFinished();
-                        }
+                        onLoadFinished();
                     }
                 };
             } else {
-                ieWait = 0;
                 script_tag.onload = onLoadFinished;
             }
         } else {
@@ -75,10 +61,6 @@
                 script_tag.onreadystatechange = function () {
                     if (this.readyState === 'complete' || this.readyState === 'loaded') {
                         script_tag.onreadystatechange = null; // bug IE8
-                        ieWait--;
-                        if (ieWait === 0) {
-                            onLoadFinished();
-                        }
                     }
                 };
             }
@@ -86,49 +68,49 @@
     }
 
     function onLoadFinished() {
-
-        jQuery(function () {
-            $('.widget-coursesearch').each(function(){
+        $.fn.coursesearch = function (params) {
+            $(this.selector). each(function() {
                 var $elem = $(this);
-                $elem.load(rootUrl + 'ajax.php', initParams);
+                $elem.load(rootUrl + 'ajax.php', params);
                 $elem.on('submit', 'form', buildSearchMoodleCourses($elem));
             });
-            function buildSearchMoodleCourses($elem) {
-                return function searchMoodleCourses (event) {
-                    var data = $(this).closest('form').serialize();
-                    $.ajax({
-                        'url': rootUrl + 'ajax.php',
-                        'type': 'GET',
-                        'data': data
-                    }).done(function(html) {
-                        $elem.html(html).find('table').dataTable({ "oLanguage": {
-                            "sProcessing":     "Traitement en cours...",
-                            "sSearch":         "Rechercher&nbsp;:",
-                            "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
-                            "sInfo":           "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
-                            "sInfoEmpty":      "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
-                            "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
-                            "sInfoPostFix":    "",
-                            "sLoadingRecords": "Chargement en cours...",
-                            "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
-                            "sEmptyTable":     "Aucune donnée disponible dans le tableau",
-                            "oPaginate": {
-                                "sFirst":      "Premier",
-                                "sPrevious":   "Pr&eacute;c&eacute;dent",
-                                "sNext":       "Suivant",
-                                "sLast":       "Dernier"
-                            },
-                            "oAria": {
-                                "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
-                                "sSortDescending": ": activer pour trier la colonne par ordre décroissant"
-                            }
+            return this;
+        };
+        function buildSearchMoodleCourses($elem) {
+            return function (event) {
+                var data = $(this).closest('form').serialize();
+                $.ajax({
+                    'url': rootUrl + 'ajax.php',
+                    'type': 'GET',
+                    'data': data
+                }).done(function(html) {
+                    $elem.html(html).find('table').dataTable({ "oLanguage": {
+                        "sProcessing":     "Traitement en cours...",
+                        "sSearch":         "Rechercher&nbsp;:",
+                        "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+                        "sInfo":           "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+                        "sInfoEmpty":      "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
+                        "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+                        "sInfoPostFix":    "",
+                        "sLoadingRecords": "Chargement en cours...",
+                        "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+                        "sEmptyTable":     "Aucune donnée disponible dans le tableau",
+                        "oPaginate": {
+                            "sFirst":      "Premier",
+                            "sPrevious":   "Pr&eacute;c&eacute;dent",
+                            "sNext":       "Suivant",
+                            "sLast":       "Dernier"
+                        },
+                        "oAria": {
+                            "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                            "sSortDescending": ": activer pour trier la colonne par ordre décroissant"
                         }
-                        });
+                    }
                     });
-                    return false;
-                };
-            }
-        });
+                });
+                return false;
+            };
+        }
     }
 
 })();
