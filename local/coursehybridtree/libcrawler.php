@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * @package    local
+ * @subpackage coursehybridtree
+ * @copyright  2014 Silecs {@link http://www.silecs.info/societe}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/CourseHybridTree.php';
+require_once __DIR__ . '/ChtNode.php';
+require_once __DIR__ . '/ChtNodeCategory.php';
+require_once __DIR__ . '/ChtNodeRof.php';
+require_once __DIR__ . '/ChtNodeCourse.php';
+
+
+function hybridcrawler($maxdepth = 0) {
+    $tree = CourseHybridTree::createTree('/cat0');
+
+    internalcrawler($tree, $maxdepth);
+}
+
+function internalcrawler($node, $maxdepth) {
+    $total = 0;
+
+    // echo $node->getAbsoluteDepth() . "  " . $node->getAbsolutePath() . "\n";
+    $children = $node->listChildren();
+    if ( count($children) == 0 ) {
+        return 1;
+    }
+    if ( $maxdepth == 0  ||  $node->getAbsoluteDepth() < $maxdepth ) {        
+        foreach ($children as $child) {
+            $total += internalcrawler($child, $maxdepth);
+        }
+    echo $node->getAbsoluteDepth() . "  " . $node->getAbsolutePath() . "  ";
+    echo $total . "\n";
+    }
+    return $total;
+}
