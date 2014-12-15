@@ -39,19 +39,26 @@ class course_batch_search_form extends moodleform {
         $mform->addElement('hidden', 'enrolledroles');
         $mform->setType('enrolledroles', PARAM_RAW);
 
+        $yearselector = array(
+            'startyear' => 2010,
+            'stopyear'  => date('Y') + 1,
+            'timezone'  => 99,
+            'optional'  => true
+        );
+
         if ( ! empty($this->_customdata['startdate']) && $this->_customdata['startdate'] === true ) {
-            $mform->addElement('date_selector', 'startdateafter', get_string('startdate') . ' &gt;');
+            $mform->addElement('date_selector', 'startdateafter', get_string('startdate') . ' &gt;', $yearselector);
             $mform->setDefault('startdateafter', mktime(12, 0, 0, 1, 1, date('Y') - 1));
             $mform->setType('startdateafter', PARAM_INT);
-            $mform->addElement('date_selector', 'startdatebefore', get_string('startdate') . ' &lt;');
+            $mform->addElement('date_selector', 'startdatebefore', get_string('startdate') . ' &lt;', $yearselector);
             $mform->setDefault('startdatebefore', time() + 3600 * 24);
             $mform->setType('startdatebefore', PARAM_INT);
         }
 
-        $mform->addElement('date_selector', 'createdafter', get_string('createdon', 'search') . ' &gt;');
+        $mform->addElement('date_selector', 'createdafter', get_string('createdon', 'search') . ' &gt;', $yearselector);
         $mform->setDefault('createdafter', mktime(12, 0, 0, 1, 1, date('Y') - 1));
         $mform->setType('createdafter', PARAM_INT);
-        $mform->addElement('date_selector', 'createdbefore', get_string('createdon', 'search') . ' &lt;');
+        $mform->addElement('date_selector', 'createdbefore', get_string('createdon', 'search') . ' &lt;', $yearselector);
         $mform->setDefault('createdbefore', time() + 3600 * 24);
         $mform->setType('createdbefore', PARAM_INT);
 
