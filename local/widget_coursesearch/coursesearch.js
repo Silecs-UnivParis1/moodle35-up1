@@ -6,7 +6,7 @@
     var rootUrl = findScriptUrl('coursesearch.js');
 
     if (window.jQuery === undefined) {
-        loadJs(rootUrl + "../jquery/jquery.js", true);
+        loadJs(rootUrl + "../jquery/jquery.js", onLoadFinished);
         loadJs(rootUrl + "../jquery/jquery-ui.js", false);
         loadJs(rootUrl + "../jquery/jquery.dataTables.min.js", false);
     } else {
@@ -50,11 +50,11 @@
             if (script_tag.readyState) {
                 script_tag.onreadystatechange = function () {
                     if (this.readyState === 'complete' || this.readyState === 'loaded') {
-                        onLoadFinished();
+                        last.call();
                     }
                 };
             } else {
-                script_tag.onload = onLoadFinished;
+                script_tag.onload = last;
             }
         } else {
             if (script_tag.readyState) { // IE < 9, bug on async script loading
@@ -69,9 +69,14 @@
 
     function onLoadFinished() {
         $.fn.coursesearch = function (params) {
-            $(this.selector). each(function() {
+            $(this.selector).each(function() {
                 var $elem = $(this);
-                $elem.load(rootUrl + 'ajax.php', params);
+                $elem.load(rootUrl + 'ajax.php', params, function() {
+					if (typeof M.form.dependencyManagers === 'undefined') {
+						loadJs(rootUrl + '../../lib/javascript.php/0/lib/form/form.js');
+					}
+					$('.collapsed').removeClass('collapsed');
+				});
                 $elem.on('submit', 'form', buildSearchMoodleCourses($elem));
             });
             return this;
