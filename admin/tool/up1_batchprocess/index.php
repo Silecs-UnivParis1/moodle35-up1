@@ -94,8 +94,11 @@ foreach ($actionchecks as $action) {
 } // foreach (actionchecks)
 
 
+$searchconfig = array(
+    'startdate' => true,
+);
 
-$form = new course_batch_search_form();
+$form = new course_batch_search_form(null, $searchconfig);
 $data = $form->get_data();
 $totalcount = 0;
 $courses = null;

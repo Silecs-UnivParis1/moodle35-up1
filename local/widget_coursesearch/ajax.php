@@ -17,6 +17,7 @@ $PAGE->set_context(context_system::instance());
 
 $searchconfig = array(
     'fieldset' => $fieldset,
+    'startdate' => false,
     'fields' => array(
         'Identification' => array(
             'up1nomnorme',
