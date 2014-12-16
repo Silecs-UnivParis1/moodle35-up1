@@ -18,23 +18,31 @@ require_once __DIR__ . '/ChtNodeCourse.php';
 function hybridcrawler($maxdepth = 0) {
     $tree = CourseHybridTree::createTree('/cat0');
 
-    internalcrawler($tree, $maxdepth);
+    internalcrawler($tree, $maxdepth, 'printnode');
 }
 
-function internalcrawler($node, $maxdepth) {
+function internalcrawler($node, $maxdepth, $callbackfn) {
     $total = 0;
 
-    // echo $node->getAbsoluteDepth() . "  " . $node->getAbsolutePath() . "\n";
+    call_user_func($callbackfn, $node);
     $children = $node->listChildren();
     if ( count($children) == 0 ) {
         return 1;
     }
     if ( $maxdepth == 0  ||  $node->getAbsoluteDepth() < $maxdepth ) {        
         foreach ($children as $child) {
-            $total += internalcrawler($child, $maxdepth);
+            $total += internalcrawler($child, $maxdepth, $callbackfn);
         }
-    echo $node->getAbsoluteDepth() . "  " . $node->getAbsolutePath() . "  ";
-    echo $total . "\n";
+    // echo $node->getAbsoluteDepth() . "  " . $node->getAbsolutePath() . "  ";
+    // echo $total . "\n";
     }
     return $total;
+}
+
+function printnode($node) {
+    echo $node->getAbsoluteDepth() . "  " . $node->getAbsolutePath() . "  "  ;
+    $descendantcourses = $node->listDescendantCourses();
+    echo "    " . count($descendantcourses);
+    echo "  " . join (' ', $descendantcourses);
+    echo "\n";
 }
