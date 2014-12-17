@@ -2,8 +2,8 @@
 
 /**
  * @package    report
- * @subpackage rofstats
- * @copyright  2012-2013 Silecs {@link http://www.silecs.info/societe}
+ * @subpackage up1rofstats
+ * @copyright  2012-2014 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -26,5 +26,5 @@ $record->timemodified = time();
 //die();
 $DB->update_record($table, $record, false);
 
-$url = new moodle_url('/report/rofstats/view.php', array('rofid' => $rofid));
+$url = new moodle_url('/report/up1rofstats/view.php', array('rofid' => $rofid));
 redirect($url);

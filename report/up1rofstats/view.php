@@ -2,7 +2,7 @@
 
 define('NO_OUTPUT_BUFFERING', true);
 require(__DIR__ . '/../../config.php');
-require_once($CFG->dirroot.'/report/rofstats/locallib.php');
+require_once($CFG->dirroot.'/report/up1rofstats/locallib.php');
 require_once($CFG->dirroot.'/local/roftools/rofcourselib.php');
 require_once($CFG->libdir.'/adminlib.php');
 
@@ -12,11 +12,11 @@ $path = optional_param('path', null, PARAM_ALPHANUMEXT); //
 
 // Print the header.
 $table = rof_get_table($rofid);
-admin_externalpage_setup('reportrofstats', '', null, '', array('pagelayout'=>'report'));
+admin_externalpage_setup('reportup1rofstats', '', null, '', array('pagelayout'=>'report'));
 echo $OUTPUT->header();
 echo $OUTPUT->heading('Détails de ' . $rofid ." ($table)");
 
-$url = "$CFG->wwwroot/report/rofstats/index.php";
+$url = "$CFG->wwwroot/report/up1rofstats/index.php";
 
 $browserurl = "$CFG->wwwroot/local/rof_browser/rof_browser.php";
 

@@ -105,7 +105,7 @@ function rof_combined_name($localname, $refname) {
  * @return string url
  */
 function rof_rofid_link($rofid, $support=false, $title='') {
-    $url = new moodle_url('/report/rofstats/view.php', array('rofid' => $rofid));
+    $url = new moodle_url('/report/up1rofstats/view.php', array('rofid' => $rofid));
     $attributes = null;
     if ($title) {
         $attributes = array('title' => $title);

@@ -3,8 +3,8 @@
  * Lib functions
  *
  * @package    report
- * @subpackage rofstats
- * @copyright  2012-2013 Silecs {@link http://www.silecs.info/societe}
+ * @subpackage up1rofstats
+ * @copyright  2012-2014 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -12,7 +12,7 @@ defined('MOODLE_INTERNAL') || die;
 require_once(dirname(dirname(__DIR__)).'/config.php'); // global moodle config file.
 require_once($CFG->dirroot . "/local/roftools/roflib.php");
 
-function report_rofstats_generic() {
+function report_up1rofstats_generic() {
     global $DB;
     $res = array();
 
@@ -36,7 +36,7 @@ function report_rofstats_generic() {
     return $res;
 }
 
-function report_rofstats_courses() {
+function report_up1rofstats_courses() {
     global $DB;
     $res = array();
 
@@ -53,7 +53,7 @@ function report_rofstats_courses() {
     return $res;
 }
 
-function report_rofstats_components() {
+function report_up1rofstats_components() {
     global $DB;
     $res = array();
 
@@ -76,7 +76,7 @@ function report_rofstats_components() {
 }
 
 
-function report_rofstats_persons_not_empty() {
+function report_up1rofstats_persons_not_empty() {
     global $DB;
     $res = array();
 
@@ -102,13 +102,13 @@ function report_rofstats_persons_not_empty() {
  * @global type $DB
  * @return array(array(string)) : table rows 
  */
-function report_rofstats_hybrid_programs() {
+function report_up1rofstats_hybrid_programs() {
     global $DB;
     $res = array();
     $programs = $DB->get_records_sql("SELECT rofid, name, subnb, coursesnb FROM {rof_program} WHERE level=1 AND subnb>0 AND coursesnb>0");
 
     foreach ($programs as $program) {
-        $url = new moodle_url('/report/rofstats/view.php', array('rofid'=>$program->rofid));
+        $url = new moodle_url('/report/up1rofstats/view.php', array('rofid'=>$program->rofid));
         $res[] = array (
             html_writer::link($url, $program->rofid),
             $program->name,
@@ -126,7 +126,7 @@ function report_rofstats_hybrid_programs() {
  * @global type $DB
  * @return array(array(string)) : table rows 
  */
-function report_rofstats_localname_not_empty() {
+function report_up1rofstats_localname_not_empty() {
     global $DB;
     $res = array();
     $objects = array('component', 'program', 'course');
@@ -136,7 +136,7 @@ function report_rofstats_localname_not_empty() {
         $items = $DB->get_records_sql($sql);
 
         foreach ($items as $item) {
-            $url = new moodle_url('/report/rofstats/view.php', array('rofid' => $item->rofid));
+            $url = new moodle_url('/report/up1rofstats/view.php', array('rofid' => $item->rofid));
             $res[] = array (
                 $object,
                 html_writer::link($url, $item->rofid),

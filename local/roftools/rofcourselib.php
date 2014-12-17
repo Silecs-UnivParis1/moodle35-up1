@@ -28,7 +28,7 @@ function rof_check_courses_references() {
         $row = array();
         foreach ($brokenRefs[0] as $rofid => $brokenNb) {
             $crsid = $brokenRefs[1][$rofid];
-            $urlrof = new moodle_url('/report/rofstats/view.php', array('rofid' => $rofid));
+            $urlrof = new moodle_url('/report/up1rofstats/view.php', array('rofid' => $rofid));
             // urlrof = dumb link, as the rof object is listed as non-existent
             $urlcrs = new moodle_url('/course/view.php', array('id' => $crsid));
             $coursename = $DB->get_field('course', 'fullname', array('id' => $crsid), 'MUST_EXIST');
@@ -59,7 +59,7 @@ function rof_check_course_references($crsid) {
         $output = "<ul>\n";
         foreach ($brokenRefs[0] as $rofid => $brokenNb) {
             $crsid = $brokenRefs[1][$rofid];
-            $urlrof = new moodle_url('/report/rofstats/view.php', array('rofid' => $rofid));
+            $urlrof = new moodle_url('/report/up1rofstats/view.php', array('rofid' => $rofid));
             // urlrof = dumb link, as the rof object is listed as non-existent
             $output .= '<li>' . html_writer::link($urlrof, $rofid) . "</li>\n";
         }

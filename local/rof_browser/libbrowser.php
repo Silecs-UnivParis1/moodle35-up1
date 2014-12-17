@@ -205,7 +205,7 @@ class rof_browser {
 			$nbCourses = nbSub($sp->courses);
 		}
 		$nbEnf = $nbSub + $nbCourses;
-        $detUrl = new moodle_url('/report/rofstats/view.php', array('rofid' => $sp->rofid, 'path' => $data_path));
+        $detUrl = new moodle_url('/report/up1rofstats/view.php', array('rofid' => $sp->rofid, 'path' => $data_path));
         $listStyle = 'list-none';
 
 		if ($nbEnf) {
