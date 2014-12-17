@@ -63,11 +63,20 @@ echo $OUTPUT->single_button($paramsurl, $displaymode[ ! $displaycompact], 'get')
 }
 </style>
 
+<!--
 <script type="text/javascript" src="<?php echo new moodle_url('/local/mwscoursetree/widget.js'); ?>"></script>
 <div class="coursetree" data-root="<?php echo "/cat" . $grandparentcat; ?>" data-title="1" data-stats="1" data-debug="0"></div>
+-->
+
 
 <?php
 
+// DEBUG
+echo "<p>get acitivy all courses</p>";
+get_activity_all_courses();
+
+
+/*
 echo "<h2>Statistiques par UFR</h2>\n";
 echo "<p>Note : pour les étudiants et les enseignants, les comptages sont faits au niveau de chaque cours, puis totalisés par Composante.</p>";
 
@@ -83,7 +92,7 @@ echo "<p>Note : pour les étudiants et les enseignants, les comptages sont dédo
       et inscrits dédoublonnés.</p>";
 
 echo cat_tree_display_table($parentcat, ! $displaycompact);
-
+*/
 
 
 echo $OUTPUT->footer();

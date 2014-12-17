@@ -77,3 +77,67 @@ function get_parentcat() {
     }
     return $parentcat;
 }
+
+
+// TEST / DEBUG function
+function get_activity_all_courses() {
+    global $DB;
+    $allcourses = $DB->get_fieldset_sql('SELECT id FROM {course} ORDER BY id', array());
+    foreach ($allcourses as $course) {
+        echo "<br />" . $course . " ";
+        print_r(get_inner_activity_stats($course));
+    }
+}
+
+
+function get_inner_activity_stats($course) {
+    $res = array(
+        'module:instances' => get_inner_activity_instances($course, null),
+        'forum:instances' => get_inner_activity_instances($course, 'forum'),
+        'assign:instances' => get_inner_activity_instances($course, 'assign'),
+        'file:instances' => get_inner_activity_instances($course, 'resource'), // 'resource' is the Moodle name for files (local or distant)
+        'module:views' => get_inner_activity_views($course, null),
+        'forum:views' => get_inner_activity_views($course, 'forum'),
+        'assign:views' => get_inner_activity_views($course, 'assign'),
+        'file:views' => get_inner_activity_views($course, 'resource'), // 'resource' is the Moodle name for files (local or distant)
+        'forum:posts' => get_inner_forum_posts($course),
+        'assign:posts' => get_inner_assign_posts($course),
+    );
+    return $res;
+}
+
+function get_inner_activity_instances($course, $module=null) {
+    global $DB;
+    $sql = "SELECT COUNT(cm.id) FROM {course_modules} cm " .
+           ($module === null ? '' : "JOIN {modules} m ON (cm.module=m.id) ") .
+           " WHERE course=? " .
+           ($module === null ? '' : " AND m.name=?");
+    $res = $DB->get_field_sql($sql, array($course, $module), MUST_EXIST);
+    return $res;
+}
+
+function get_inner_activity_views($course, $module=null) {
+    global $DB;
+    $sql = "SELECT COUNT(l.id) FROM {log} l " .
+           ($module === null ? '' : "JOIN {modules} m ON (l.module=m.name) ") .
+           " WHERE course=? AND action LIKE ? " .
+           ($module === null ? '' : " AND m.name=?");
+    $res = $DB->get_field_sql($sql, array($course, 'view%', $module), MUST_EXIST);
+    return $res;
+}
+
+function get_inner_forum_posts($course) {
+    global $DB;
+    $sql = "SELECT COUNT(fp.id) FROM {forum_posts} fp " .
+           "JOIN {forum_discussions} fd ON (fp.discussion = fd.id) " .
+           "WHERE fd.course = ?";
+    return $DB->get_field_sql($sql, array($course), MUST_EXIST);
+}
+
+function get_inner_assign_posts($course) {
+    global $DB;
+    $sql = "SELECT COUNT(asu.id) FROM {assign_submission} asu " .
+           "JOIN {assign} a ON (asu.assignment = a.id) " .
+           "WHERE a.course = ?";
+    return $DB->get_field_sql($sql, array($course), MUST_EXIST);
+}
