@@ -3,28 +3,28 @@
 /**
  * Administrator reporting
  *
- * @package    tool
- * @subpackage up1_reporting
- * @copyright  2013 Silecs {@link http://www.silecs.info/societe}
+ * @package    report
+ * @subpackage up1reporting
+ * @copyright  2013-2014 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 define('NO_OUTPUT_BUFFERING', true);
 
-require_once(__DIR__ . '/../../../config.php');
-require_once($CFG->dirroot.'/admin/tool/up1_reporting/locallib.php');
-require_once($CFG->dirroot.'/admin/tool/up1_reporting/cattreecountlib.php');
+require_once(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot.'/report/up1reporting/locallib.php');
+require_once($CFG->dirroot.'/report/up1reporting/cattreecountlib.php');
 
 require_once($CFG->libdir.'/adminlib.php');
 
 require_login();
-// admin_externalpage_setup('up1_reporting', '', null, '', array('pagelayout'=>'report'));
+// admin_externalpage_setup('up1reporting', '', null, '', array('pagelayout'=>'report'));
 $parentcat = optional_param('period', 0, PARAM_INT);
 $displaycompact = optional_param('compact', true, PARAM_BOOL);
 
 $systemcontext = context_system::instance();
 $PAGE->set_context($systemcontext);
-$url = "$CFG->wwwroot/admin/tool/up1_reporting/index.php";
+$url = "$CFG->wwwroot/report/up1reporting/index.php";
 $PAGE->set_url($url);
 
 require_capability('moodle/site:config', $systemcontext);
@@ -33,7 +33,7 @@ if ( ! is_siteadmin() ) {
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('pluginname', 'tool_up1_reporting'));
+echo $OUTPUT->heading(get_string('pluginname', 'report_up1reporting'));
 $periodes = get_parentcat();
 if ($parentcat == 0 || array_key_exists($parentcat, $periodes) == FALSE) {
     $parentcat = get_config('local_crswizard','cas2_default_etablissement');

@@ -3,14 +3,14 @@
 /**
  * Administrator reporting
  *
- * @package    tool
- * @subpackage up1_reporting
+ * @package    report
+ * @subpackage up1reporting
  * @copyright  2013-2014 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
-require_once(__DIR__ . '/../../../config.php');
+require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/local/up1_courselist/courselist_tools.php');
 
 /**

@@ -6,6 +6,8 @@
  * and commented on http://tickets.silecs.info/mantis/view.php?id=2163
  */
 
+require_once($CFG->dirroot . '/report/up1reporting/locallib.php');
+
 abstract class ChtNode
 {
     public $name;
