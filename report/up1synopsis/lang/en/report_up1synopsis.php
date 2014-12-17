@@ -23,7 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Course synopsis';
+$string['pluginname'] = 'UP1 Course synopsis';
 
 $string['Synopsis'] = 'Synopsis';
 $string['Teachers'] = 'Teachers';

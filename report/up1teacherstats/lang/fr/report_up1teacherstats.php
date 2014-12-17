@@ -23,4 +23,4 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Tableau de bord enseignants';
+$string['pluginname'] = 'UP1 Tableau de bord enseignants';
