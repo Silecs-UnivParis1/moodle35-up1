@@ -4,7 +4,7 @@
  * Lib functions
  *
  * @package    report
- * @subpackage up1stats
+ * @subpackage up1userstats
  * @copyright  2012-2014 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -20,7 +20,7 @@ defined('MOODLE_INTERNAL') || die;
  * Users and Authentication statistics
  */
 
-function report_up1stats_users() {
+function report_up1userstats_users() {
     global $DB;
     $res = array();
 
@@ -39,7 +39,7 @@ function report_up1stats_users() {
     return $res;
 }
 
-function report_up1stats_users_by_affiliation() {
+function report_up1userstats_users_by_affiliation() {
     global $DB;
     $res = array();
 
@@ -58,7 +58,7 @@ function report_up1stats_users_by_affiliation() {
  * Cohorts statistics
  */
 
-function report_up1stats_cohorts_generic() {
+function report_up1userstats_cohorts_generic() {
     global $DB;
     $res = array();
 
@@ -77,14 +77,14 @@ function report_up1stats_cohorts_generic() {
 
 
 /**
- * see report_up1stats_cohorts_criterium() below
+ * see report_up1userstats_cohorts_criterium() below
  */
-function report_up1stats_cohorts_category() {
-    return report_up1stats_cohorts_criterium('up1category');
+function report_up1userstats_cohorts_category() {
+    return report_up1userstats_cohorts_criterium('up1category');
 }
 
-function report_up1stats_cohorts_period() {
-    return report_up1stats_cohorts_criterium('up1period');
+function report_up1userstats_cohorts_period() {
+    return report_up1userstats_cohorts_criterium('up1period');
 }
 
 /**
@@ -92,7 +92,7 @@ function report_up1stats_cohorts_period() {
  * @param string $crit "up1category" or "up1period"
  * @return array(array) to be displayed by html_writer::table
  */
-function report_up1stats_cohorts_criterium($crit) {
+function report_up1userstats_cohorts_criterium($crit) {
     global $DB;
 // NOTA: you have to define an index on enrol.customint1 to get a reasonable response time
     $sql = "SELECT IF(" .$crit. " <> '', " .$crit. ", '(none)') AS " .$crit
@@ -111,7 +111,7 @@ function report_up1stats_cohorts_criterium($crit) {
  * @return array(array) table partial content (N rows x 3 cols)
  */
 
-function report_up1stats_cohorts_top($limit, $prefix=false) {
+function report_up1userstats_cohorts_top($limit, $prefix=false) {
     global $DB;
     $res = array();
 
@@ -135,16 +135,16 @@ function report_up1stats_cohorts_top($limit, $prefix=false) {
  * @param int $limit SQL limit
  * @return array(array)  table content (N rows x 3 cols)
  */
-function report_up1stats_cohorts_top_by_prefix($limit) {
+function report_up1userstats_cohorts_top_by_prefix($limit) {
     global $cohortPrefixes;
     $res = array();
 
     foreach ($cohortPrefixes as $prefix) {
         $linkdetails = html_writer::link(
-            new moodle_url('/report/up1stats/topcohorts.php', array('number'=>50, 'prefix'=>$prefix)),
+            new moodle_url('/report/up1userstats/topcohorts.php', array('number'=>50, 'prefix'=>$prefix)),
             'Détails');
         $res[] = array('', $prefix, $linkdetails); // Separator header row for a given prefix
-        $tres = report_up1stats_cohorts_top($limit, $prefix);
+        $tres = report_up1userstats_cohorts_top($limit, $prefix);
         $res = array_merge($res, $tres);
     }
     return $res;
@@ -155,7 +155,7 @@ function report_up1stats_cohorts_top_by_prefix($limit) {
  * Sync and log statistics
  */
 
-function report_up1stats_last_sync() {
+function report_up1userstats_last_sync() {
     // $ldap = auth_plugin_ldapup1::get_last_sync(); // because non-static method
     $ldap = get_auth_plugin('ldapup1')->get_last_sync();
     $cohorts = get_cohort_last_sync('syncAllGroups');
@@ -169,7 +169,7 @@ function report_up1stats_last_sync() {
     return $res;
 }
 
-function report_up1stats_syncs($plugin, $howmany) {
+function report_up1userstats_syncs($plugin, $howmany) {
     global $DB;
 
     $res = array();
@@ -196,7 +196,7 @@ function report_up1stats_syncs($plugin, $howmany) {
  * Obsolete functions since up1* fields have been added
  */
 
-function report_up1stats_cohorts_prefix() {
+function report_up1userstats_cohorts_prefix() {
     global $DB, $cohortPrefixes;
     $res = array();
 
