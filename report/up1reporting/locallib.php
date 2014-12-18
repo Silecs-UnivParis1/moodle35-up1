@@ -94,10 +94,61 @@ function crawl_stats($node) {
     echo $node->getAbsoluteDepth() . "  " . $node->getAbsolutePath() . "  "  ;
     $descendantcourses = $node->listDescendantCourses();
 
-    $coursesnumbers = get_courses_numbers($descendantcourses, $activedays=90);
-    print_r($coursesnumbers) . "\n";
+    // $coursesnumbers = get_courses_numbers($descendantcourses, $activedays=90);
+    // print_r($coursesnumbers) . "\n";
+
+    $usercount = get_usercount_from_courses($descendantcourses);
+    print_r($usercount);
+    echo "\n\n";
 
     return true;
+}
+
+
+// ************************** Compute enrolled users ******************
+
+function get_usercount_from_courses($courses) {
+    global $DB;
+    //** @todo more flexible list
+    $targetroles = array('editingteacher', 'teacher', 'student');
+    $rolemenu = $DB->get_records_menu('role', null, '', 'shortname, id' );
+    $total = 0;
+    $res = array();
+
+    foreach ($targetroles as $role) {
+echo " $role \n";
+        $mycount = count_unique_users_from_role_courses($rolemenu[$role], $courses, false);
+        $total += $mycount;
+        $res['enrolled:' . $role . ':all'] = $mycount;
+    }
+    $res['enrolled:total:all'] = $total;
+    return $res;
+}
+
+function count_unique_users_from_role_courses($roleid, $courses, $neverconnected=false) {
+    $uniqusers = array();
+    foreach ($courses as $courseid) {
+echo ".";
+        $mergeusers = array_merge($uniqusers, get_users_from_role_course($roleid, $courseid, $neverconnected));
+        $uniqusers = array_unique($mergeusers, SORT_NUMERIC);
+    }
+    return count($uniqusers);
+}
+
+function get_users_from_role_course($roleid, $courseid, $neverconnected=false) {
+    $context = context_course::instance($courseid);
+    $where = '';
+    if ($neverconnected) {
+        $where = "u.lastlogin = 0";
+    }
+    $dbusers = get_role_users($roleid, $context, false, 'u.id', null, false, '', '', '', $where);
+    $res = array();
+
+    //** @todo optimize with an array_map ? (projection)
+    foreach ($dbusers as $user) {
+        $res[] = $user->id;
+    }
+    return $res;
 }
 
 
@@ -145,21 +196,21 @@ function get_inner_activity_all_courses() {
 
 function get_inner_activity_stats($course) {
     $res = array(
-        'module:instances' => get_inner_activity_instances($course, null),
-        'forum:instances' => get_inner_activity_instances($course, 'forum'),
-        'assign:instances' => get_inner_activity_instances($course, 'assign'),
-        'file:instances' => get_inner_activity_instances($course, 'resource'), // 'resource' is the Moodle name for files (local or distant)
-        'module:views' => get_inner_activity_views($course, null),
-        'forum:views' => get_inner_activity_views($course, 'forum'),
-        'assign:views' => get_inner_activity_views($course, 'assign'),
-        'file:views' => get_inner_activity_views($course, 'resource'), // 'resource' is the Moodle name for files (local or distant)
-        'forum:posts' => get_inner_forum_posts($course),
-        'assign:posts' => get_inner_assign_posts($course),
+        'module:instances' => count_inner_activity_instances($course, null),
+        'forum:instances' => count_inner_activity_instances($course, 'forum'),
+        'assign:instances' => count_inner_activity_instances($course, 'assign'),
+        'file:instances' => count_inner_activity_instances($course, 'resource'), // 'resource' is the Moodle name for files (local or distant)
+        'module:views' => count_inner_activity_views($course, null),
+        'forum:views' => count_inner_activity_views($course, 'forum'),
+        'assign:views' => count_inner_activity_views($course, 'assign'),
+        'file:views' => count_inner_activity_views($course, 'resource'), // 'resource' is the Moodle name for files (local or distant)
+        'forum:posts' => count_inner_forum_posts($course),
+        'assign:posts' => count_inner_assign_posts($course),
     );
     return $res;
 }
 
-function get_inner_activity_instances($course, $module=null) {
+function count_inner_activity_instances($course, $module=null) {
     global $DB;
     $sql = "SELECT COUNT(cm.id) FROM {course_modules} cm " .
            ($module === null ? '' : "JOIN {modules} m ON (cm.module=m.id) ") .
@@ -169,7 +220,7 @@ function get_inner_activity_instances($course, $module=null) {
     return $res;
 }
 
-function get_inner_activity_views($course, $module=null) {
+function count_inner_activity_views($course, $module=null) {
     global $DB;
     $sql = "SELECT COUNT(l.id) FROM {log} l " .
            ($module === null ? '' : "JOIN {modules} m ON (l.module=m.name) ") .
@@ -179,7 +230,7 @@ function get_inner_activity_views($course, $module=null) {
     return $res;
 }
 
-function get_inner_forum_posts($course) {
+function count_inner_forum_posts($course) {
     global $DB;
     $sql = "SELECT COUNT(fp.id) FROM {forum_posts} fp " .
            "JOIN {forum_discussions} fd ON (fp.discussion = fd.id) " .
@@ -187,7 +238,7 @@ function get_inner_forum_posts($course) {
     return $DB->get_field_sql($sql, array($course), MUST_EXIST);
 }
 
-function get_inner_assign_posts($course) {
+function count_inner_assign_posts($course) {
     global $DB;
     $sql = "SELECT COUNT(asu.id) FROM {assign_submission} asu " .
            "JOIN {assign} a ON (asu.assignment = a.id) " .
