@@ -8,12 +8,11 @@
  */
 
 require_once __DIR__ . '/../../config.php';
-require_once __DIR__ . '/CourseHybridTree.php';
-require_once __DIR__ . '/ChtNode.php';
-require_once __DIR__ . '/ChtNodeCategory.php';
-require_once __DIR__ . '/ChtNodeRof.php';
-require_once __DIR__ . '/ChtNodeCourse.php';
-
+require_once($CFG->dirroot . '/local/coursehybridtree/CourseHybridTree.php');
+require_once($CFG->dirroot . '/local/coursehybridtree/ChtNode.php');
+require_once($CFG->dirroot . '/local/coursehybridtree/ChtNodeCategory.php');
+require_once($CFG->dirroot . '/local/coursehybridtree/ChtNodeRof.php');
+require_once($CFG->dirroot . '/local/coursehybridtree/ChtNodeCourse.php');
 
 function hybridcrawler($maxdepth = 0) {
     $tree = CourseHybridTree::createTree('/cat0');
