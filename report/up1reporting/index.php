@@ -63,20 +63,13 @@ echo $OUTPUT->single_button($paramsurl, $displaymode[ ! $displaycompact], 'get')
 }
 </style>
 
-<!--
 <script type="text/javascript" src="<?php echo new moodle_url('/local/mwscoursetree/widget.js'); ?>"></script>
 <div class="coursetree" data-root="<?php echo "/cat" . $grandparentcat; ?>" data-title="1" data-stats="1" data-debug="0"></div>
--->
 
 
 <?php
 
-// DEBUG
-echo "<p>get acitivy all courses</p>";
-get_activity_all_courses();
 
-
-/*
 echo "<h2>Statistiques par UFR</h2>\n";
 echo "<p>Note : pour les étudiants et les enseignants, les comptages sont faits au niveau de chaque cours, puis totalisés par Composante.</p>";
 
@@ -85,7 +78,7 @@ $table->head = array('UFR', 'Espaces de cours', 'Étudiants inscrits', 'Enseigna
 $table->data = report_base_counts($parentcat, ! $displaycompact);
 echo html_writer::table($table);
 
-
+/*
 echo "<h2>Statisitiques par catégories - niveaux 3 et 4</h2>\n";
 echo "<p>Note : pour les étudiants et les enseignants, les comptages sont dédoublonnés au niveau le plus bas (4 = niveau-LMD)
       puis pour le regroupement par Composante (niveau 3), les deux informations sont affichées : inscrits totalisés,

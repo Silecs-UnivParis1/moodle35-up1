@@ -14,6 +14,9 @@ abstract class ChtNode
     public $code; // generally, Moodle idnumber
     public $debug = false; // boolean, display debug information at the beginning of each label
     public $stats = false; // boolean, display statistics information next to each entry (manager reporting)
+    // reporting links are limited upon depth
+    public $reportdepthmin = 3; // ufr-composante
+    public $reportdepthmax = 6; // semestre
 
     protected $flag = '(N) ';
     protected $component; // '00' or "composante" coded on 2 digits (01 to 37 ...)
@@ -212,12 +215,21 @@ abstract class ChtNode
      */
     protected function getStats() {
         $teachroles = array('editingteacher' => 'Enseignants', 'teacher' => 'Autres intervenants' );
-
+        $absdepth = $this->getAbsoluteDepth();
         $courses = $this->listDescendantCourses();
+        $reportlink = '';
+        // lien Reporting
+        if ($absdepth >= $this->reportdepthmin && $absdepth <= $this->reportdepthmax
+                && !($this instanceof ChtNodeCourse) ) {
+            $url = new moodle_url('/report/up1reporting/exportcsv.php', array('node' => $this->getAbsolutePath()));
+            $reportlink = html_writer::link($url, '[R]', array('title' => 'Reporting CSV'));
+            //** @todo icon (table) instead of [R] ?
+        }
         $res = array(
             'Cours' => count($courses),
             'Étudiants' => count_roles_from_courses(array('student' => "Étudiants"), $courses),
             'Enseignants' => count_roles_from_courses($teachroles, $courses),
+            'Reporting' => $reportlink,
         );
         return $res;
     }
