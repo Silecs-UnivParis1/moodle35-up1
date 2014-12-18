@@ -20,10 +20,10 @@ function hybridcrawler($maxdepth = 0) {
     internalcrawler($tree, $maxdepth, 'printnode');
 }
 
-function internalcrawler($node, $maxdepth, $callbackfn) {
+function internalcrawler($node, $maxdepth, $callbackfn, $params=array()) {
     $total = 0;
 
-    call_user_func($callbackfn, $node);
+    call_user_func($callbackfn, $node, $params);
     $children = $node->listChildren();
     if ( count($children) == 0 ) {
         return 1;

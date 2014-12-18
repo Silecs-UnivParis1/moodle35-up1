@@ -86,22 +86,43 @@ function get_parentcat() {
 function statscrawler($maxdepth = 6) {
     $tree = CourseHybridTree::createTree('/cat0');
 
-    internalcrawler($tree, $maxdepth, 'crawl_stats');
+    $timestamp = time();
+    internalcrawler($tree, $maxdepth, 'crawl_stats', array('timestamp' => time()));
 }
 
 
-function crawl_stats($node) {
+function crawl_stats($node, $params) {
     echo $node->getAbsoluteDepth() . "  " . $node->getAbsolutePath() . "  "  ;
     $descendantcourses = $node->listDescendantCourses();
+    $coursenumbers = array();
+    $usercount = array();
+    $activitycount = array();
 
+    echo "Compute courses number (total, visible, active)... \n";
     // $coursesnumbers = get_courses_numbers($descendantcourses, $activedays=90);
     // print_r($coursesnumbers) . "\n";
-
-    $usercount = get_usercount_from_courses($descendantcourses);
-    print_r($usercount);
     echo "\n\n";
 
+    echo "Count enrolled users (by role and total)... \n";
+    // $usercount = get_usercount_from_courses($descendantcourses);
+    // print_r($usercount);
+    echo "\n\n";
+    
+    echo "Count and add inner course activity... \n";
+    $activitycount = sum_inner_activity_for_courses($descendantcourses);
+    // print_r($activitycount);
+    echo "\n\n";
+
+    update_reporting_table($params['timestamp'], $node->getAbsolutePath(), array_merge($coursenumbers, $usercount, $activitycount));
     return true;
+}
+
+function update_reporting_table($timestamp, $path, $criteria) {
+    global $DB;
+    foreach ($criteria as $name => $value) {
+        //** @todo
+        
+    }
 }
 
 
@@ -174,6 +195,19 @@ function get_courses_numbers($courses, $activedays=90) {
 
 // ************************** Compute inner statistics (internal to a course) ******************
 
+function sum_inner_activity_for_courses($courses) {
+
+    $res = get_zero_activity_stats();
+    $innerstats = get_inner_activity_all_courses();
+
+    foreach ($courses as $courseid) {
+        foreach ($innerstats[$courseid] as $name => $value) {
+            $res[$name] += $value;
+        }
+    }
+    return $res;
+}
+
 // TEST / DEBUG function
 function get_activity_all_courses() {
 
@@ -191,6 +225,22 @@ function get_inner_activity_all_courses() {
     foreach ($allcourses as $course) {
         $res[$course] = get_inner_activity_stats($course);
     }
+    return $res;
+}
+
+function get_zero_activity_stats() {
+    $res = array(
+        'module:instances' => 0,
+        'forum:instances' => 0,
+        'assign:instances' => 0,
+        'file:instances' => 0,
+        'module:views' => 0,
+        'forum:views' => 0,
+        'assign:views' => 0,
+        'file:views' => 0,
+        'forum:posts' => 0,
+        'assign:posts' => 0,
+    );
     return $res;
 }
 
