@@ -14,6 +14,7 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/local/up1_courselist/courselist_tools.php');
 require_once($CFG->dirroot . '/local/coursehybridtree/libcrawler.php');
 
+global  $ReportingTimestamp;
 
 /**
  * prepare table content to be displayed : UFR | course count | student count | teacher count
@@ -84,47 +85,53 @@ function get_parentcat() {
 // ***** Tree crawling *****
 
 function statscrawler($maxdepth = 6) {
+    global $ReportingTimestamp;
     $tree = CourseHybridTree::createTree('/cat0');
 
-    $timestamp = time();
+    // $timestamp = time();
+    $ReportingTimestamp = time();
     internalcrawler($tree, $maxdepth, 'crawl_stats', array('timestamp' => time()));
 }
 
 
 function crawl_stats($node, $params) {
-    echo $node->getAbsoluteDepth() . "  " . $node->getAbsolutePath() . "  "  ;
+    $nodepath = $node->getAbsolutePath();
+    echo $node->getAbsoluteDepth() . "  " . $nodepath . "  "  ;
     $descendantcourses = $node->listDescendantCourses();
-    $coursenumbers = array();
+    $coursesnumbers = array();
     $usercount = array();
     $activitycount = array();
 
+    echo "\n";
     echo "Compute courses number (total, visible, active)... \n";
-    // $coursesnumbers = get_courses_numbers($descendantcourses, $activedays=90);
+    $coursesnumbers = get_courses_numbers($descendantcourses, $activedays=90);
     // print_r($coursesnumbers) . "\n";
-    echo "\n\n";
+    echo "";
 
+/* */
     echo "Count enrolled users (by role and total)... \n";
-    // $usercount = get_usercount_from_courses($descendantcourses);
+    $usercount = get_usercount_from_courses($descendantcourses);
     // print_r($usercount);
-    echo "\n\n";
-    
+    echo "";
+
     echo "Count and add inner course activity... \n";
     $activitycount = sum_inner_activity_for_courses($descendantcourses);
-    echo "\n\n";
-
-    update_reporting_table($params['timestamp'], $node->getAbsolutePath(), array_merge($coursenumbers, $usercount, $activitycount));
+    echo "";
+/* */
+    // update_reporting_table($params['timestamp'], $node->getAbsolutePath(), array_merge($coursenumbers, $usercount, $activitycount));
+    update_reporting_table(0, $nodepath, array_merge($coursesnumbers, $usercount, $activitycount));
     return true;
 }
 
 function update_reporting_table($timestamp, $path, $criteria) {
-    global $DB;
+    global $DB, $ReportingTimestamp;
     foreach ($criteria as $name => $value) {
         $record = new stdClass();
         $record->object = 'node';
         $record->objectid = $path;
         $record->name = $name;
         $record->value = $value;
-        $record->timecreated = $timestamp;
+        $record->timecreated = $ReportingTimestamp; //$timestamp;
         //** @todo
         $lastinsertid = $DB->insert_record('up1reporting', $record, false);
     }
@@ -142,7 +149,7 @@ function get_usercount_from_courses($courses) {
     $res = array();
 
     foreach ($targetroles as $role) {
-echo " $role \n";
+echo "  $role ";
         $mycount = count_unique_users_from_role_courses($rolemenu[$role], $courses, false);
         $total += $mycount;
         $res['enrolled:' . $role . ':all'] = $mycount;
