@@ -14,7 +14,7 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/local/up1_courselist/courselist_tools.php');
 require_once($CFG->dirroot . '/local/coursehybridtree/libcrawler.php');
 
-global  $ReportingTimestamp;
+global  $ReportingTimestamp, $CsvFileHandle;
 
 /**
  * prepare table content to be displayed : UFR | course count | student count | teacher count
@@ -92,6 +92,72 @@ function statscrawler($maxdepth = 6) {
     $ReportingTimestamp = time();
     internalcrawler($tree, $maxdepth, 'crawl_stats', array('timestamp' => time()));
 }
+
+function reportcsvcrawler($rootnode, $maxdepth=6) {
+    global $DB;
+    global $ReportingTimestamp, $CsvFileHandle;
+    $tree = CourseHybridTree::createTree($rootnode);
+
+    $lasttimestamp = $DB->get_field_sql('SELECT MAX(timecreated) FROM {up1reporting} ');
+    $CsvFile = "./reporting.csv";
+    $CsvFileHandle = fopen($CsvFile, "w");
+    $row = array_merge(array_values(csvheaderleft()), array_values(csvheaderreport()));
+    fputcsv($CsvFileHandle, $row, ';');
+    
+    $ReportingTimestamp = $lasttimestamp;
+    internalcrawler($tree, $maxdepth, 'crawl_csvrow', array());
+    fclose($CsvFileHandle);
+}
+
+function crawl_csvrow($node, $params) {
+    global $DB;
+    global $ReportingTimestamp, $CsvFileHandle;
+    $nodepath = $node->getAbsolutePath();
+
+    $row = array($node->getAbsoluteDepth(), $node->name, $nodepath);
+    $criteria = $DB->get_records_menu('up1reporting',
+        array('timecreated' => $ReportingTimestamp, 'object' => 'node', 'objectid' => $nodepath), '', 'name, value' );
+
+    foreach (csvheaderreport() as $crit => $critnamefr) {
+        if (isset($criteria[$crit])) {
+            $row[$crit] = $criteria[$crit];
+        } else {
+            $row[$crit] = '';
+        }
+    }
+    fputcsv($CsvFileHandle, array_values($row), ';');
+}
+
+function csvheaderleft() {
+    return array(
+        'level' => 'Niveau',
+        'title' => 'Libellé',
+        'chtpath' => 'Chemin Cht'
+    );
+}
+
+function csvheaderreport() {
+    return array(
+        'coursenumber:all' => 'Cours',
+        'coursenumber:visible' => 'Cours ouverts',
+        'coursenumber:active' => 'Courts actifs',
+        'enrolled:editingteacher:all' => 'Enseignants',
+        'enrolled:teacher:all' => 'Enseignants non-éd',
+        'enrolled:student:all' => 'Etudiants',
+        'enrolled:total:all' => 'Tous inscrits',
+        'module:instances' => 'Activités gén.',
+        'module:views' => 'Activités vues',
+        'file:instances' => 'Fichiers',
+        'file:views' => 'Fichiers vus',
+        'forum:instances' => 'Forums',
+        'forum:views' => 'Fichiers vus',
+        'forum:posts' => 'Messages',
+        'assign:instances' => 'Devoirs',
+        'assign:views' => 'Devoirs vus',
+        'assign:posts' => 'Rendus',
+    );
+}
+
 
 
 function crawl_stats($node, $params) {

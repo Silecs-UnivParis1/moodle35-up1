@@ -22,7 +22,10 @@ class CourseHybridTree
                 get_config('local_crswizard','cas2_default_etablissement')
             );
         } else if (preg_match('#^/cat(\d+)$#', $nodename, $m)) {
-            // root node, given through a category
+            // root node, given through a category ex. /cat1
+            $node = ChtNodeCategory::buildFromCategoryId($m[1]);
+        } else if (preg_match('#.+/cat(\d+)$#', $nodename, $m)) {
+            // root node, given through a category-path ex. /cat1/cat2/cat3
             $node = ChtNodeCategory::buildFromCategoryId($m[1]);
         } else if (preg_match('#^/cat\d+/.+$#', $nodename, $m)) {
             // root node, given through a path

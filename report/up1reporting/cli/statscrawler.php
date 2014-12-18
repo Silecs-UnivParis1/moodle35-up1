@@ -16,7 +16,7 @@ require_once(dirname(__DIR__) . '/locallib.php');
 
 // now get cli options
 list($options, $unrecognized) = cli_get_params(array(
-        'help'=>false, 'maxdepth'=>6, 'verb'=>1),
+        'help'=>false, 'stats'=>false, 'csv'=>false, 'maxdepth'=>6, 'node'=>'', 'verb'=>1),
     array('h'=>'help'));
 
 if ($unrecognized) {
@@ -29,8 +29,10 @@ $help =
 
 Options:
 -h, --help            Print out this help
+--stats               (action) compute stats and update database (normally, launched by cron)
+--csv                 (action) generates a csv output  (normally, launched by web UI)
 --maxdepth            Maximal tree depth ; 0=no max.
-
+--node                Root node for action
 ";
 
 if ( ! empty($options['help']) ) {
@@ -41,4 +43,11 @@ if ( ! empty($options['help']) ) {
 // Ensure errors are well explained
 $CFG->debug = DEBUG_NORMAL;
 
-statscrawler($options['maxdepth']);
+if ($options['stats']) {
+    statscrawler($options['maxdepth']);
+} elseif ($options['csv']) {
+    reportcsvcrawler($options['node'], $options['maxdepth']);
+} else {
+    echo "You must specify --help or --stats or --csv";
+}
+
