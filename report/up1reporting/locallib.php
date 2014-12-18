@@ -12,6 +12,8 @@
 defined('MOODLE_INTERNAL') || die;
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/local/up1_courselist/courselist_tools.php');
+require_once($CFG->dirroot . '/local/coursehybridtree/libcrawler.php');
+
 
 /**
  * prepare table content to be displayed : UFR | course count | student count | teacher count
@@ -79,16 +81,67 @@ function get_parentcat() {
 }
 
 
+// ***** Tree crawling *****
+
+function statscrawler($maxdepth = 6) {
+    $tree = CourseHybridTree::createTree('/cat0');
+
+    internalcrawler($tree, $maxdepth, 'crawl_stats');
+}
+
+
+function crawl_stats($node) {
+    echo $node->getAbsoluteDepth() . "  " . $node->getAbsolutePath() . "  "  ;
+    $descendantcourses = $node->listDescendantCourses();
+
+    $coursesnumbers = get_courses_numbers($descendantcourses, $activedays=90);
+    print_r($coursesnumbers) . "\n";
+
+    return true;
+}
+
+
+
+// ************************** Compute course numbers ******************
+
+function get_courses_numbers($courses, $activedays=90) {
+    global $DB;
+    $coursein = '(' . join(', ', $courses) . ')';
+    $sql = "SELECT COUNT(id) FROM {course} c " .
+            "WHERE id IN $coursein AND c.visible=1 ";
+    $sqlactive = "AND (NOW() - c.timemodified) < ?"; // WARNING not exactly the good filter
+    //** @todo see backup/util/helper/backup_cron_helper_class.php lines 155-165 : join with log table ? NECESSARY ???
+
+    $res = array(
+        'coursenumber:all' => count($courses),
+        'coursenumber:visible' => $DB->get_field_sql($sql, array(), MUST_EXIST),
+        'coursenumber:active'  => $DB->get_field_sql($sql . $sqlactive, array($activedays * DAYSECS), MUST_EXIST),
+    );
+    return $res;
+}
+
+
+// ************************** Compute inner statistics (internal to a course) ******************
+
 // TEST / DEBUG function
 function get_activity_all_courses() {
+
+    // var_dump(get_inner_activity_all_courses());
+    foreach (get_inner_activity_all_courses() as $course => $values) {
+        echo "<br />" . $course . " ";
+        print_r($values);
+    } 
+    
+}
+
+function get_inner_activity_all_courses() {
     global $DB;
     $allcourses = $DB->get_fieldset_sql('SELECT id FROM {course} ORDER BY id', array());
     foreach ($allcourses as $course) {
-        echo "<br />" . $course . " ";
-        print_r(get_inner_activity_stats($course));
+        $res[$course] = get_inner_activity_stats($course);
     }
+    return $res;
 }
-
 
 function get_inner_activity_stats($course) {
     $res = array(
