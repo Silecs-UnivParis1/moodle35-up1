@@ -110,7 +110,6 @@ function crawl_stats($node, $params) {
     
     echo "Count and add inner course activity... \n";
     $activitycount = sum_inner_activity_for_courses($descendantcourses);
-    // print_r($activitycount);
     echo "\n\n";
 
     update_reporting_table($params['timestamp'], $node->getAbsolutePath(), array_merge($coursenumbers, $usercount, $activitycount));
@@ -120,8 +119,14 @@ function crawl_stats($node, $params) {
 function update_reporting_table($timestamp, $path, $criteria) {
     global $DB;
     foreach ($criteria as $name => $value) {
+        $record = new stdClass();
+        $record->object = 'node';
+        $record->objectid = $path;
+        $record->name = $name;
+        $record->value = $value;
+        $record->timecreated = $timestamp;
         //** @todo
-        
+        $lastinsertid = $DB->insert_record('up1reporting', $record, false);
     }
 }
 
