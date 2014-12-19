@@ -98,7 +98,7 @@ function reportcsvcrawler($rootnode, $maxdepth=6) {
     global $ReportingTimestamp, $CsvFileHandle;
     $tree = CourseHybridTree::createTree($rootnode);
 
-    $lasttimestamp = $DB->get_field_sql('SELECT MAX(timecreated) FROM {up1reporting} ');
+    $lasttimestamp = $DB->get_field_sql('SELECT MAX(timecreated) FROM {report_up1reporting} ');
     $CsvFile = "./reporting.csv";
     $CsvFileHandle = fopen($CsvFile, "w");
     $row = array_merge(array_values(csvheaderleft()), array_values(csvheaderreport()));
@@ -115,7 +115,7 @@ function crawl_csvrow($node, $params) {
     $nodepath = $node->getAbsolutePath();
 
     $row = array($node->getAbsoluteDepth(), $node->name, $nodepath);
-    $criteria = $DB->get_records_menu('up1reporting',
+    $criteria = $DB->get_records_menu('report_up1reporting',
         array('timecreated' => $ReportingTimestamp, 'object' => 'node', 'objectid' => $nodepath), '', 'name, value' );
 
     foreach (csvheaderreport() as $crit => $critnamefr) {
@@ -203,7 +203,7 @@ function update_reporting_table($timestamp, $path, $criteria) {
         $record->value = $value;
         $record->timecreated = $ReportingTimestamp; //$timestamp;
         //** @todo
-        $lastinsertid = $DB->insert_record('up1reporting', $record, false);
+        $lastinsertid = $DB->insert_record('record_up1reporting', $record, false);
     }
 }
 
