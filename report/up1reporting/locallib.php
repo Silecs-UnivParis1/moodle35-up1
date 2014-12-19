@@ -93,79 +93,6 @@ function statscrawler($maxdepth = 6) {
     internalcrawler($tree, $maxdepth, 'crawl_stats', array('timestamp' => time()));
 }
 
-function reportcsvcrawler($rootnode, $maxdepth=6) {
-    global $DB;
-    global $ReportingTimestamp, $CsvFileHandle;
-    $tree = CourseHybridTree::createTree($rootnode);
-
-    $lasttimestamp = $DB->get_field_sql('SELECT MAX(timecreated) FROM {report_up1reporting} ');
-    $CsvFileHandle = fopen("php://output", "w");
-    $row = array_merge(array_values(csvheaderleft()), array_values(csvheaderreport()));
-    fputcsv($CsvFileHandle, $row, ';');
-    
-    $ReportingTimestamp = $lasttimestamp;
-    internalcrawler($tree, $maxdepth, 'crawl_csvrow', array());
-    fclose($CsvFileHandle);
-}
-
-function crawl_csvrow($node, $params) {
-    global $DB;
-    global $ReportingTimestamp, $CsvFileHandle;
-    $nodepath = $node->getAbsolutePath();
-
-    $row = array($node->getAbsoluteDepth(), $node->name, $nodepath);
-    $criteria = $DB->get_records_menu(
-        'report_up1reporting',
-        array('timecreated' => $ReportingTimestamp, 'object' => 'node', 'objectid' => $nodepath),
-        '', 'name, value'
-    );
-
-    foreach (csvheaderreport() as $crit => $critnamefr) {
-        if (isset($criteria[$crit])) {
-            $row[$crit] = $criteria[$crit];
-        } else {
-            $row[$crit] = '';
-        }
-    }
-    fputcsv($CsvFileHandle, array_values($row), ';');
-}
-
-function csvheaderleft() {
-    return array(
-        'level' => 'Niveau',
-        'title' => 'Libellé',
-        'chtpath' => 'Chemin Cht'
-    );
-}
-
-function csvheaderreport() {
-    return array(
-        'coursenumber:all' => 'Cours',
-        'coursenumber:visible' => 'Cours ouverts',
-        'coursenumber:active' => 'Courts actifs',
-        'enrolled:editingteacher:all' => 'Enseignants',
-        'enrolled:editingteacher:neverconnected' => 'Enseignants jamais connectés',
-        'enrolled:teacher:all' => 'Enseignants non-éd',
-        'enrolled:teacher:neverconnected' => 'Enseignants non-éd jamais connectés',
-        'enrolled:student:all' => 'Etudiants',
-        'enrolled:student:neverconnected' => 'Etudiants jamais connectés',
-        'enrolled:total:all' => 'Tous inscrits',
-        'enrolled:total:neverconnected' => 'Tous jamais connectés',
-        'module:instances' => 'Activités gén.',
-        'module:views' => 'Activités vues',
-        'file:instances' => 'Fichiers',
-        'file:views' => 'Fichiers vus',
-        'forum:instances' => 'Forums',
-        'forum:views' => 'Fichiers vus',
-        'forum:posts' => 'Messages',
-        'assign:instances' => 'Devoirs',
-        'assign:views' => 'Devoirs vus',
-        'assign:posts' => 'Rendus',
-    );
-}
-
-
-
 function crawl_stats($node, $params) {
     $nodepath = $node->getAbsolutePath();
     echo $node->getAbsoluteDepth() . "  " . $nodepath . "  "  ;
@@ -303,17 +230,6 @@ function sum_inner_activity_for_courses($courses) {
         }
     }
     return $res;
-}
-
-// TEST / DEBUG function
-function get_activity_all_courses() {
-
-    // var_dump(get_inner_activity_all_courses());
-    foreach (get_inner_activity_all_courses() as $course => $values) {
-        echo "<br />" . $course . " ";
-        print_r($values);
-    } 
-    
 }
 
 function get_inner_activity_all_courses() {

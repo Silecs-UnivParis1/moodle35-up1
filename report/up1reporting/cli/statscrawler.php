@@ -13,6 +13,7 @@ define('CLI_SCRIPT', true);
 require(dirname(dirname(dirname(__DIR__))) . '/config.php'); // global moodle config file.
 require_once($CFG->libdir . '/clilib.php');      // cli only functions
 require_once(dirname(__DIR__) . '/locallib.php');
+require_once(dirname(__DIR__) . '/ExportReportingCsv.php');
 
 // now get cli options
 list($options, $unrecognized) = cli_get_params(array(
@@ -50,7 +51,9 @@ if ($options['stats']) {
         echo "Please specify --node.\n";
         return 0;
     }
-    reportcsvcrawler($options['node'], $options['maxdepth']);
+
+    $export = new ExportReportingCsv($options['node'], $options['maxdepth']);
+    $export->reportcsvcrawler();
 } else {
     echo "You must specify --help or --stats or --csv.\n";
 }
