@@ -35,14 +35,24 @@ class ExportReportingCsv {
         $tree = CourseHybridTree::createTree($this->rootnode);
 
         $this->csvFileHandle = fopen("php://output", "w");
-        $row = array_merge(array_values($this->csvheaderleft()), array_values($this->csvheaderreport()));
-        fputcsv($this->csvFileHandle, $row, ';');
-
+        $this->csvheader();
         internalcrawler($tree, $this->maxdepth, array($this, 'crawl_csvrow'), array());
         fclose($this->csvFileHandle);
         return true;
     }
 
+    function csvheader() {
+        global $CFG;
+        $metadata = array(
+            'Créé le ', date(DATE_ISO8601),
+            'Noeud ' . $this->rootnode, '', '', '',
+            $CFG->wwwroot
+        );
+        fputcsv($this->csvFileHandle, $metadata, ';'); // metadata
+        $row = array_merge(array_values($this->csvheaderleft()), array_values($this->csvheaderreport()));
+        fputcsv($this->csvFileHandle, $row, ';'); // first row
+
+    }
     /**
      * this is the callback method for reportcsvcrawler()
      * @param string $node // must match ChtNode::absolutePath()
