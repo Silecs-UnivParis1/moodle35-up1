@@ -46,6 +46,10 @@ $CFG->debug = DEBUG_NORMAL;
 if ($options['stats']) {
     statscrawler($options['maxdepth']);
 } elseif ($options['csv']) {
+    if (empty($options['node'])) {
+        echo "Please specify --node.\n";
+        return 0;
+    }
     reportcsvcrawler($options['node'], $options['maxdepth']);
 } else {
     echo "You must specify --help or --stats or --csv.\n";
