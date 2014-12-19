@@ -99,8 +99,7 @@ function reportcsvcrawler($rootnode, $maxdepth=6) {
     $tree = CourseHybridTree::createTree($rootnode);
 
     $lasttimestamp = $DB->get_field_sql('SELECT MAX(timecreated) FROM {report_up1reporting} ');
-    $CsvFile = "./reporting.csv";
-    $CsvFileHandle = fopen($CsvFile, "w");
+    $CsvFileHandle = fopen("php://output", "w");
     $row = array_merge(array_values(csvheaderleft()), array_values(csvheaderreport()));
     fputcsv($CsvFileHandle, $row, ';');
     
