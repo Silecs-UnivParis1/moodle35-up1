@@ -17,5 +17,5 @@ $PAGE->set_context(context_system::instance());
 
 $node = required_param('node', PARAM_RAW);
 
-header('Content-Type: application/csv; charset="UTF-8"; header=present');
+header('Content-Type: text/csv; charset="UTF-8"; header=present');
 reportcsvcrawler($node, 6);
