@@ -90,51 +90,50 @@ function statscrawler($maxdepth = 6) {
 
     // $timestamp = time();
     $ReportingTimestamp = time();
-    internalcrawler($tree, $maxdepth, 'crawl_stats', array('timestamp' => time()));
+    internalcrawler($tree, $maxdepth, 'crawl_stats');
 }
 
-function crawl_stats($node, $params) {
+function crawl_stats($node) {
     $nodepath = $node->getAbsolutePath();
     echo $node->getAbsoluteDepth() . "  " . $nodepath . "  "  ;
     $descendantcourses = $node->listDescendantCourses();
-    $coursesnumbers = array();
-    $usercount = array();
-    $activitycount = array();
 
     echo "\n";
     echo "Compute courses number (total, visible, active)... \n";
     $coursesnumbers = get_courses_numbers($descendantcourses, $activedays=90);
-    // print_r($coursesnumbers) . "\n";
     echo "";
 
 /* */
     echo "Count enrolled users (by role and total)... \n";
     $usercount = get_usercount_from_courses($descendantcourses);
-    // print_r($usercount);
     echo "";
 
     echo "Count and add inner course activity... \n";
     $activitycount = sum_inner_activity_for_courses($descendantcourses);
     echo "";
 /* */
-    // update_reporting_table($params['timestamp'], $node->getAbsolutePath(), array_merge($coursenumbers, $usercount, $activitycount));
-    update_reporting_table(0, $nodepath, array_merge($coursesnumbers, $usercount, $activitycount));
+    update_reporting_table($nodepath, array_merge($coursesnumbers, $usercount, $activitycount));
     return true;
 }
 
-function update_reporting_table($timestamp, $path, $criteria) {
+function update_reporting_table($path, $criteria) {
     global $DB, $ReportingTimestamp;
+    $diag = true;
     foreach ($criteria as $name => $value) {
         $record = new stdClass();
         $record->object = 'node';
         $record->objectid = $path;
         $record->name = $name;
         $record->value = $value;
-        $record->timecreated = $ReportingTimestamp; //$timestamp;
+        $record->timecreated = $ReportingTimestamp;
         //** @todo
         $lastinsertid = $DB->insert_record('report_up1reporting', $record, false);
-        return ($lastinsertid > 0);
+        if ( ! $lastinsertid) {
+            $diag = false;
+            echo "Error inserting " . print_r($record, true);
+        }
     }
+    return $diag;
 }
 
 
