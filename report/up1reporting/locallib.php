@@ -142,9 +142,13 @@ function csvheaderreport() {
         'coursenumber:visible' => 'Cours ouverts',
         'coursenumber:active' => 'Courts actifs',
         'enrolled:editingteacher:all' => 'Enseignants',
+        'enrolled:editingteacher:neverconnected' => 'Enseignants jamais connectés',
         'enrolled:teacher:all' => 'Enseignants non-éd',
+        'enrolled:teacher:neverconnected' => 'Enseignants non-éd jamais connectés',
         'enrolled:student:all' => 'Etudiants',
+        'enrolled:student:neverconnected' => 'Etudiants jamais connectés',
         'enrolled:total:all' => 'Tous inscrits',
+        'enrolled:total:neverconnected' => 'Tous jamais connectés',
         'module:instances' => 'Activités gén.',
         'module:views' => 'Activités vues',
         'file:instances' => 'Fichiers',
@@ -208,12 +212,13 @@ function update_reporting_table($timestamp, $path, $criteria) {
 
 function get_usercount_from_courses($courses) {
     global $DB;
-    //** @todo more flexible list
+    //** @todo more flexible roles list ?
     $targetroles = array('editingteacher', 'teacher', 'student');
     $rolemenu = $DB->get_records_menu('role', null, '', 'shortname, id' );
-    $total = 0;
     $res = array();
 
+    $total = 0;
+echo "  all ";
     foreach ($targetroles as $role) {
 echo "  $role ";
         $mycount = count_unique_users_from_role_courses($rolemenu[$role], $courses, false);
@@ -221,6 +226,17 @@ echo "  $role ";
         $res['enrolled:' . $role . ':all'] = $mycount;
     }
     $res['enrolled:total:all'] = $total;
+
+    $total = 0;
+echo "  neverconnected ";
+    foreach ($targetroles as $role) {
+echo "  $role ";
+        $mycount = count_unique_users_from_role_courses($rolemenu[$role], $courses, true);
+        $total += $mycount;
+        $res['enrolled:' . $role . ':neverconnected'] = $mycount;
+    }
+    $res['enrolled:total:neverconnected'] = $total;
+
     return $res;
 }
 

@@ -48,6 +48,6 @@ if ($options['stats']) {
 } elseif ($options['csv']) {
     reportcsvcrawler($options['node'], $options['maxdepth']);
 } else {
-    echo "You must specify --help or --stats or --csv";
+    echo "You must specify --help or --stats or --csv.\n";
 }
 
