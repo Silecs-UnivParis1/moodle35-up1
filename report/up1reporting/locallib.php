@@ -115,8 +115,11 @@ function crawl_csvrow($node, $params) {
     $nodepath = $node->getAbsolutePath();
 
     $row = array($node->getAbsoluteDepth(), $node->name, $nodepath);
-    $criteria = $DB->get_records_menu('report_up1reporting',
-        array('timecreated' => $ReportingTimestamp, 'object' => 'node', 'objectid' => $nodepath), '', 'name, value' );
+    $criteria = $DB->get_records_menu(
+        'report_up1reporting',
+        array('timecreated' => $ReportingTimestamp, 'object' => 'node', 'objectid' => $nodepath),
+        '', 'name, value'
+    );
 
     foreach (csvheaderreport() as $crit => $critnamefr) {
         if (isset($criteria[$crit])) {
@@ -203,7 +206,8 @@ function update_reporting_table($timestamp, $path, $criteria) {
         $record->value = $value;
         $record->timecreated = $ReportingTimestamp; //$timestamp;
         //** @todo
-        $lastinsertid = $DB->insert_record('record_up1reporting', $record, false);
+        $lastinsertid = $DB->insert_record('report_up1reporting', $record, false);
+        return ($lastinsertid > 0);
     }
 }
 
