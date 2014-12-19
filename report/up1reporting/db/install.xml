@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/url/db" VERSION="2012072300" COMMENT="XMLDB file for user_sync table"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="report_up1reporting" COMMENT="store statistics for reporting based upon CourseHybridTree">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
+        <FIELD NAME="object" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="course or node" />
+        <FIELD NAME="objectid" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="courseId or absolutePath" />
+        <FIELD NAME="name" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="criteria name" />
+        <FIELD NAME="value" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="timestamp of stats computing"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="courseid"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
