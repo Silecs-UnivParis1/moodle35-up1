@@ -68,15 +68,15 @@ echo $OUTPUT->single_button($paramsurl, $displaymode[ ! $displaycompact], 'get')
 
 
 <?php
-
-
-echo "<h2>Statistiques par UFR</h2>\n";
-echo "<p>Note : pour les étudiants et les enseignants, les comptages sont faits au niveau de chaque cours, puis totalisés par Composante.</p>";
-
+$linkdetails = html_writer::link(
+        new moodle_url('/report/up1reporting/lastrecords.php', array('number' => 100)),
+        'détails');
+echo "<p>" . up1reporting_count_timestamps() . " enregistrements (" .$linkdetails. ").</p>\n";
 $table = new html_table();
-$table->head = array('UFR', 'Espaces de cours', 'Étudiants inscrits', 'Enseignants inscrits');
-$table->data = report_base_counts($parentcat, ! $displaycompact);
+$table->head = array('Dernier calcul', 'Critères', 'Noeuds', 'Enregistrements');
+$table->data = up1reporting_last_records(1);
 echo html_writer::table($table);
+
 
 /*
 echo "<h2>Statisitiques par catégories - niveaux 3 et 4</h2>\n";

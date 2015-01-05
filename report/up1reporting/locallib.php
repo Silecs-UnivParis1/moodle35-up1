@@ -82,6 +82,28 @@ function get_parentcat() {
 }
 
 
+
+// ***** Log statistics *****
+
+function up1reporting_count_timestamps() {
+    global $DB;
+
+    return $DB->count_records_sql("SELECT COUNT(DISTINCT timecreated) FROM {report_up1reporting}");
+}
+
+function up1reporting_last_records($howmany) {
+    global $DB;
+
+    // $lastrecord = $DB->get_field_sql("SELECT LAST(timecreated) FROM {report_up1reporting}");
+    $sql = "SELECT FROM_UNIXTIME(timecreated), "
+         . "COUNT(DISTINCT name) AS crit, COUNT(DISTINCT objectid) AS nodes, COUNT(id) as records "
+         . "FROM {report_up1reporting} GROUP BY timecreated ORDER BY timecreated DESC LIMIT " . $howmany;
+
+    $logs = $DB->get_records_sql($sql);
+    return array_values($logs);
+}
+
+
 // ***** Tree crawling *****
 
 function statscrawler($maxdepth = 6) {
