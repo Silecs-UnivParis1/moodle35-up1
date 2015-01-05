@@ -5,7 +5,7 @@
  *
  * @package    report
  * @subpackage up1reporting
- * @copyright  2013-2014 Silecs {@link http://www.silecs.info/societe}
+ * @copyright  2013-2015 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,9 +31,11 @@ require_capability('moodle/site:config', $systemcontext);
 if ( ! is_siteadmin() ) {
     error('Only for admins');
 }
-
+// Print the header.
+admin_externalpage_setup('reportup1reporting', '', null, '', array('pagelayout'=>'report'));
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_up1reporting'));
+
 $periodes = get_parentcat();
 if ($parentcat == 0 || array_key_exists($parentcat, $periodes) == FALSE) {
     $parentcat = get_config('local_crswizard','cas2_default_etablissement');

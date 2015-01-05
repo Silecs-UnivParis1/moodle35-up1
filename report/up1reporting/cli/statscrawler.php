@@ -4,7 +4,7 @@
 /**
  * @package    local
  * @subpackage up1reporting
- * @copyright  2014 Silecs {@link http://www.silecs.info/societe}
+ * @copyright  2014-2015 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
