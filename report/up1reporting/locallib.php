@@ -106,16 +106,19 @@ function up1reporting_last_records($howmany) {
 
 // ***** Tree crawling *****
 
-function statscrawler($maxdepth = 6) {
+function statscrawler($rootnode, $maxdepth = 6) {
     global $ReportingTimestamp;
-    $tree = CourseHybridTree::createTree('/cat0');
-
+    if ($rootnode) {
+        $tree = CourseHybridTree::createTree($rootnode);
+    } else  {
+        $tree = CourseHybridTree::createTree('/cat0');
+    }
     // $timestamp = time();
     $ReportingTimestamp = time();
     internalcrawler($tree, $maxdepth, 'crawl_stats');
 }
 
-function crawl_stats($node, $cntcourses=true, $enrolled=true, $activities=true, $verb=2) {
+function crawl_stats($node, $cntcourses=true, $enrolled=true, $activities=false, $verb=2) {
     $nodepath = $node->getAbsolutePath();
     echo $node->getAbsoluteDepth() . "  " . $nodepath . "  "  ;
     $starttime = microtime(true);

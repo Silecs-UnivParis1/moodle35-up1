@@ -51,7 +51,7 @@ if ( ! empty($options['config']) ) {
 $CFG->debug = DEBUG_NORMAL;
 
 if ($options['stats']) {
-    statscrawler($options['maxdepth'], false, true, false);
+    statscrawler($options['node'], $options['maxdepth'], false, true, false);
 } elseif ($options['csv']) {
     if (empty($options['node'])) {
         echo "Please specify --node.\n";
