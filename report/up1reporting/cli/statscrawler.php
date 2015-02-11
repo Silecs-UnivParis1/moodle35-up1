@@ -17,7 +17,7 @@ require_once(dirname(__DIR__) . '/ExportReportingCsv.php');
 
 // now get cli options
 list($options, $unrecognized) = cli_get_params(array(
-        'help'=>false, 'stats'=>false, 'csv'=>false, 'maxdepth'=>6, 'node'=>'', 'verb'=>1),
+        'help'=>false, 'stats'=>false, 'csv'=>false, 'maxdepth'=>6, 'node'=>'', 'verb'=>1, 'config'=>0),
     array('h'=>'help'));
 
 if ($unrecognized) {
@@ -30,6 +30,7 @@ $help =
 
 Options:
 -h, --help            Print out this help
+--config              Dump the Moodle configuration
 --stats               (action) compute stats and update database (normally, launched by cron)
 --csv                 (action) generates a csv output  (normally, launched by web UI)
 --maxdepth            Maximal tree depth ; 0=no max.
@@ -41,11 +42,16 @@ if ( ! empty($options['help']) ) {
     return 0;
 }
 
+if ( ! empty($options['config']) ) {
+    var_dump($CFG);
+    return 0;
+}
+
 // Ensure errors are well explained
 $CFG->debug = DEBUG_NORMAL;
 
 if ($options['stats']) {
-    statscrawler($options['maxdepth']);
+    statscrawler($options['maxdepth'], false, true, false);
 } elseif ($options['csv']) {
     if (empty($options['node'])) {
         echo "Please specify --node.\n";
