@@ -62,9 +62,10 @@ class courselist_roftools {
      *
      * @param array $courses array of course ID (from DB)
      * @param string $component '01' to ... '99'
+     * @param bool $die die (with exception) on error ; otherwise returns an empty result
      * @return array array($rofcourses, $catcourses)
      */
-    public static function split_courses_from_rof($courses, $component) {
+    public static function split_courses_from_rof($courses, $component, $die=true) {
         $rofcourses = array();
         $catcourses = array();
         if ($component != "00") {
@@ -80,10 +81,16 @@ class courselist_roftools {
                     if ($matchingRofpathids) {
                         $rofcourses[$crsid] = $matchingRofpathids;
                     } else {
-                        print_r($arrofpathids);
+                        echo "\n courses = " ; print_r($courses);
+                        echo "\n component = "; print_r($component);
+                        echo "\nrofpathids = "; print_r($rofpathids);
                         echo "\nCourseId = $crsid \nComponent = $component \n";
-                        throw new Exception("Incohérence du ROF dans split_courses_from_rof()");
-                        die();
+                        $msg = "Incohérence du ROF dans split_courses_from_rof()\n";
+                        if ($die) { 
+                            throw new Exception($msg);
+                        } else {
+                            echo "WARNING: $msg \n";
+                        }
                     }
                 } else { // no rofpathid
                     $catcourses[$crsid] = $crsid;
