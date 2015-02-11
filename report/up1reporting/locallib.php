@@ -115,25 +115,32 @@ function statscrawler($maxdepth = 6) {
     internalcrawler($tree, $maxdepth, 'crawl_stats');
 }
 
-function crawl_stats($node) {
+function crawl_stats($node, $cntcourses=true, $enrolled=true, $activities=true, $verb=2) {
     $nodepath = $node->getAbsolutePath();
     echo $node->getAbsoluteDepth() . "  " . $nodepath . "  "  ;
+    $starttime = microtime(true);
     $descendantcourses = $node->listDescendantCourses();
+    $coursesnumbers = array();
+    $usercount = array();
+    $activitycount = array();
 
-    echo "\n";
-    echo "Compute courses number (total, visible, active)... \n";
-    $coursesnumbers = get_courses_numbers($descendantcourses, $activedays=90);
-    echo "";
+    if ($cntcourses) {
+        progressBar($verb, 1, "\nCompute courses number (total, visible, active)... \n");
+        $coursesnumbers = get_courses_numbers($descendantcourses, $activedays=90);
+    }
 
-/* */
-    echo "Count enrolled users (by role and total)... \n";
-    $usercount = get_usercount_from_courses($descendantcourses);
-    echo "";
+    if ($enrolled) {
+        progressBar($verb, 1, "Count enrolled users (by role and total)... \n");
+        $usercount = get_usercount_from_courses($descendantcourses, $verb);
+    }
 
-    echo "Count and add inner course activity... \n";
-    $activitycount = sum_inner_activity_for_courses($descendantcourses);
-    echo "";
-/* */
+    if ($activities) {
+        progressBar($verb, 1, "Count and add inner course activity... \n");
+        $activitycount = sum_inner_activity_for_courses($descendantcourses);
+    }
+
+    progressBar($verb, 2, "\n" . (string)(microtime(true) - $starttime) . " s.\n");
+
     update_reporting_table($nodepath, array_merge($coursesnumbers, $usercount, $activitycount));
     return true;
 }
@@ -161,7 +168,7 @@ function update_reporting_table($path, $criteria) {
 
 // ************************** Compute enrolled users ******************
 
-function get_usercount_from_courses($courses) {
+function get_usercount_from_courses($courses, $verb) {
     global $DB;
     //** @todo more flexible roles list ?
     $targetroles = array('editingteacher', 'teacher', 'student');
@@ -169,20 +176,20 @@ function get_usercount_from_courses($courses) {
     $res = array();
 
     $total = 0;
-echo "  all ";
+    progressbar($verb, 1, "  all ");
     foreach ($targetroles as $role) {
-echo "  $role ";
-        $mycount = count_unique_users_from_role_courses($rolemenu[$role], $courses, false);
+        progressbar($verb, 1, "  $role ");
+        $mycount = count_unique_users_from_role_courses($rolemenu[$role], $courses, false, $verb);
         $total += $mycount;
         $res['enrolled:' . $role . ':all'] = $mycount;
     }
     $res['enrolled:total:all'] = $total;
 
     $total = 0;
-echo "  neverconnected ";
+    progressbar($verb, 1, "  neverconnected ");
     foreach ($targetroles as $role) {
-echo "  $role ";
-        $mycount = count_unique_users_from_role_courses($rolemenu[$role], $courses, true);
+        progressbar($verb, 1, "  $role ");
+        $mycount = count_unique_users_from_role_courses($rolemenu[$role], $courses, true, $verb);
         $total += $mycount;
         $res['enrolled:' . $role . ':neverconnected'] = $mycount;
     }
@@ -191,12 +198,14 @@ echo "  $role ";
     return $res;
 }
 
-function count_unique_users_from_role_courses($roleid, $courses, $neverconnected=false) {
+function count_unique_users_from_role_courses($roleid, $courses, $neverconnected=false, $verb) {
     $uniqusers = array();
+    $progressmark = ($verb >=2 ? '.' : '');
     foreach ($courses as $courseid) {
-echo ".";
-        $mergeusers = array_merge($uniqusers, get_users_from_role_course($roleid, $courseid, $neverconnected));
-        $uniqusers = array_unique($mergeusers, SORT_NUMERIC);
+        echo $progressmark;
+        foreach (get_users_from_role_course($roleid, $courseid, $neverconnected) as $userid) {
+            $uniqusers[$userid] = true;
+        }
     }
     return count($uniqusers);
 }
@@ -328,4 +337,16 @@ function count_inner_assign_posts($course) {
            "JOIN {assign} a ON (asu.assignment = a.id) " .
            "WHERE a.course = ?";
     return $DB->get_field_sql($sql, array($course), MUST_EXIST);
+}
+
+/**
+ * progress bar display
+ * @param int $verb verbosity
+ * @param int $verbmin minimal verbosity
+ * @param string $strig to display
+ */
+function progressBar($verb, $verbmin, $string) {
+    if ($verb >= $verbmin) {
+        echo $string;
+    }
 }
