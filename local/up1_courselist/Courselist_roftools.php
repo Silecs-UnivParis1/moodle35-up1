@@ -80,8 +80,10 @@ class courselist_roftools {
                     if ($matchingRofpathids) {
                         $rofcourses[$crsid] = $matchingRofpathids;
                     } else {
+                        print_r($arrofpathids);
+                        echo "\nCourseId = $crsid \nComponent = $component \n";
                         throw new Exception("Incohérence du ROF dans split_courses_from_rof()");
-                        print_r($arrofpathids); die("\nCourseId: $crsid\nComponent: $component");
+                        die();
                     }
                 } else { // no rofpathid
                     $catcourses[$crsid] = $crsid;
