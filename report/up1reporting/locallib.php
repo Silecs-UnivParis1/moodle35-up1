@@ -116,7 +116,12 @@ function up1reporting_last_records($howmany) {
 
 
 // ***** Tree crawling *****
-
+/**
+ * This is the main function to start crawling the hybridtree and compute statistics
+ * @global type $ReportingTimestamp
+ * @param type $rootnode
+ * @param type $maxdepth
+ */
 function statscrawler($rootnode, $maxdepth = 6) {
     global $ReportingTimestamp;
     if ($rootnode) {
@@ -124,13 +129,19 @@ function statscrawler($rootnode, $maxdepth = 6) {
     } else  {
         $tree = CourseHybridTree::createTree('/cat0');
     }
-    // $timestamp = time();
     $ReportingTimestamp = time();
-    $enable = array('countcourses'=>false, 'enrolled'=>true, 'activities'=>false);
+    $enable = array('countcourses'=>true, 'enrolled'=>true, 'activities'=>true);
     $crawlparams = array('enable' => $enable, 'verb' => 2);
     internalcrawler($tree, $maxdepth, 'crawl_stats', $crawlparams);
 }
 
+/**
+ * This function is called by internalcrawler (coursehybridtree:libcrawler) on each node
+ * to compute the related statistics
+ * @param object $node
+ * @param array $extraparams : array('verb'=>int, 'enable'=>array())
+ * @return boolean ALWAYS TRUE
+ */
 function crawl_stats($node, $extraparams) {
     $verb = $extraparams['verb'];
     $enable = $extraparams['enable'];
@@ -146,6 +157,7 @@ function crawl_stats($node, $extraparams) {
         progressBar($verb, 1, "\nCompute courses number (total, visible, active)... \n");
         $coursesnumbers = get_courses_numbers($descendantcourses, $activedays=90);
     }
+
     if ($enable['enrolled']) {
         progressBar($verb, 1, "Count enrolled users (by role and total)... \n");
         $usercount = get_usercount_from_courses($descendantcourses, $verb);
@@ -162,6 +174,14 @@ function crawl_stats($node, $extraparams) {
     return true;
 }
 
+/**
+ * this function is called on each node, to insert the records in the database
+ * one new row for each member of the $criteria array
+ * @global type $ReportingTimestamp
+ * @param string $path eg. /cat10/cat11/cat12/cat14/01:UP1-PROG39571/UP1-PROG33876
+ * @param array $criteria($name => $value)
+ * @return boolean true if all records inserted, false otherwise
+ */
 function update_reporting_table($path, $criteria) {
     global $DB, $ReportingTimestamp;
     $diag = true;
@@ -172,7 +192,6 @@ function update_reporting_table($path, $criteria) {
         $record->name = $name;
         $record->value = $value;
         $record->timecreated = $ReportingTimestamp;
-        //** @todo
         $lastinsertid = $DB->insert_record('report_up1reporting', $record, false);
         if ( ! $lastinsertid) {
             $diag = false;
