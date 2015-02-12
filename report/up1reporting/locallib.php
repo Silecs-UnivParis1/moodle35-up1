@@ -85,6 +85,17 @@ function get_parentcat() {
 
 // ***** Log statistics *****
 
+function cli_meta_statistics() {
+    echo "Number of statpoints = " . up1reporting_count_timestamps() . "\n\n";
+
+    echo "Details:\n";
+    $timestats = up1reporting_last_records(1000);
+    echo "Timestamp            Criters Nodes Records\n";
+    foreach ($timestats as $stats) {
+        printf("%s  %6d %6d %6d \n", $stats->timestamp, $stats->crit, $stats->nodes, $stats->records);
+    }
+}
+
 function up1reporting_count_timestamps() {
     global $DB;
 
@@ -95,7 +106,7 @@ function up1reporting_last_records($howmany) {
     global $DB;
 
     // $lastrecord = $DB->get_field_sql("SELECT LAST(timecreated) FROM {report_up1reporting}");
-    $sql = "SELECT FROM_UNIXTIME(timecreated), "
+    $sql = "SELECT FROM_UNIXTIME(timecreated) AS timestamp, "
          . "COUNT(DISTINCT name) AS crit, COUNT(DISTINCT objectid) AS nodes, COUNT(id) as records "
          . "FROM {report_up1reporting} GROUP BY timecreated ORDER BY timecreated DESC LIMIT " . $howmany;
 
@@ -118,7 +129,7 @@ function statscrawler($rootnode, $maxdepth = 6) {
     internalcrawler($tree, $maxdepth, 'crawl_stats');
 }
 
-function crawl_stats($node, $cntcourses=true, $enrolled=true, $activities=false, $verb=2) {
+function crawl_stats($node, $cntcourses=false, $enrolled=false, $activities=true, $verb=2) {
     $nodepath = $node->getAbsolutePath();
     echo $node->getAbsoluteDepth() . "  " . $nodepath . "  "  ;
     $starttime = microtime(true);
