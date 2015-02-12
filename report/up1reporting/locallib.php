@@ -14,7 +14,7 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/local/up1_courselist/courselist_tools.php');
 require_once($CFG->dirroot . '/local/coursehybridtree/libcrawler.php');
 
-global  $ReportingTimestamp, $CsvFileHandle;
+global  $ReportingTimestamp, $CourseInnerStats;
 
 /**
  * prepare table content to be displayed : UFR | course count | student count | teacher count
@@ -123,7 +123,8 @@ function up1reporting_last_records($howmany) {
  * @param type $maxdepth
  */
 function statscrawler($rootnode, $maxdepth = 6) {
-    global $ReportingTimestamp;
+    global $ReportingTimestamp, $CourseInnerStats;
+
     if ($rootnode) {
         $tree = CourseHybridTree::createTree($rootnode);
     } else  {
@@ -132,6 +133,11 @@ function statscrawler($rootnode, $maxdepth = 6) {
     $ReportingTimestamp = time();
     $enable = array('countcourses'=>true, 'enrolled'=>true, 'activities'=>true);
     $crawlparams = array('enable' => $enable, 'verb' => 2);
+
+    if ($enable['activities']) {
+        // computes one time only the global course activity statistics
+        $CourseInnerStats = get_inner_activity_all_courses();
+    }
     internalcrawler($tree, $maxdepth, 'crawl_stats', $crawlparams);
 }
 
@@ -286,12 +292,11 @@ function get_courses_numbers($courses, $activedays=90) {
 // ************************** Compute inner statistics (internal to a course) ******************
 
 function sum_inner_activity_for_courses($courses) {
+global $CourseInnerStats;
 
     $res = get_zero_activity_stats();
-    $innerstats = get_inner_activity_all_courses();
-
     foreach ($courses as $courseid) {
-        foreach ($innerstats[$courseid] as $name => $value) {
+        foreach ($CourseInnerStats[$courseid] as $name => $value) {
             $res[$name] += $value;
         }
     }
