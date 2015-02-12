@@ -126,29 +126,32 @@ function statscrawler($rootnode, $maxdepth = 6) {
     }
     // $timestamp = time();
     $ReportingTimestamp = time();
-    internalcrawler($tree, $maxdepth, 'crawl_stats');
+    $enable = array('countcourses'=>false, 'enrolled'=>true, 'activities'=>false);
+    $crawlparams = array('enable' => $enable, 'verb' => 2);
+    internalcrawler($tree, $maxdepth, 'crawl_stats', $crawlparams);
 }
 
-function crawl_stats($node, $cntcourses=false, $enrolled=false, $activities=true, $verb=2) {
+function crawl_stats($node, $extraparams) {
+    $verb = $extraparams['verb'];
+    $enable = $extraparams['enable'];
     $nodepath = $node->getAbsolutePath();
-    echo $node->getAbsoluteDepth() . "  " . $nodepath . "  "  ;
+    progressBar($verb, 1, "\n" . $node->getAbsoluteDepth() . "  " . $nodepath . "  ");
     $starttime = microtime(true);
     $descendantcourses = $node->listDescendantCourses();
     $coursesnumbers = array();
     $usercount = array();
     $activitycount = array();
 
-    if ($cntcourses) {
+    if ($enable['countcourses']) {
         progressBar($verb, 1, "\nCompute courses number (total, visible, active)... \n");
         $coursesnumbers = get_courses_numbers($descendantcourses, $activedays=90);
     }
-
-    if ($enrolled) {
+    if ($enable['enrolled']) {
         progressBar($verb, 1, "Count enrolled users (by role and total)... \n");
         $usercount = get_usercount_from_courses($descendantcourses, $verb);
     }
 
-    if ($activities) {
+    if ($enable['activities']) {
         progressBar($verb, 1, "Count and add inner course activity... \n");
         $activitycount = sum_inner_activity_for_courses($descendantcourses);
     }

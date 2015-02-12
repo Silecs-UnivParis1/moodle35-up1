@@ -20,19 +20,18 @@ function hybridcrawler($maxdepth = 0) {
     internalcrawler($tree, $maxdepth, 'printnode');
 }
 
-function internalcrawler($node, $maxdepth, $callbackfn, $params=array()) {
+function internalcrawler($node, $maxdepth, $callbackfn, $extraparams=array()) {
     $total = 0;
 
-    call_user_func($callbackfn, $node, $params);
+    call_user_func($callbackfn, $node, $extraparams);
     $children = $node->listChildren();
     if ( count($children) == 0 ) {
         return 1;
     }
     if ( $maxdepth == 0  ||  $node->getAbsoluteDepth() < $maxdepth ) {        
         foreach ($children as $child) {
-            $total += internalcrawler($child, $maxdepth, $callbackfn);
+            $total += internalcrawler($child, $maxdepth, $callbackfn, $extraparams);
         }
-    // echo $node->getAbsoluteDepth() . "  " . $node->getAbsolutePath() . "  ";
     // echo $total . "\n";
     }
     return $total;
