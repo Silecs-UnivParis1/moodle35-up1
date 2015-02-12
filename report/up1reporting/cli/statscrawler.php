@@ -33,6 +33,7 @@ Options:
 -h, --help            Print out this help
 --config              Dump the Moodle configuration
 --metastats           Show the statistics on the recorded statistics (number and dates)
+--verb                Verbosity, 0 to 3 (default is 1)
 
 --stats               (action) compute stats and update database (normally, launched by cron)
 --csv                 (action) generates a csv output  (normally, launched by web UI)
@@ -60,7 +61,7 @@ if ( ! empty($options['metastats']) ) {
 $CFG->debug = DEBUG_NORMAL;
 
 if ($options['stats']) {
-    statscrawler($options['node'], $options['maxdepth'], false, true, false);
+    statscrawler($options['node'], $options['maxdepth'], $options['verb']);
 } elseif ($options['csv']) {
     if (empty($options['node'])) {
         echo "Please specify --node.\n";

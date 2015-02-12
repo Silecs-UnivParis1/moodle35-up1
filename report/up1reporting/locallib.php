@@ -122,7 +122,7 @@ function up1reporting_last_records($howmany) {
  * @param type $rootnode
  * @param type $maxdepth
  */
-function statscrawler($rootnode, $maxdepth = 6) {
+function statscrawler($rootnode, $maxdepth = 6, $verb) {
     global $ReportingTimestamp, $CourseInnerStats;
 
     if ($rootnode) {
@@ -132,7 +132,7 @@ function statscrawler($rootnode, $maxdepth = 6) {
     }
     $ReportingTimestamp = time();
     $enable = array('countcourses'=>true, 'enrolled'=>true, 'activities'=>true);
-    $crawlparams = array('enable' => $enable, 'verb' => 2);
+    $crawlparams = array('enable' => $enable, 'verb' => $verb);
 
     if ($enable['activities']) {
         // computes one time only the global course activity statistics
@@ -160,21 +160,21 @@ function crawl_stats($node, $extraparams) {
     $activitycount = array();
 
     if ($enable['countcourses']) {
-        progressBar($verb, 1, "\nCompute courses number (total, visible, active)... \n");
+        progressBar($verb, 2, "\nCompute courses number (total, visible, active)... \n");
         $coursesnumbers = get_courses_numbers($descendantcourses, $activedays=90);
     }
 
     if ($enable['enrolled']) {
-        progressBar($verb, 1, "Count enrolled users (by role and total)... \n");
+        progressBar($verb, 2, "Count enrolled users (by role and total)... \n");
         $usercount = get_usercount_from_courses($descendantcourses, $verb);
     }
 
     if ($enable['activities']) {
-        progressBar($verb, 1, "Count and add inner course activity... \n");
+        progressBar($verb, 2, "Count and add inner course activity... \n");
         $activitycount = sum_inner_activity_for_courses($descendantcourses);
     }
 
-    progressBar($verb, 2, "\n" . (string)(microtime(true) - $starttime) . " s.\n");
+    progressBar($verb, 3, "\n" . (string)(microtime(true) - $starttime) . " s.\n");
 
     update_reporting_table($nodepath, array_merge($coursesnumbers, $usercount, $activitycount));
     return true;
@@ -218,9 +218,9 @@ function get_usercount_from_courses($courses, $verb) {
     $res = array();
 
     $total = 0;
-    progressbar($verb, 1, "  all ");
+    progressbar($verb, 2, "  all ");
     foreach ($targetroles as $role) {
-        progressbar($verb, 1, "  $role ");
+        progressbar($verb, 2, "  $role ");
         $mycount = count_unique_users_from_role_courses($rolemenu[$role], $courses, false, $verb);
         $total += $mycount;
         $res['enrolled:' . $role . ':all'] = $mycount;
@@ -228,9 +228,9 @@ function get_usercount_from_courses($courses, $verb) {
     $res['enrolled:total:all'] = $total;
 
     $total = 0;
-    progressbar($verb, 1, "  neverconnected ");
+    progressbar($verb, 2, "  neverconnected ");
     foreach ($targetroles as $role) {
-        progressbar($verb, 1, "  $role ");
+        progressbar($verb, 2, "  $role ");
         $mycount = count_unique_users_from_role_courses($rolemenu[$role], $courses, true, $verb);
         $total += $mycount;
         $res['enrolled:' . $role . ':neverconnected'] = $mycount;
