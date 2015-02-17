@@ -267,8 +267,10 @@ function wizard_get_course_list_teacher() {
                     $idperiode = trim($path);
                 }
                 $periode = $periodes[$idperiode];
+                $fullname = trim($course->fullname);
+                $fullname = preg_replace('/ +/', ' ', $fullname);
                 $course_list[$course->id] = trim($periode->name)
-                    . ' / ' . trim($course->fullname) . ' (' . $course->id . ')';
+                    . ' / ' . $fullname . ' (' . $course->id . ')';
             }
         }
     }
