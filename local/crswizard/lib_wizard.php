@@ -705,11 +705,13 @@ function wizard_role($labels) {
     $sql = "SELECT * FROM {role} WHERE shortname = ?";
     foreach (array_keys($labels) as $key) {
         $record = $DB->get_record_sql($sql, array($key));
-        $roles[] = array(
-            'shortname' => $record->shortname,
-            'name' => $record->name,
-            'id' => $record->id
-        );
+        if ($record != false) {
+            $roles[] = array(
+                'shortname' => $record->shortname,
+                'name' => $record->name,
+                'id' => $record->id
+            );
+        }
     }
     return $roles;
 }
