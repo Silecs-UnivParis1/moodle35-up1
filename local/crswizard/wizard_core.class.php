@@ -803,6 +803,7 @@ class wizard_core {
         $eventdata->subject = $subject;
         $eventdata->fullmessage = $mgc;
         $eventdata->smallmessage = $mgc; // USED BY DEFAULT !
+        $eventdata->fullmessagehtml   = '';
         $res = message_send($eventdata);
 
         // envoi à helpdesk_user si définit dans crswizard.setting
