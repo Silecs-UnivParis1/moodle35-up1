@@ -3902,8 +3902,11 @@ class settings_navigation extends navigation_node {
 
         // Tableau de bord
         if (has_capability('moodle/course:update', $coursecontext)) {
-            $url = new moodle_url('/local/courseboard/view.php', array('id'=>$course->id));
-            $coursenode->add(get_string('pluginname', 'local_courseboard'), $url, self::TYPE_SETTING, null, 'dashboard', null, '');
+            $context_sys = context_system::instance();
+            if (has_capability('moodle/site:approvecourse', $context_sys)) {
+                $url = new moodle_url('/local/courseboard/view.php', array('id'=>$course->id));
+                $coursenode->add(get_string('pluginname', 'local_courseboard'), $url, self::TYPE_SETTING, null, 'dashboard', null, '');
+            }
         }
 
         // Backup this course
