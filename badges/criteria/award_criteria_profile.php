@@ -223,7 +223,7 @@ class award_criteria_profile extends award_criteria {
             if (is_numeric($param['field'])) {
                 // This is a custom field.
                 $idx = count($whereparts);
-                $join .= " LEFT JOIN {user_info_data} uid{$idx} ON uid{$idx}.userid = u.id AND uid{$idx}.fieldid = :fieldid{$idx} ";
+                $join .= " LEFT JOIN {custom_info_data} uid{$idx} ON uid{$idx}.objectname = 'user' AND uid{$idx}.objectid = u.id AND uid{$idx}.fieldid = :fieldid{$idx} ";
                 $params["fieldid{$idx}"] = $param['field'];
                 $whereparts[] = "uid{$idx}.id IS NOT NULL";
             } else {

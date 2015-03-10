@@ -124,7 +124,7 @@ function profile_get_custom_fields($onlyinuserobject = false) {
     global $DB, $CFG;
 
     // Get all the fields.
-    $fields = $DB->get_records('user_info_field', null, 'id ASC');
+    $fields = $DB->get_records('custom_info_field', array('objectname' => 'user'), 'id ASC');
 
     // If only doing the user object ones, unset the rest.
     if ($onlyinuserobject) {
