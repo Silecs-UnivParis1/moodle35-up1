@@ -93,10 +93,10 @@ class core_user_profilelib_testcase extends advanced_testcase {
         require_once($CFG->dirroot . '/user/profile/definelib.php');
         $datatypes = profile_list_datatypes();
         foreach ($datatypes as $datatype => $datatypename) {
-            require_once($CFG->dirroot . '/user/profile/field/' .
+            require_once($CFG->dirroot . '/lib/custominfo/field/' .
                 $datatype . '/field.class.php');
             $newfield = 'profile_field_' . $datatype;
-            $formfield = new $newfield();
+            $formfield = new $newfield('user');
             $this->assertNotNull($formfield);
         }
     }

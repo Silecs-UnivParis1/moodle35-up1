@@ -129,11 +129,11 @@ function profile_get_custom_fields($onlyinuserobject = false) {
     // If only doing the user object ones, unset the rest.
     if ($onlyinuserobject) {
         foreach ($fields as $id => $field) {
-            require_once($CFG->dirroot . '/user/profile/field/' .
+            require_once($CFG->dirroot . '/lib/custominfo/field/' .
                     $field->datatype . '/field.class.php');
             $newfield = 'profile_field_' . $field->datatype;
-            $formfield = new $newfield();
-            if (!$formfield->is_user_object_data()) {
+            $formfield = new $newfield('user');
+            if (!$formfield->is_object_data()) {
                 unset($fields[$id]);
             }
         }
