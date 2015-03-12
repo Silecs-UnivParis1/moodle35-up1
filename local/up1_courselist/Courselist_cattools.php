@@ -115,7 +115,7 @@ class courselist_cattools {
         $patharray = self::get_coursecat_array_from_course($crsid);
         $out = '';
         foreach ($patharray as $catid => $name) {
-            $url = new moodle_url('/course/category.php', array('id' => $catid));
+            $url = new moodle_url('/course/index.php', array('categoryid' => $catid));
             $out .= " / " . html_writer::link($url, $name);
         }
         return $out;
