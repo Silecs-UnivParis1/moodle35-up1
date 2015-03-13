@@ -30,7 +30,7 @@ class course_wizard_step_model extends moodleform {
             if (count($course_model_list)) {
                 $m1array = array();
                 $m1array[] = $mform->CreateElement('radio', 'modeletype', '', '<span class="fake-fitemtitle">Créer un nouvel EPI</span>', 'selm1');
-                $m1array[] = $mform->CreateElement('select', 'sEPIelm1', '', $course_model_list);
+                $m1array[] = $mform->CreateElement('select', 'selm1', '', $course_model_list);
                 $m1array[] = $mform->CreateElement('select', 'course_summary', '',  $course_summary, array('class' => 'cache'));
 
                 $mform->addGroup($m1array, 'm1array', "", array(' '), false);
