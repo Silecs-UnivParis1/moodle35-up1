@@ -131,7 +131,7 @@ class wizard_core {
 
         $signature = 'Cordialement,' . "\n\n";
         $signature .= 'L\'assistance EPI' . "\n\n";
-        $signature .= 'Service TICE - Pôle Ingénieries pédagogique et de formation' . "\n";
+        $signature .= 'DSIUN-SUN - Service des usages numériques' . "\n";
         $signature .= 'Université Paris 1 Panthéon-Sorbonne' . "\n";
         $signature .= 'Courriel : assistance-epi@univ-paris1.fr' . "\n";
 
