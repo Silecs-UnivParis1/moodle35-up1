@@ -157,7 +157,7 @@ class wizard_core {
             $mgc .= 'Vous trouverez à cette adresse ' . $urlguide . ' des informations sur le processus d\'approbation des espaces '
                 . 'nouvellement créés.' . "\n\n";
         }
-        $mgc .= 'N\'hésitez pas à contacter l\'un des membres de l\'équipe du service TICE :' . "\n";
+        $mgc .= 'N\'hésitez pas à contacter l\'un des membres de l\'équipe du service des usages numériques :' . "\n";
         $mgc .= '- si vous souhaitez participer à l\'une des sessions de prise en mains régulièrement organisées ;' . "\n";
         $mgc .= '- si vous rencontrez une difficulté ou si vous constatez une anomalie de fonctionnement.' . "\n\n";
         $mgc .= 'Conservez ce message. Le récapitulatif technique présenté ci-après peut vous être utile, '
