@@ -83,6 +83,10 @@ switch ($stepin) {
         $editform = new course_wizard_step_model();
         $data = $editform->get_data();
         if ($data){
+            /* CORRECTIF 05/03/2015 : LES MODELES ETAIT TOUJOURS VIDES*/
+            if (!empty($data->sEPIelm1)&&!empty($data->course_summary)) {
+                $data->course_summary=$data->sEPIelm1;
+            }
             $SESSION->wizard['form_step' . $stepin] = (array) $data;
             redirect($CFG->wwwroot . '/local/crswizard/index.php?stepin=' . $stepgo);
         } else {
