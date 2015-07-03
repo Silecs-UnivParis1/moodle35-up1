@@ -14,7 +14,6 @@ require_once($CFG->libdir . '/completionlib.php');
 class course_wizard_step2_rof_form extends moodleform {
 
     function definition() {
-        global $OUTPUT, $SESSION, $USER;
         $isnew = TRUE;
 
         $mform = $this->_form;
@@ -269,6 +268,20 @@ class course_wizard_step2_rof_form extends moodleform {
         if ($category) {
             if ($category->depth < 1) {
                 $errors['category'] = get_string('categoryerrormsg1', 'local_crswizard');
+            }
+            $cat_annee_courante = get_config('local_crswizard', 'cas2_default_etablissement');
+            if ( ! empty($cat_annee_courante)) {
+                if (!preg_match('#' . $cat_annee_courante . '#i', $category->path)) {
+                   $category2 =  $DB->get_record('course_categories', array('id' => $cat_annee_courante));
+                   if (!empty($category2->path)) {
+                       $array_cat = explode('/',$category2->path);
+                       if (!empty($array_cat[1])) {
+                        $category3 =  $DB->get_record('course_categories', array('id' => $array_cat[1]));
+                        if (!empty($category3->name)) $errors['category'] = 'Attention, veuillez sélectionner l\''.strtolower($category3->name).', puis l\'établissement !'; 
+                       }
+                   
+                   }
+                }
             }
         } else {
             $errors['category'] = get_string('categoryerrormsg2', 'local_crswizard');
