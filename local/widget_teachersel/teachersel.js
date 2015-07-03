@@ -60,10 +60,12 @@
                 $(this).autocomplete("search");
             });
             $(this.settings.outputSelector, this.elem).on("click", ".selected-remove", function(event) {
-                var item = $(this).closest(".teacher-item-block").find('input[type="hidden"]').first();
-                selected[item.val()] = 0;
-                nbsel = nbsel - 1;
-                $(this).closest(".teacher-item-block").remove();
+                if (confirm("Attention ! En supprimant un nom dans la liste d'enseignant-e-s, cela risque de supprimer tous les rôles et les droits (enseignant éditeur, enseignant responsable EPI) associés à cet-te enseignant-e, même si le nom reste affiché.")) {
+                    var item = $(this).closest(".teacher-item-block").find('input[type="hidden"]').first();
+                    selected[item.val()] = 0;
+                    nbsel = nbsel - 1;
+                    $(this).closest(".teacher-item-block").remove();
+		}
             });
         },
 
