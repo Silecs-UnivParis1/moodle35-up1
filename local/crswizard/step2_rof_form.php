@@ -14,6 +14,7 @@ require_once($CFG->libdir . '/completionlib.php');
 class course_wizard_step2_rof_form extends moodleform {
 
     function definition() {
+        global $SESSION, $USER;
         $isnew = TRUE;
 
         $mform = $this->_form;
