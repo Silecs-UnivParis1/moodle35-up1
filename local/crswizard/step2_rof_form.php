@@ -229,9 +229,13 @@ class course_wizard_step2_rof_form extends moodleform {
             $labelprevious = get_string('upcancel', 'local_crswizard');
         }
         $buttonarray = array();
+        $urlwizard = '';
+        if (isset($SESSION->wizard['wizardurl'])) {
+            $urlwizard = $SESSION->wizard['wizardurl'];
+        }
         $buttonarray[] = $mform->createElement(
             'link', 'previousstage', null,
-            new moodle_url($SESSION->wizard['wizardurl'], array('stepin' => 1)),
+            new moodle_url($urlwizard, array('stepin' => 1)),
                 $labelprevious, array('class' => 'previousstage'));
         $buttonarray[] = $mform->createElement('submit', 'stepgo_3', get_string('nextstage', 'local_crswizard'));
         $mform->addGroup($buttonarray, 'buttonar', '', null, false);
@@ -277,9 +281,9 @@ class course_wizard_step2_rof_form extends moodleform {
                        $array_cat = explode('/',$category2->path);
                        if (!empty($array_cat[1])) {
                         $category3 =  $DB->get_record('course_categories', array('id' => $array_cat[1]));
-                        if (!empty($category3->name)) $errors['category'] = 'Attention, veuillez sélectionner l\''.strtolower($category3->name).', puis l\'établissement !'; 
+                        if (!empty($category3->name)) $errors['category'] = 'Attention, veuillez sélectionner l\''.strtolower($category3->name).', puis l\'établissement !';
                        }
-                   
+
                    }
                 }
             }
