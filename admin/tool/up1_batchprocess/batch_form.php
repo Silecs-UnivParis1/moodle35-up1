@@ -32,6 +32,9 @@ class course_batch_search_form extends moodleform {
             $mform->addElement('header', 'main_settings', format_string($this->_customdata['fieldset']));
         }
 
+        $mform->addElement('text', 'limitresults', "Limiter résultats", 'maxlength="10" size="10" value="100" ');
+        $mform->setType('limitresults', PARAM_INT);
+
         $mform->addElement('text', 'search', get_string('searchcourses'), 'maxlength="254" size="50"');
         $mform->setType('search', PARAM_RAW);
         $mform->addElement('text', 'enrolled', get_string('defaultcourseteacher'), 'maxlength="254" size="50"');

@@ -103,7 +103,8 @@ $data = $form->get_data();
 $totalcount = 0;
 $courses = null;
 if ($data) {
-    $courses = get_courses_batch_search($data, "c.fullname ASC", $page, $perpage, $totalcount);
+    $limit = $data->limitresults;
+    $courses = get_courses_batch_search($data, "c.fullname ASC", $page, $limit, $totalcount);
 } else if ($coursesid) {
     $courses = $DB->get_records_list('course', 'id', $coursesid);
 }
@@ -131,7 +132,7 @@ if (empty($courses)) {
             <table border="0" cellspacing="2" cellpadding="4" class="course-selection">
                 <tr>
                     <th><input type="checkbox" name="course-selectall" id="course-selectall" value="0" /></th>
-                    <th class="header" scope="col"><?php echo get_string('courses'); ?></th>
+                    <th class="header" scope="col"><?php echo get_string('courses') . ' (' . count ($courses) . ')' ; ?></th>
                     <?php if ($preview) { ?>
                     <th class="header" scope="col"><?php echo get_string('preview'); ?></th>
                     <?php } ?>
