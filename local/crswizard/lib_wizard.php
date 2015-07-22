@@ -89,6 +89,7 @@ function get_selected_etablissement_id() {
 
 /**
  * Récupère les utilisateurs ayant des rôles de type teachers dans le cours d'identifiant $courseid
+ * les utilisateurs de rôle ens_epi_archive deviennent editingteacher
  * @param int $courseid : identifiant du cours
  * @return array $users (utilisateurs non suspendus)
  */
@@ -97,6 +98,8 @@ function wizard_get_teachers($courseid) {
     $users = array();
     $myconfig = new my_elements_config();
     $labels = $myconfig->role_teachers;
+    //ens_epi_archive
+    $labels['ens_epi_archive'] = 'ens_epi_archive';
     $roles = wizard_role($labels);
     if (count($roles)) {
         $context = context_course::instance($courseid);
@@ -106,7 +109,11 @@ function wizard_get_teachers($courseid) {
                 foreach ($ra as $r) {
                    $user = $DB->get_record('user', array('id'=>$r->userid), '*', MUST_EXIST);
                     if ($user && $user->deleted ==0 && $user->suspended == 0) {
-                        $users[$role['shortname']][$user->username] = $user;
+                        $rolename = $role['shortname'];
+                        if ($rolename == 'ens_epi_archive') {
+                            $rolename = 'editingteacher';
+                        }
+                        $users[$rolename][$user->username] = $user;
                     }
                 }
             }
