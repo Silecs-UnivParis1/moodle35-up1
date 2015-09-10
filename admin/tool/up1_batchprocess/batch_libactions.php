@@ -5,8 +5,10 @@
  *
  * @package    tool
  * @subpackage up1_batchprocess
- * @copyright  2014 Silecs {@link http://www.silecs.info/societe}
+ * @copyright  2014-2015 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @todo turn this lib into a class, and factorize the parameters $courses, $redirect and global $redirectUrl (GA 2015-09-10)
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -161,19 +163,22 @@ global $redirectUrl, $DB, $CFG;
  * disable each enrolment method (except 'manual') of each course
  * @param array $courses of (DB) objects course
  * @param bool $redirect
+ * @param array $excepts list of enrolment methods
+ * @param bool if TRUE disable ONLY $excepts methods ; if FALSE disable ALL methods except the $excepts
+ * @return string diagnostic message
  */
-function batchaction_disable_enrols($courses, $redirect) {
+function batchaction_disable_enrols($courses, $redirect, $excepts = array('manual'), $only = FALSE) {
 global $redirectUrl, $DB, $CFG;
 
     $cnt = 0;
-    $excepts = array('manual');
     $plugins = enrol_get_plugins(false);
     // code dérivé de  moodle/enrol/instances.php l.143  (action=='disable')
     foreach ($courses as $course) {
         $instances = enrol_get_instances($course->id, false); // records of table "enrol"
         foreach ($instances as $instanceid => $instance) {
             $plugin = $plugins[$instance->enrol];
-            if ( $instance->status != ENROL_INSTANCE_DISABLED && ! in_array($instance->enrol, $excepts) ) {
+            if ( $instance->status != ENROL_INSTANCE_DISABLED 
+                 && (in_array($instance->enrol, $excepts) == $only) ) {
                 $plugin->update_status($instance, ENROL_INSTANCE_DISABLED);
                 $cnt++;
             }

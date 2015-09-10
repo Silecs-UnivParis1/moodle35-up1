@@ -84,9 +84,13 @@ foreach ($actionchecks as $action) {
             break;
 
         case 'disableenrols':
-            $msg .= batchaction_disable_enrols($courses, false) . "<br />\n";
+            $msg .= batchaction_disable_enrols($courses, false, array('manual'), false) . "<br />\n";
             break;
-      
+
+        case 'disablemanualenrols':
+            $msg .= batchaction_disable_enrols($courses, false, array('manual'), true) . "<br />\n";
+            break;
+
         case 'backup':
             $msg .= batchaction_backup($courses, false) . "<br />\n";
             break;
@@ -210,12 +214,16 @@ if (empty($courses)) {
                     </li>
                     <li>
                         <input type="checkbox" name="actioncheck[]" value="disableenrols" />
-                        Désactiver les inscriptions
+                        Désactiver les inscriptions (sauf manuelles)
                     </li>
                     <li>
                         <input type="checkbox" name="actioncheck[]" value="backup" />
                         <?php echo "Archiver dans " . get_config('backup', 'backup_auto_destination'); ?>
-                    </li>                    
+                    </li>
+                    <li>
+                        <input type="checkbox" name="actioncheck[]" value="disablemanualenrols" />
+                        Désactiver les inscriptions manuelles
+                    </li>
                 </ul>
                 <input type="submit" name="Exec" value="Exécuter" />
             </fieldset>
