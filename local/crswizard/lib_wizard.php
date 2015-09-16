@@ -185,6 +185,9 @@ function wizard_get_metadonnees() {
                 $SESSION->wizard['form_step5']['all-cohorts'] = wizard_get_enrolement_cohorts();
             }
 
+			$summary = array('text' => $course->summary, 'format' => $course->summaryformat);
+			$SESSION->wizard['form_step2']['summary_editor'] = $summary;
+
             $case = wizard_get_generateur($course);
             if ($case == $SESSION->wizard['wizardcase']) {
                 switch ($case) {
