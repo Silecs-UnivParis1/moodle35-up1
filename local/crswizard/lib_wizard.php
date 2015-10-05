@@ -953,6 +953,7 @@ function wizard_preselected_cohort() {
  */
 function wizard_preselected_users() {
     global $SESSION;
+    global $USER;
     if (!isset($SESSION->wizard['form_step4']['all-users'])) {
         return '[]';
     }
@@ -967,11 +968,20 @@ function wizard_preselected_users() {
             }
 
             foreach ($users as $id => $user) {
-                $liste[] = array(
-                    "label" => fullname($user) . ' — ' . $user->username . $labelrole,
-                    "value" => $id,
-                    "fieldName" => "user[$role]",
-                );
+                //si $USER - responsable_epi
+                if ($user->id == $USER->id) {
+                    $liste[] = array(
+                        "label" => fullname($user) . ' — ' . $user->username . get_string('responsable_epi', 'local_crswizard'),
+                        "value" => $id,
+                        "fieldName" => "user[responsable_epi]",
+                    );
+                } else {
+                    $liste[] = array(
+                        "label" => fullname($user) . ' — ' . $user->username . ' (' . $labelrole . ')  ',
+                        "value" => $id,
+                        "fieldName" => "user[$role]",
+                    );
+                }
             }
         }
     }
