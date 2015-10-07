@@ -26,7 +26,7 @@ function handle_course_modified($eventdata) {
 
     // copied from course/category.php l.87-95
     if ($courses = get_courses($eventdata->category, '', 'c.id,c.fullname,c.sortorder')) {
-        collatorlib::asort_objects_by_property($courses, 'fullname', collatorlib::SORT_NATURAL);
+        core_collator::asort_objects_by_property($courses, 'fullname', core_collator::SORT_NATURAL);
         $i = 1;
         foreach ($courses as $course) {
             $DB->set_field('course', 'sortorder', $category->sortorder+$i, array('id'=>$course->id));
