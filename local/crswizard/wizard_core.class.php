@@ -37,9 +37,16 @@ class wizard_core {
             $course = create_course($mydata);
         }
 
-        add_to_log($course->id, 'crswizard', 'create', 'view.php?id='.$course->id, 'previous (ID '.$course->id.')');
-        $this->course = $course;
+        $event = \core\event\course_created::create(array(
+            'objectid' => $course->id,
+            'context' => context_course::instance($course->id),
+            'other' => array('plugin' => 'crswizard',
+                        'shortname' => $course->shortname,
+                         'fullname' => $course->fullname)
+        ));
+        $event->trigger();
 
+        $this->course = $course;
         // on supprime les enrols par défaut
         $this->delete_default_enrol_course($course->id);
         // save custom fields data
@@ -992,12 +999,26 @@ class wizard_core {
         $this->prepare_update_course();
 
         if ($this->formdata['modif']['identification']) {
-            add_to_log($this->mydata->id, 'crswizard', 'update',
-                'update/index.php?id=' . $this->mydata->id, 'Update Identification (course ' . $this->mydata->id . ' )');
+            $event = \core\event\course_updated::create(array(
+                'objectid' => $this->mydata->id,
+                'context' => context_course::instance($this->mydata->id),
+                'other' => array('shortname' => $this->mydata->shortname,
+                'fullname' => $this->mydata->fullname,
+                'crswizard' => 'Identification')
+            ));
+            $event->set_legacy_logdata(array($this->mydata->id, 'course', 'update', 'edit.php?id=' . $this->mydata->id, $this->mydata->id));
+            $event->trigger();
         }
         if ($this->formdata['modif']['attach']) {
-            add_to_log($this->mydata->id, 'crswizard', 'update',
-                'update/index.php?id=' . $this->mydata->id, 'Update Rattachement (course ' . $this->mydata->id . ' )');
+            $event = \core\event\course_updated::create(array(
+                'objectid' => $this->mydata->id,
+                'context' => context_course::instance($this->mydata->id),
+                'other' => array('shortname' => $this->mydata->shortname,
+                'fullname' => $this->mydata->fullname,
+                'crswizard' => 'Rattachement')
+            ));
+            $event->set_legacy_logdata(array($this->mydata->id, 'course', 'update', 'edit.php?id=' . $this->mydata->id, $this->mydata->id));
+            $event->trigger();
         }
         update_course($this->mydata);
         $custominfo_data = custominfo_data::type('course');
@@ -1021,13 +1042,27 @@ class wizard_core {
         $custominfo_data->save_data($cleandata);
         $modif = $this->update_myenrol_cohort();
         if ($modif) {
-            add_to_log($this->mydata->id, 'crswizard', 'update',
-                'update/index.php?id=' . $this->mydata->id, 'Update Cohorts (course ' . $this->mydata->id . ' )');
+            $event = \core\event\course_updated::create(array(
+                'objectid' => $this->mydata->id,
+                'context' => context_course::instance($this->mydata->id),
+                'other' => array('shortname' => $this->mydata->shortname,
+                'fullname' => $this->mydata->fullname,
+                'crswizard' => 'Cohorts')
+            ));
+            $event->set_legacy_logdata(array($this->mydata->id, 'course', 'update', 'edit.php?id=' . $this->mydata->id, $this->mydata->id));
+            $event->trigger();
         }
         $modif = $this->update_myenrol_key();
         if ($modif) {
-            add_to_log($this->mydata->id, 'crswizard', 'update',
-                'update/index.php?id=' . $this->mydata->id, 'Update keys (course ' . $this->mydata->id . ' )');
+            $event = \core\event\course_updated::create(array(
+                'objectid' => $this->mydata->id,
+                'context' => context_course::instance($this->mydata->id),
+                'other' => array('shortname' => $this->mydata->shortname,
+                'fullname' => $this->mydata->fullname,
+                'crswizard' => 'Keys')
+            ));
+            $event->set_legacy_logdata(array($this->mydata->id, 'course', 'update', 'edit.php?id=' . $this->mydata->id, $this->mydata->id));
+            $event->trigger();
         }
         rebuild_course_cache($this->mydata->id);
     }
