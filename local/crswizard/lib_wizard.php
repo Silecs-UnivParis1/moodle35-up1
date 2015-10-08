@@ -668,18 +668,26 @@ function wizard_update_enrol_key($enrol, $course, $tabkey) {
     $instance = $DB->get_record('enrol', array('courseid' => $course->id,
         'enrol' => $enrol, 'timecreated' => $course->timecreated));
     if ($instance) {
+        $startdate = 0;
+        $enddate = 0;
+        if (isset($tabkey['enrolstartdate'])) {
+                $startdate  = $tabkey['enrolstartdate'];
+        }
+        if (isset($tabkey['enrolenddate'])) {
+            $enddate = $tabkey['enrolenddate'];
+        }
         if (isset($tabkey['password']) && $tabkey['password'] != $instance->password) {
             $modif = true;
         }
-        if (isset($tabkey['enrolstartdate']) && $tabkey['enrolstartdate'] != $instance->enrolstartdate) {
+        if ($startdate != $instance->enrolstartdate) {
             $modif = true;
         }
-        if (isset($tabkey['enrolenddate']) && $tabkey['enrolenddate'] != $instance->enrolenddate) {
+        if ($enddate != $instance->enrolenddate) {
             $modif = true;
         }
         if ($modif) {
             $DB->update_record('enrol', array('id' => $instance->id, 'password' => $tabkey['password'],
-                'enrolstartdate' => $tabkey['enrolstartdate'], 'enrolenddate' => $tabkey['enrolenddate'],
+                'enrolstartdate' => $startdate, 'enrolenddate' => $enddate,
                 'timemodified' => time()));
         }
     }
