@@ -17,12 +17,7 @@ $infolog = array();
 
 // faire pleins de vérif
 
-if (! $cm = get_coursemodule_from_id('feedback', $id)) {
-    print_error('invalidcoursemodule');
-}
-if (! $course = $DB->get_record("course", array("id"=>$cm->course))) {
-    print_error('coursemisconf');
-}
+list ($course, $cm) = get_course_and_cm_from_cmid($id, 'feedback');
 
 if (! $feedback = $DB->get_record("feedback", array("id"=>$cm->instance))) {
     print_error('invalidcoursemodule');
