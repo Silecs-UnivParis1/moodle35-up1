@@ -103,7 +103,7 @@ function notification_send_all_email($ids, $msg, $infolog) {
 
 /**
  * construit le message d'interface après l'envoi groupé de notification
- * @param array $infolog informations pour le log pour les envois de mails
+ * @param array $infolog informations
  * @return string message interface
  */
 function get_result_action($infolog) {
@@ -119,9 +119,6 @@ function get_result_action($infolog) {
     if (isset($infolog['copie']) && isset($infolog['useremail'])) {
         $message .= "  " . "+ copie à " . $infolog['userfullname'];
     }
-    //log
-    add_to_log($infolog['courseid'], 'up1_notification', 'send notification',
-        $infolog['cmurl'], $message . ' ('. $infolog['public'] .')', $infolog['cmid'], $infolog['userid']);
 
     return $message;
 }
