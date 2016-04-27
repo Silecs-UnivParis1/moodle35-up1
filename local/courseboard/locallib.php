@@ -90,6 +90,62 @@ function get_table_course_header($rofcols) {
     return array($row);
 }
 
+
+/**
+ * print html table of memo messages on a course
+ * @global type $DB
+ * @param int $crsid
+ */
+function print_course_memo($crsid) {
+    global $DB;
+
+    $table = new html_table();
+    $table->classes = array('logtable', 'generalbox');
+    $table->align = array('right', 'left', 'left');
+    $table->head = array(
+        get_string('time'),
+        get_string('fullnameuser'),
+        'Message'
+    );
+    $table->data = array();
+
+    $sql = "SELECT m.id, m.timecreated, m.userid, m.message, u.firstname, u.lastname "
+            . "FROM {up1_courseboard_memo} m JOIN {user} u  ON (m.userid = u.id) "
+            . "WHERE ( courseid = ? ) "
+            . "ORDER BY timecreated DESC ";
+    $memos = $DB->get_recordset_sql($sql, array($crsid));
+
+    foreach ($memos as $memo) {
+        $row = new html_table_row();
+        $row->cells[0] = new html_table_cell(userdate($memo->timecreated, '%Y-%m-%d %H:%M:%S'));
+        $row->cells[1] = new html_table_cell($memo->firstname . ' ' . $memo->lastname);
+        $row->cells[2] = new html_table_cell($memo->message);
+        $table->data[] = $row;
+    }
+    $memos->close();
+    echo html_writer::table($table);
+}
+
+/**
+ * add a user memo in the table up1_courseboard_memo
+ * @global type $USER
+ * @global moodle_database $DB
+ * @param integer $crsid
+ * @param string $message
+ * @return integer or false
+ */
+function add_memo($crsid, $message) {
+    global $USER, $DB;
+
+    $memo = new stdClass();
+    $memo->timecreated = time();
+    $memo->userid = $USER->id;
+    $memo->courseid = $crsid;
+    $memo->message = $message;
+    return $DB->insert_record('up1_courseboard_memo', $memo);
+}
+
+
 /**
  * print html table of administration logs for a course (creation, validation...)
  * @global type $DB
@@ -114,11 +170,11 @@ function print_admin_log($crsid, $brief=true) {
             . "FROM {log} l JOIN {user} u  ON (l.userid = u.id)"
             . "WHERE ( ( module = 'course' AND action = 'new' AND info LIKE '%ID " . $crsid . "%' ) "
             . "     OR ( module = 'course' AND action != 'view' AND action != 'login' AND course = ? ) "
-            . "     OR (module IN ('course_validate', 'crswizard', 'courseboard') AND course = ?)  ) "
+            . "     OR (module IN ('course_validate', 'crswizard') AND course = ?)  ) "
             . "ORDER BY time DESC ";
     $sqlbrief = "SELECT l.id, time, userid, ip, module, action, l.url, info, u.firstname, u.lastname "
             . "FROM {log} l JOIN {user} u  ON (l.userid = u.id) "
-            . "WHERE ( (module='crswizard' OR (module='courseboard' AND action='memo')) AND course = ?) "
+            . "WHERE ( module='crswizard' AND course = ?) "
             . "ORDER BY time DESC LIMIT 10";
     $sql = ($brief ? $sqlbrief : $sqllong);
     $logs = $DB->get_recordset_sql($sql, array($crsid, $crsid));

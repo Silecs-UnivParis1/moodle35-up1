@@ -95,17 +95,21 @@ if ($rattachements) {
 }
 // echo '<p><a href="' . $browserurl . '">Navigateur ROF</a></p>';
 
+echo '<h2 id="course-memo">Mémos</h2>' . "\n";
+print_course_memo($crsid);
+
+echo '<form id="form-memo" action="add_memo.php" method="POST">';
+echo '<label for="memo">Nouveau mémo </label>';
+echo '<textarea cols="100" rows="3" name="memo" id="memo" required="required" placeholder="Saisissez votre note"></textarea>';
+echo '<input type="hidden" name="crsid" value="' . $crsid . '"/>';
+echo '<button type="submit" value="Envoyer">Envoyer</button>';
+echo '</form>';
+
+
 $url = new moodle_url('/local/courseboard/view.php', array('id' => $crsid, 'brief' => 'false'));
 $url->set_anchor('course-log');
 echo '<h2 id="course-log">Journal du cours ' . html_writer::link($url, "(Complet)") . "</h2>\n";
 
 print_admin_log($crsid, $brief);
-
-echo '<form action="add_memo.php" method="POST">';
-echo '<label for="memo">Nouveau mémo </label>';
-echo '<input type="text" name="memo" id="memo" required="required" size="100" />';
-echo '<input type="hidden" name="crsid" value="' . $crsid . '"/>';
-echo '</form>';
-
 
 echo $OUTPUT->footer();
