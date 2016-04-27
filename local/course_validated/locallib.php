@@ -347,7 +347,6 @@ function show_or_hide($show, $hide) {
         require_capability('moodle/course:visibility', $coursecontext);
         // Set the visibility of the course. we set the old flag when user manually changes visibility of course.
         $DB->update_record('course', array('id' => $course->id, 'visible' => $visible, 'visibleold' => $visible, 'timemodified' => time()));
-        add_to_log($course->id, 'course_validated', $action, '/local/course_validated/index.php', '');
     }
 }
 
@@ -369,8 +368,6 @@ function validate_course($crsid) {
     }
     $DB->update_record('custom_info_data', array('id' => $iddate, 'data' => time()));
     $DB->update_record('custom_info_data', array('id' => $idwho, 'data' => $USER->id));
-    add_to_log($crsid, 'course_validated', 'validate', '/local/course_validated/index.php', 
-            'course validated by user ' . $USER->id);
     send_notification_validation($crsid);
     return true;
 }

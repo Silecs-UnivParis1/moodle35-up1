@@ -120,9 +120,6 @@ function get_result_action_notificationcourse($infolog) {
         return get_string('nomessagesend', 'local_up1_notificationcourse');
     }
     $message = get_string('numbernotification', 'local_up1_notificationcourse', $infolog['nb']);
-    //log
-    add_to_log($infolog['courseid'], 'up1_notif_course', 'send notification_course',
-        $infolog['cmurl'], $message , $infolog['cmid'], $infolog['userid']);
     return $message;
 }
 
