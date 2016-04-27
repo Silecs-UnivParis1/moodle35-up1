@@ -35,5 +35,11 @@ function xmldb_local_courseboard_upgrade($oldversion) {
 		upgrade_plugin_savepoint(true, 2016042701, 'local', 'courseboard');
     }
 
+    if ($oldversion < 2016042702) {
+        require(dirname(__DIR__) . '/upgradelib.php');
+        upgrade_to_memo();
+		upgrade_plugin_savepoint(true, 2016042702, 'local', 'courseboard');
+    }
+
     return true;
 }

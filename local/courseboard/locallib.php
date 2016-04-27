@@ -3,7 +3,7 @@
 /**
  * @package    local
  * @subpackage courseboard
- * @copyright  2012-2013 Silecs {@link http://www.silecs.info/societe}
+ * @copyright  2012-2016 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once($CFG->dirroot . '/course/lib.php');
@@ -131,5 +131,6 @@ function print_admin_log($crsid, $brief=true) {
         $row->cells[3] = new html_table_cell($log->info);
         $table->data[] = $row;
     }
+    $logs->close();
     echo html_writer::table($table);
 }
