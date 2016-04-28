@@ -164,29 +164,76 @@ function print_admin_log($crsid, $brief=true) {
         get_string('action'),
         get_string('info')
     );
-    $table->data = array();
 
-    $sqllong = "SELECT l.id, time, userid, ip, module, action, l.url, info, u.firstname, u.lastname "
+    $legacyrows = array();
+    if ( ! $brief ) {
+        $legacyrows =  array( new html_table_row(['<b>Logs historiques</b>', '', '', '' ]) );
+        $legacyrows = array_merge($legacyrows, table_course_logs(get_course_log_legacy($crsid, false)));        
+    }
+    $records = get_course_log_standard($crsid);
+    $detailed = ! $brief; // en première approximation : quand afficher les "infos" de logstore_standard ?
+    $table->data = array_merge(table_course_logs($records, $detailed), $legacyrows);
+
+    echo html_writer::table($table);
+}
+
+/**
+ * turn log records into table rows
+ * @param type $records
+ * @return array \html_table_row
+ */
+function table_course_logs($records, $detailed=false) {
+    $data = array();
+    foreach ($records as $record) {
+        $row = new html_table_row(array(
+            userdate($record->timecreated, '%Y-%m-%d %H:%M:%S'),
+            $record->firstname . ' ' . $record->lastname,
+            $record->component . ' ' . $record->action,
+            $record->info . ' '
+                . ($detailed ? print_r(unserialize($record->other), true) : '')
+            ));
+        $data[] = $row;
+    }
+    return $data;
+}
+
+/**
+ * get logs from legacy storage (pre-2.7)
+ * @param integer $crsid
+ * @param bool $brief
+ * @return array records
+ */
+function get_course_log_legacy($crsid, $brief=true) {
+    global $DB;
+
+    $sqllong = "SELECT l.id, time as timecreated, userid, module as component, action, info, '' as other, u.firstname, u.lastname "
             . "FROM {log} l JOIN {user} u  ON (l.userid = u.id)"
             . "WHERE ( ( module = 'course' AND action = 'new' AND info LIKE '%ID " . $crsid . "%' ) "
             . "     OR ( module = 'course' AND action != 'view' AND action != 'login' AND course = ? ) "
             . "     OR (module IN ('course_validate', 'crswizard') AND course = ?)  ) "
-            . "ORDER BY time DESC ";
-    $sqlbrief = "SELECT l.id, time, userid, ip, module, action, l.url, info, u.firstname, u.lastname "
+            . "ORDER BY time DESC LIMIT 20";
+    $sqlbrief = "SELECT l.id, time as timecreated, userid, module as component, action, info, '' as other, u.firstname, u.lastname "
             . "FROM {log} l JOIN {user} u  ON (l.userid = u.id) "
             . "WHERE ( module='crswizard' AND course = ?) "
             . "ORDER BY time DESC LIMIT 10";
     $sql = ($brief ? $sqlbrief : $sqllong);
-    $logs = $DB->get_recordset_sql($sql, array($crsid, $crsid));
+    $logs = $DB->get_records_sql($sql, array($crsid, $crsid));
+    return $logs;
+}
 
-    foreach ($logs as $log) {
-        $row = new html_table_row();
-        $row->cells[0] = new html_table_cell(userdate($log->time, '%Y-%m-%d %H:%M:%S'));
-        $row->cells[1] = new html_table_cell($log->firstname . ' ' . $log->lastname);
-        $row->cells[2] = new html_table_cell($log->module . ' ' . $log->action);
-        $row->cells[3] = new html_table_cell($log->info);
-        $table->data[] = $row;
-    }
-    $logs->close();
-    echo html_writer::table($table);
+/**
+ * get logs from standard storage (post-2.7)
+ * @param integer $crsid
+ * @param bool $brief
+ * @return array records
+ */
+function get_course_log_standard($crsid, $brief=true) {
+    global $DB;
+
+    $sql = "SELECT l.id, l.timecreated, userid, component, CONCAT(eventname, ' ', action) as action, '' as info, other, u.firstname, u.lastname "
+            . "FROM {logstore_standard_log} l JOIN {user} u  ON (l.userid = u.id) "
+            . "WHERE (crud != 'r' AND contextlevel <= 100 AND courseid = ?) "
+            . "ORDER BY timecreated DESC " . ($brief ? 'LIMIT 10' : '');
+    $logs = $DB->get_records_sql($sql, array($crsid));
+    return $logs;
 }
