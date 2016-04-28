@@ -30,7 +30,7 @@ function local_crswizard_extends_navigation(global_navigation $navigation) {
     if ($permcreator || $permvalidator) {
         $node1 = $navigation->add('Assistant création de cours');
         if ($permcreator) {
-            $node2 = $node1->add('Création', new moodle_url('/local/crswizard/index.php'));
+            $node2 = $node1->add('Création / duplication', new moodle_url('/local/crswizard/index.php'));
         }
         if ($permvalidator) {
             $node3 = $node1->add('Approbation', new moodle_url('/local/course_validated/index.php'));
