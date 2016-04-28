@@ -235,3 +235,19 @@ function wizard_has_delete_course($courseid, $userid) {
     }
     return false;
 }
+
+/**
+ * vérifie si le cours $courseid à une date $field définie
+ * @param int $courseid
+ * @param string $field : datearchivage
+ * @return bool true si archivé
+ */
+function wizard_course_is_archived($courseid, $field) {
+    global $CFG;
+    require_once("$CFG->dirroot/local/up1_metadata/lib.php");
+    $dtime = up1_meta_get_text($courseid, $field);
+    if ($dtime == 0) {
+        return false;
+    }
+    return true;
+}

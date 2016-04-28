@@ -170,6 +170,12 @@ $string['deletecourseexplain'] = "texte d'avertissement texte d'avertissement te
 $string['deletecoursebutton'] = "Supprimer définitivement l'espace";
 $string['deleteconfirmationmsg'] = 'Répondre OUI / NON';
 
+/** archive **/
+$string['archivecourseexplain'] = "Veuillez répondre par OUI pour confirmer ou par NON pour sortir.";
+$string['archivecoursebutton'] = "Archiver définitivement l'espace";
+$string['archiveconfirmationmsg'] = 'Répondre OUI / NON';
+$string['archivingcourse'] = 'Archivation de {$a}';
+
 /** old **/
 $string['up1domaine'] = 'Domaine(s) d\'enseignement : ';
 $string['up1mention'] = 'Mention(s) : ';
