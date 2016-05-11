@@ -206,3 +206,21 @@ function up1_meta_set_data($courseid, $fieldname, $data) {
         return $dataid;
     }
 }
+
+/**
+ * search all objects (users/courses) matching a specific custominfo data
+ * @param string $objectname "course" or "user"
+ * @param string $shortname, ex. 'up1urlfixe' or 'up1semestre'
+ * @param string $needle the searched value
+ * @return array(integer $id)
+ */
+function up1_meta_get_objects_by_field($objectname, $shortname, $needle) {
+    global $DB;
+
+    $sql = "SELECT cid.objectid "
+        . "FROM {custom_info_data} cid "
+        . "JOIN {custom_info_field} cif ON (cid.fieldid = cif.id) "
+        . "WHERE cid.objectname = :object AND cid.data = :data and cif.shortname = :sname ";
+    $objectid = $DB->get_fieldset_sql($sql, ['object' => $objectname, 'sname' => 'up1urlfixe', 'data' => $needle] );
+    return $objectid;
+}
