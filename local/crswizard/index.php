@@ -73,6 +73,7 @@ if ($wizardcase) {
 
 switch ($stepin) {
     case 0:
+        $SESSION->wizard['urlpfixe'] = $CFG->wwwroot . '/fixe/';
         $SESSION->wizard['wizardurl'] = '/local/crswizard/index.php';
         $steptitle = get_string('selectcourse', 'local_crswizard');
         $editform = new course_wizard_step1_form();
@@ -124,9 +125,12 @@ switch ($stepin) {
             }
             $SESSION->wizard['form_step' . $stepin] = (array) $data;
             if ($wizardcase == 2) {
-                 $SESSION->wizard['form_step2']['item'] = wizard_get_array_item($_POST['item']);
-                 $SESSION->wizard['form_step2']['all-rof'] = wizard_get_rof();
-                 $SESSION->wizard['form_step2']['complement'] = trim($_POST['complement']);
+                $SESSION->wizard['form_step2']['item'] = wizard_get_array_item($_POST['item']);
+                $SESSION->wizard['form_step2']['all-rof'] = wizard_get_rof();
+                $SESSION->wizard['form_step2']['complement'] = trim($_POST['complement']);
+                if (isset($SESSION->wizard['form_step2']['myurl'])) {
+                    $SESSION->wizard['form_step2']['myurl'] = trim($_POST['myurl']);
+                }
             }
             redirect($CFG->wwwroot . '/local/crswizard/index.php?stepin=' . $stepgo);
         } else {
@@ -274,6 +278,8 @@ switch ($stepin) {
             $remarques  .= "\n\n---------------\n\n";
         }
 
+        //suppression de l'urlfixe du modèle si besoin
+        $corewizard->remove_urlfixe_model();
 
         $messages['mgvalidator'] .= $remarques . $recap;
         $messages['mgcreator'] .= $remarques . $recap;

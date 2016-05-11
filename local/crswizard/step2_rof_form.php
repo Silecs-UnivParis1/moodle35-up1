@@ -16,6 +16,11 @@ class course_wizard_step2_rof_form extends moodleform {
     function definition() {
         global $SESSION, $USER;
         $isnew = TRUE;
+        $urlPfixe = $SESSION->wizard['urlpfixe'];
+        $urlfixeExist = false;
+        if (isset($SESSION->wizard['form_step2']['modelurlfixe']) && $SESSION->wizard['form_step2']['modelurlfixe'] != '') {
+            $urlfixeExist = true;
+        }
 
         $mform = $this->_form;
 
@@ -108,7 +113,7 @@ class course_wizard_step2_rof_form extends moodleform {
         $mform->addElement('html', $rofseleted);
 
         $mform->addElement('header', 'general', get_string('generalinfoblock', 'local_crswizard'));
-	$mform->setExpanded('general');
+        $mform->setExpanded('general');
         $coursegeneralhelp = get_string('coursegeneralhelpRof', 'local_crswizard');
         $mform->addElement('html', html_writer::tag('div', $coursegeneralhelp, array('class' => 'fitem')));
 
@@ -120,6 +125,7 @@ class course_wizard_step2_rof_form extends moodleform {
         if (isset($SESSION->wizard['form_step2']['complement'])) {
             $valcomplement = $SESSION->wizard['form_step2']['complement'];
         }
+
         $htmlcn = '<div id="fgroup_id_coursename" class="fitem required fitem_fgroup">'
             . '<div class="fitemtitle">'
             . '<div class="fgrouplabel">'
@@ -143,7 +149,7 @@ class course_wizard_step2_rof_form extends moodleform {
         $mform->setType('summary_editor', PARAM_RAW);
 
         $mform->addElement('header', 'parametre', get_string('coursesettingsblock', 'local_crswizard'));
-	$mform->setExpanded('parametre');
+        $mform->setExpanded('parametre');
 
         $coursesettingshelp = get_string('coursesettingshelp', 'local_crswizard');
         $mform->addElement('html', html_writer::tag('div', $coursesettingshelp, array('class' => 'fitem')));
@@ -155,6 +161,65 @@ class course_wizard_step2_rof_form extends moodleform {
         $datefermeture = 'up1datefermeture';
         $mform->addElement('date_selector', $datefermeture, get_string('up1datefermeture', 'local_crswizard'));
         $mform->setDefault($datefermeture, time());
+
+        $mform->addElement('header', 'URL', 'Souhaitez-vous utiliser une URL pérenne ?');
+        $mform->setExpanded('URL');
+
+        $mform->addElement('checkbox', 'urlok', 'Je souhaite utiliser une URL pérenne.' );
+        $mform->setDefault('urlok', 0);
+
+        $htmlUrl = '<div id="blocUrl" class="cache"><div class="urlHeader">Qu’est-ce qu’une URL pérenne ? </div>';
+        $htmlUrl .= '<p>Une URL pérenne (ou fixe) est un lien permanent que vous pourrez transmettre à '
+            . 'vos étudiants et à vos collègues inscrits à votre EPI. <br/><font color="red">Fonctionnant comme un alias, l’URL '
+            . 'pérenne permet notamment de réutiliser une même adresse d’une année sur l’autre : </font></p>';
+        $htmlUrl .= '<ul>'
+            . '<li>lors de la duplication, l’URL pérenne pointera automatiquement vers le nouvel EPI,</li>'
+            . '<li>les liens créés avec votre URL pérenne resteront à jour.</li>'
+            . '</ul>';
+        $htmlUrl .= '<div class="urlHeader">Comment rédiger votre URL pérenne ?</div>';
+        $htmlUrl .= '<p>L’URL pérenne doit être complète, courte et explicite.<br/>'
+            . 'Elle doit notamment permettre, le cas échéant, d\'identifier l\'UFR et le niveau de l\'EPI '
+            . '(à la fois pour éviter toute confusion avec un EPI au titre similaire et pour situer l\'EPI dans le ROF).</p>';
+        $htmlUrl .= '<p><u>Voici quelques exemples d’URL pérennes bien écrites : </u></p>'
+            . '<ul>'
+            . '<li>02-L2-economie-politiques-europeennes</li>'
+            . '<li>08-L1-initiation-histoire-economique-europe-USA</li>'
+            . '<li>13-M2-management-RH-responsabilite-sociale-entreprise</li>'
+            . '<li>11-M2-politique-comparee-monde-arabe-contemporain</li>'
+            . '</ul>';
+        $htmlUrl .= '<div class="urlHeader">Compléter le champ ci-dessous avec l’URL souhaitée</div>';
+        $mform->addElement('html', $htmlUrl);
+
+        if ($urlfixeExist) {
+            $htmlMyUrlModel = '<div id="myurlmodel">L\'URL pérenne de l\'EPI modèle sélectionné est la suivante : <b>'.
+                $urlPfixe . $SESSION->wizard['form_step2']['modelurlfixe'].'</b></div>';
+            $mform->addElement('hidden', 'modelurlfixe', null);
+            $mform->setType('modelurlfixe', PARAM_MULTILANG);
+            $mform->setConstant('modelurlfixe', $SESSION->wizard['form_step2']['modelurlfixe']);
+
+            $mform->addElement('html', $htmlMyUrlModel);
+            $mform->addElement('radio', 'urlmodel', '', 'Je souhaite transférer cette l\'URL pérenne au nouveau cours',  'fixe');
+            $mform->addElement('radio', 'urlmodel', '', 'Je souhaitre utiliser une autre URL pérenne',  'myurl');
+        }
+
+        $mform->addElement('text', 'myurl', '<span title="Partie fixe de l\'URL">' . $urlPfixe . '</span>',
+            'maxlength="50" size="50" title="Extension à compléter par l\'expression résumée de votre cours en 50 caractères maximum"');
+        $mform->setType('myurl', PARAM_MULTILANG);
+
+        $htmlUrl2 = '<p>Veuillez respecter la charte suivante : </p>';
+        $htmlUrl2 .= '<div class="bloc_pink"><ul>'
+            . '<li>laissez votre numéro d\'UFR et le niveau d\'enseignement pré-remplis,</li>'
+            . '<li>complétez le titre court de votre enseignement,</li>'
+            . '<li>ne mettez pas d\'accents, pas d\'apostrophe ni signes de ponctuation dans vos URL,</li>'
+            . '<li>ne mettez pas d\'espaces et utilisez le tiret simple (ou tiret du 6) comme séparateur,</li>'
+            . '<li>n\'excédez pas 50 caractères tout compris.</li>'
+            . '</ul></div>';
+        $htmlUrl2 .= '<p>NB : Les URL pérennes ne sont pas recommandées pour les TD. '
+            . 'Si toutefois vous avez besoin d\'une URL pérenne pour un TD, veuillez '
+            . 'lui attribuer une extension comportant le n° de TD.<br/>'
+            . 'Exemple : 04-L3-analyse-cinema-experimental-TD2</p>';
+        $htmlUrl2 .= '</div>';
+        $mform->addElement('html', $htmlUrl2);
 
         /**
          * liste des paramètres de cours ayant une valeur par défaut
@@ -248,6 +313,23 @@ class course_wizard_step2_rof_form extends moodleform {
         if (empty($errors)) {
             //$this->validation_shortname($data['shortname'], $errors);
             $this->validation_category($data['category'], $errors);
+            $urlok = 0;
+            $myurl = '';
+            $urlmodel = '';
+            $modelurlfixe = '';
+            if (isset($data['urlok'])) {
+                $urlok = $data['urlok'];
+            }
+            if (isset($data['myurl'])) {
+                $myurl = $data['myurl'];
+            }
+            if (isset($data['urlmodel'])) {
+                $urlmodel = $data['urlmodel'];
+            }
+            if (isset($data['modelurlfixe'])) {
+                $modelurlfixe = $data['modelurlfixe'];
+            }
+            $this->validation_myurl($urlok, $myurl, $urlmodel, $modelurlfixe, $errors);
         }
         return $errors;
     }
@@ -292,5 +374,45 @@ class course_wizard_step2_rof_form extends moodleform {
             $errors['category'] = get_string('categoryerrormsg2', 'local_crswizard');
         }
         return $errors;
+    }
+
+    private function validation_myurl($urlok, $myurl, $urlmodel, $modelurlfixe, &$errors) {
+        global $DB;
+        if ($urlok == 1) {
+            $url = trim($myurl);
+            if ($modelurlfixe != '' && $urlmodel == '') {
+                $errors['urlmodel'] = 'Vous devez sélectionner une URL pérenne';
+            } elseif($urlmodel != 'fixe') {
+                if ($url == '') {
+                    $errors['myurl'] = 'Vous devez défnir une L’URL pérenne';
+                } else {
+                    $myerrors = [];
+                    if (strlen($url) > 50) {
+                        $myerrors[] = 'L\'URL ne doit pas faire plus de 50 caractères';
+                    }
+                    if (strpos($url, ' ') != false) {
+                        $myerrors[] = 'L\'URL ne doit contenir d\'espaces';
+                    }
+                    $url1 = iconv("UTF-8", "ASCII//TRANSLIT", $url);
+                    $url1 = preg_replace('/[^-_A-Za-z0-9]*/', '', $url1);
+
+                    if ($url1 != $url) {
+                        $myerrors[] = 'L\'URL ne doit pas contenir de caratères accentués ou spéciaux';
+                    }
+                    $sql = "SELECT count(objectid) FROM {custom_info_field} cf "
+                        . "JOIN {custom_info_data} cd ON (cf.id = cd.fieldid) "
+                        . "WHERE cf.objectname='course' AND cd.objectname='course' "
+                        . "AND cf.shortname=? AND data =?";
+                    $res = $DB->get_field_sql($sql, array('up1urlfixe', $url));
+                    if ($res) {
+                        // je contrôle si doublon
+                        $myerrors[] = 'Désolé, cette URL est déjà utilisée. Veuillez choisir un autre nom';
+                    }
+                    if (count($myerrors)) {
+                        $errors['myurl'] = implode(',<br/>', $myerrors);
+                    }
+                }
+            }
+        }
     }
 }

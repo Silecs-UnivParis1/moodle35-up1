@@ -205,6 +205,18 @@ function wizard_get_metadonnees() {
                         wizard_rof_connection($course->profile_field_up1rofpathid);
                         $SESSION->wizard['form_step2']['all-rof'] = wizard_get_rof();
                         $SESSION->wizard['init_course']['form_step2']['item'] = $SESSION->wizard['form_step2']['item'];
+
+                        //ajout champ urlfixe
+                        $SESSION->wizard['form_step2']['modelurl'] = make_url_fixe(
+                            $course->profile_field_up1composante,
+                            $course->profile_field_up1type,
+                            $course->profile_field_up1rofname);
+                        if (isset($SESSION->wizard['form_step2']['myurl']) == false || $SESSION->wizard['form_step2']['myurl'] == '') {
+                            $SESSION->wizard['form_step2']['myurl'] = $SESSION->wizard['form_step2']['modelurl'];
+                        }
+                        if (isset($course->profile_field_up1urlfixe) && $course->profile_field_up1urlfixe != '') {
+                            $SESSION->wizard['form_step2']['modelurlfixe'] = $course->profile_field_up1urlfixe;
+                        }
                         break;
                     case 3:
                         $SESSION->wizard['form_step2']['category'] = $course->category;
@@ -1305,6 +1317,50 @@ function get_selected_model() {
             }
         }
     }
+}
+
+/**
+ * Construit la partie singulière de l'url fixe canonique
+ * @param string $composante
+ * @param string $typeRof
+ * @param string $nomRof
+ * @return string $url
+ */
+function make_url_fixe($composante, $typeRof, $nomRof) {
+    $url = '';
+    $comp = explode(';', $composante);
+    if (isset($comp[0]) && $comp[0] != '') {
+        $mycomp = substr($comp[0], 0, strpos($comp[0], '-'));
+        $url .= $mycomp . '-';
+    }
+
+    $type = explode(';', $typeRof);
+    if (isset($type[0]) && $type[0] != '') {
+        $mytype = substr($type[0], 0, strpos($type[0], ']'));
+        $mytype = substr($mytype, 1);
+        $url .= $mytype . '-';
+    }
+    $name = explode(';', $nomRof);
+    if (isset($name[0]) && $name[0] != '') {
+        $myname = wizard_normalize($name[0]);
+        $url .= $myname;
+    }
+
+    return $url;
+}
+
+/**
+ * retourne la chaine de caratère sans caratères spéciaux ni caractères accentués
+ * et dont les espaces sont remplacés par -
+ * @param string $chaine
+ * @return string
+ */
+function wizard_normalize($chaine) {
+    $chaine = strtolower(trim($chaine));
+    $chaine = str_replace(' ', '-', $chaine);
+    $chaine = iconv("UTF-8", "ASCII//TRANSLIT", $chaine);
+    $chaine = preg_replace('/[^-_A-Za-z0-9]*/', '', $chaine);
+    return $chaine;
 }
 
 class my_elements_config {

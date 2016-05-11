@@ -74,3 +74,21 @@ div#fitem_id_selm2 {
 .jsenabled .collapsible-actions {
     display: none;
 }
+
+.urlHeader {
+    font-size: 16px;
+    font-weight: 700;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.bloc_pink {
+    background-color: #fbd4b4;
+    border: 1px solid red;
+    padding-top: 10px;
+    margin-bottom: 10px;
+}
+
+div#myurlmodel {
+    padding-bottom: 6px;
+}

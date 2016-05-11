@@ -218,6 +218,7 @@ class wizard_core {
         $this->mydata = (object) array_merge($this->formdata['form_step2'], $this->formdata['form_step3']);
         $this->setup_mydata();
         $this->mydata->course_nom_norme = '';
+        $this->mydata->profile_field_up1urlfixe = '';
         $form2 = $this->formdata['form_step2'];
 
         // on est dans le cas 2
@@ -240,6 +241,14 @@ class wizard_core {
             $this->mydata->profile_field_up1complement = trim($form2['complement']);
             $this->mydata->profile_field_up1generateur = 'Manuel via assistant (cas n°2 ROF)';
 
+            //url fixe
+            if (isset($form2['urlok']) && $form2['urlok'] == 1) {
+                if (isset($form2['urlmodel']) && $form2['urlmodel'] == 'fixe') {
+                    $this->mydata->profile_field_up1urlfixe = trim($form2['modelurlfixe']);
+                } else {
+                    $this->mydata->profile_field_up1urlfixe = trim($form2['myurl']);
+                }
+            }
         } else { // cas 3
             $this->mydata->course_nom_norme = $form2['fullname'];
             $this->mydata->profile_field_up1generateur = 'Manuel via assistant (cas n°3 hors ROF)';
@@ -611,6 +620,14 @@ class wizard_core {
 
         $mg .= 'Mode de création : ' .  $this->mydata->profile_field_up1generateur . "\n";
 
+        //url fixe
+        if (isset($form2['urlok']) && $form2['urlok'] == 1) {
+            $mg .= 'URL pérenne : ' . $this->mydata->profile_field_up1urlfixe . "\n";
+            if (isset($form2['urlmodel']) &&  $form2['urlmodel'] == 'fixe') {
+                $mg .= 'Attention,  l\'url pérenne de l\'EPI modèle est transférée à ce nouvel EPI.' . "\n";
+            }
+        }
+
         // validateur si il y a lieu
         if (isset($form3['all-validators']) && !empty($form3['all-validators'])) {
             $allvalidators = $form3['all-validators'];
@@ -712,8 +729,9 @@ class wizard_core {
     * @param int $idcourse : identifiant du cours créé
     * @param string $mgc destiné au demandeur
     * @param string $mgv destiné à l'approbateur et aux validateurs
+    * @param string $remarques précises si des remarques ont été associées
     */
-    public function send_message_notification($idcourse, $mgc, $mgv) {
+    public function send_message_notification($idcourse, $mgc, $mgv, $remarques=false) {
         global $DB;
         $userfrom = new object();
         static $supportuser = null;
@@ -732,7 +750,7 @@ class wizard_core {
              $typeMessage = 'Demande approbation';
         }
         $subject = $this->get_email_subject($idcourse, $typeMessage);
-
+        if ($remarques) $subject.= ' (REMARQUES ASSOCIEES)';
         $eventdata = new object();
         $eventdata->component = 'moodle';
         $eventdata->name = 'courserequested';
@@ -1180,5 +1198,24 @@ class wizard_core {
             }
         }
         return $modif;
+    }
+
+    /**
+     * Supprime l'urlfixe de cours modele si il y a lieu
+     * utilise la fonction up1_meta_set_data() de la lib /local/up1_metadata
+     */
+    function remove_urlfixe_model() {
+        global $CFG;
+        $form1 = $this->formdata['form_step1'];
+        $form2 = $this->formdata['form_step2'];
+        if (isset($form2['urlok']) && $form2['urlok'] == 1) {
+            if (isset($form2['urlmodel']) && $form2['urlmodel'] == 'fixe') {
+                if (isset($form1['coursedmodelid']) && $form1['coursedmodelid'] != '0') {
+                    require_once("$CFG->dirroot/local/up1_metadata/lib.php");
+
+                    up1_meta_set_data($form1['coursedmodelid'], 'up1urlfixe', '');
+                }
+            }
+        }
     }
 }

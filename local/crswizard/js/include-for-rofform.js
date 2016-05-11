@@ -13,6 +13,40 @@ $(document).ready(function() {
         $('#fullname').val(intitule);
         $('#fullnamelab').empty();
         $('#fullnamelab').text(intitule + ' - ');
+
+        var myIntitule = $('#id_myurl').val();
+        if (myIntitule == '') {
+            var url = '';
+            var codeComp = '';
+            var comp =  $('#select-2').children('option[selected=selected]');
+            if (comp) {
+                codeComp = comp.attr('data-rofid');
+                url = codeComp+'-';
+            }
+            var dip =  $('#select-3').children('option[selected=selected]');
+            var titleDip = dip.attr('title');
+            var i = titleDip.indexOf('type:', 0);
+            if (i != -1) {
+                var j =  Number(i) + Number(5);
+                titleDip = titleDip.substring(j);
+                var k = titleDip.indexOf(',', 0);
+                var codeDip = titleDip.substring(0, k);
+                url = url + codeDip + '-';
+            }
+
+            myintitule = intitule.toLowerCase();
+            myintitule = myintitule.replace(/[àäâá]/g,"a");
+            myintitule = myintitule.replace(/[èéêë]/g,"e");
+            myintitule = myintitule.replace(/[ìíîï]/g,"i");
+            myintitule = myintitule.replace(/[òóôõö]/g,"o");
+            myintitule = myintitule.replace(/[ùúûü]/g,"u");
+            myintitule = myintitule.replace(/[ýÿ]/g,"y");
+            myintitule = myintitule.replace(/œ/g,"oe");
+            myintitule = myintitule.replace(/ç/g,"c");
+            myintitule = myintitule.replace(/ /g, '-');
+            myintitule = myintitule.replace(/[()'&#"]/g,"");
+            $('#id_myurl').val(url + myintitule);
+        }
     });
 
     $("#items-selected").on("click", ".selected-remove", function(event) {
@@ -20,6 +54,7 @@ $(document).ready(function() {
         var intitule = select.children('div[class=intitule-selected]').text();
         if (intitule == '') {
             $('#id_complement').val(intitule);
+            $('#id_myurl').val('');
         }
         $('#fullname').val(intitule);
         $('#fullnamelab').empty();
@@ -38,6 +73,38 @@ $(document).ready(function() {
             $('html,body').animate({scrollTop: $('#mgerrorrof').offset().top}, 'slow');
         }
         return ret;
+    });
+
+    if ($("#id_urlok").attr("checked")) {
+        $("#blocUrl").removeClass('cache');
+    };
+
+    $("#id_urlok").click(
+        function() {
+            if ($(this).attr("checked")) {
+                $("#blocUrl").removeClass('cache');
+            } else {
+                $("#blocUrl").addClass('cache');
+            }
+    });
+
+    if ($('#id_urlmodel_myurl').size()) {
+        if (! $("#id_urlmodel_myurl").attr("checked")) {
+            $("#fitem_id_myurl").addClass('cache');
+        }
+    }
+
+    $("#id_urlmodel_myurl").click(
+        function() {
+            if ($(this).attr("checked")) {
+                $("#fitem_id_myurl").removeClass('cache');
+            }
+    });
+    $("#id_urlmodel_fixe").click(
+        function() {
+            if ($(this).attr("checked")) {
+                $("#fitem_id_myurl").addClass('cache');
+            }
     });
 
 });

@@ -125,6 +125,16 @@ class course_wizard_step_confirm extends moodleform {
         $mform->addElement('text', 'profile_field_up1generateur', "Mode de création :", 'maxlength="100" size="40"');
         $mform->setType('profile_field_up1generateur', PARAM_TEXT);
 
+        if (isset($SESSION->wizard['form_step2']['urlok']) && $SESSION->wizard['form_step2']['urlok'] == 1) {
+            $mform->addElement('text', 'profile_field_up1urlfixe', "Url pérenne :", 'maxlength="100" size="60"');
+            $mform->setType('profile_field_up1urlfixe', PARAM_TEXT);
+
+            if (isset($SESSION->wizard['form_step2']['urlmodel']) &&  $SESSION->wizard['form_step2']['urlmodel'] == 'fixe') {
+                $html = '<div>Attention, l\'url pérenne de l\'EPI modèle sera transférée à ce nouvel EPI.</div>';
+                $mform->addElement('html', $html);
+            }
+        }
+
         // validateur pour le cas 2
         if (!empty($SESSION->wizard['form_step3']['all-validators'])) {
             $allvalidators = $SESSION->wizard['form_step3']['all-validators'];
