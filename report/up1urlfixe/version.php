@@ -11,6 +11,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2016051102;        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2016051200;        // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2012061700;        // Requires this Moodle version
 $plugin->component = 'report_up1urlfixe'; // Full name of the plugin (used for diagnostics)

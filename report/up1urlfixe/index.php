@@ -17,10 +17,21 @@ require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
 
-// Print the header.
-admin_externalpage_setup('reportup1urlfixe', '', null, '', array('pagelayout'=>'report'));
+global $PAGE, $OUTPUT;
+/* @var $PAGE moodle_page */
+
+$PAGE->set_context(context_system::instance());
+$PAGE->set_url('/report/up1urlfixe/index.php');
+$PAGE->set_pagelayout('report');
+
+$site = get_site();
+$strreport = get_string('pluginname', 'report_up1urlfixe');
+$PAGE->set_title($strreport); // tab title
+$PAGE->set_heading($strreport); // titre haut de page
 echo $OUTPUT->header();
-echo $OUTPUT->heading('Url fixes');
+
+// admin_externalpage_setup() semble imposer des droits au niveau système - pas problématique ici - GA 20160512
+admin_externalpage_setup('reportup1urlfixe', '', null, '', array('pagelayout'=>'report'));
 
 $url = "$CFG->wwwroot/report/up1urlfixe/index.php";
 

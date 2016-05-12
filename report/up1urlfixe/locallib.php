@@ -58,7 +58,7 @@ function report_up1urlfixe_supprimes() {
     foreach ($supprimes as $supprime) {
         $res[] = array (            
             $supprime->data,
-            $supprime->names,
+            $supprime->name,
             $supprime->crsid,
         );
     }
