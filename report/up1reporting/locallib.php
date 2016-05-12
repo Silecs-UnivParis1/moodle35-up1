@@ -379,15 +379,3 @@ function count_inner_assign_posts($course) {
            "WHERE a.course = ?";
     return $DB->get_field_sql($sql, array($course), MUST_EXIST);
 }
-
-/**
- * progress bar display
- * @param int $verb verbosity
- * @param int $verbmin minimal verbosity
- * @param string $strig to display
- */
-function progressBar($verb, $verbmin, $string) {
-    if ($verb >= $verbmin) {
-        echo $string;
-    }
-}
