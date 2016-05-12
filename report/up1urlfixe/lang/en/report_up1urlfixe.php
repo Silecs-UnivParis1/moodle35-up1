@@ -8,4 +8,4 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Url redirections synthesis';
+$string['pluginname'] = 'UP1 Url redirections';

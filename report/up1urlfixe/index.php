@@ -41,12 +41,16 @@ $table->head = array('Nombre', 'Url fixe', 'Cours', 'ID cours');
 $table->data = report_up1urlfixe_doublons();
 echo html_writer::table($table);
 
-
 echo "<h3>Cours supprimés</h3>\n";
 $table = new html_table();
 $table->head = array('Url fixe', 'Cours ?', 'ID cours');
 $table->data = report_up1urlfixe_supprimes();
 echo html_writer::table($table);
 
+echo "<h3>Redirections normales</h3>\n";
+$table = new html_table();
+$table->head = array('Url fixe', 'Url complète', 'Cours');
+$table->data = report_up1urlfixe_liste();
+echo html_writer::table($table);
 
 echo $OUTPUT->footer();
