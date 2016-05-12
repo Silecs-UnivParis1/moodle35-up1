@@ -75,6 +75,7 @@ if (!$stepin) {
 
     $SESSION->wizard['wizardurl'] = '/local/crswizard/update/index.php';
     $SESSION->wizard['idcourse'] = $id;
+    $SESSION->wizard['urlpfixe'] = $CFG->wwwroot . '/fixe/';
 
 } else {
     $stepgo = $stepin + 1;
@@ -95,6 +96,7 @@ switch ($stepin) {
             'maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes' => $CFG->maxbytes, 'trusttext' => false, 'noclean' => true
         );
         $PAGE->requires->js(new moodle_url('/local/jquery/jquery.js'), true);
+        $PAGE->requires->css(new moodle_url('/local/crswizard/css/crswizard.css'));
         if ($wizardcase == 3) {
             $editform = new course_wizard_step2_form(NULL, array('editoroptions' => $editoroptions));
         } elseif ($wizardcase == 2) {

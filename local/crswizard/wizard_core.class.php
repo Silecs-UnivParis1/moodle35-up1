@@ -900,6 +900,12 @@ class wizard_core {
                 $this->formdata['modif']['attach'] = true;
             }
 
+            if (isset($form2['urlok']) == false || $form2['urlok'] == 0) {
+                $this->mydata->profile_field_up1urlfixe = '';
+            } elseif($form2['urlok'] == 1) {
+                $this->mydata->profile_field_up1urlfixe = trim($form2['myurl']);
+            }
+
         } else { // cas 3
             $this->mydata->course_nom_norme = $form2['fullname'];
             //rattachement hybride

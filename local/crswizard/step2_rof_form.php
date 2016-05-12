@@ -165,7 +165,11 @@ class course_wizard_step2_rof_form extends moodleform {
         $mform->addElement('header', 'URL', 'Souhaitez-vous utiliser une URL pérenne ?');
         $mform->setExpanded('URL');
 
-        $mform->addElement('checkbox', 'urlok', 'Je souhaite utiliser une URL pérenne.' );
+        $urloklabel = 'Je souhaite utiliser une URL pérenne';
+        if ($isnew == false && $SESSION->wizard['form_step2']['urlok'] == 1) {
+            $urloklabel = 'J\'utilise une URL pérenne';
+        }
+        $mform->addElement('checkbox', 'urlok', $urloklabel);
         $mform->setDefault('urlok', 0);
 
         $htmlUrl = '<div id="blocUrl" class="cache"><div class="urlHeader">Qu’est-ce qu’une URL pérenne ? </div>';
@@ -377,7 +381,7 @@ class course_wizard_step2_rof_form extends moodleform {
     }
 
     private function validation_myurl($urlok, $myurl, $urlmodel, $modelurlfixe, &$errors) {
-        global $DB;
+        global $DB, $SESSION;
         if ($urlok == 1) {
             $url = trim($myurl);
             if ($modelurlfixe != '' && $urlmodel == '') {
@@ -399,10 +403,15 @@ class course_wizard_step2_rof_form extends moodleform {
                     if ($url1 != $url) {
                         $myerrors[] = 'L\'URL ne doit pas contenir de caratères accentués ou spéciaux';
                     }
+
+                    $samecourse = '';
+                    if (isset($SESSION->wizard['idcourse'])) {
+                        $samecourse = ' AND objectid != ' . $SESSION->wizard['idcourse'] . ' ';
+                    }
                     $sql = "SELECT count(objectid) FROM {custom_info_field} cf "
                         . "JOIN {custom_info_data} cd ON (cf.id = cd.fieldid) "
                         . "WHERE cf.objectname='course' AND cd.objectname='course' "
-                        . "AND cf.shortname=? AND data =?";
+                        . $samecourse . "AND cf.shortname=? AND data =?";
                     $res = $DB->get_field_sql($sql, array('up1urlfixe', $url));
                     if ($res) {
                         // je contrôle si doublon

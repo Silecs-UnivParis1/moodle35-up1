@@ -110,6 +110,15 @@ class course_wizard_confirm extends moodleform {
 
         $mform->addElement('date_selector', 'up1datefermeture', get_string('up1datefermeture', 'local_crswizard'));
 
+        //url fixe
+        if (isset($form2['urlok']) && $form2['urlok'] == 1) {
+            $mform->addElement('text', 'urlfixetotal', "URL pérenne :", 'maxlength="200" size="60"');
+            $mform->setType('urlfixetotal', PARAM_TEXT);
+            $urltotal = $SESSION->wizard['urlpfixe'];
+            $urltotal .= trim($SESSION->wizard['form_step2']['myurl']);
+            $mform->setConstant('urlfixetotal' , $urltotal);
+        }
+
         if (!empty($SESSION->wizard['form_step5']['all-cohorts'])) {
             $groupsbyrole = $SESSION->wizard['form_step5']['all-cohorts'];
             $mform->addElement('header', 'groups', get_string('cohorts', 'local_crswizard'));
