@@ -126,8 +126,15 @@ class course_wizard_step_confirm extends moodleform {
         $mform->setType('profile_field_up1generateur', PARAM_TEXT);
 
         if (isset($SESSION->wizard['form_step2']['urlok']) && $SESSION->wizard['form_step2']['urlok'] == 1) {
-            $mform->addElement('text', 'profile_field_up1urlfixe', "Url pérenne :", 'maxlength="100" size="60"');
-            $mform->setType('profile_field_up1urlfixe', PARAM_TEXT);
+            $mform->addElement('text', 'urlfixetotal', "URL pérenne :", 'maxlength="200" size="60"');
+            $mform->setType('urlfixetotal', PARAM_TEXT);
+            $urltotal = $SESSION->wizard['urlpfixe'];
+            if (isset($SESSION->wizard['form_step2']['urlmodel']) && $SESSION->wizard['form_step2']['urlmodel'] == 'fixe') {
+                     $urltotal .= trim($SESSION->wizard['form_step2']['modelurlfixe']);
+            } else {
+                $urltotal .= trim($SESSION->wizard['form_step2']['myurl']);
+            }
+            $mform->setConstant('urlfixetotal' , $urltotal);
 
             if (isset($SESSION->wizard['form_step2']['urlmodel']) &&  $SESSION->wizard['form_step2']['urlmodel'] == 'fixe') {
                 $html = '<div>Attention, l\'url pérenne de l\'EPI modèle sera transférée à ce nouvel EPI.</div>';

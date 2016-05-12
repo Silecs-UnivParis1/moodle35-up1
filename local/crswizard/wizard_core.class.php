@@ -622,7 +622,7 @@ class wizard_core {
 
         //url fixe
         if (isset($form2['urlok']) && $form2['urlok'] == 1) {
-            $mg .= 'URL pérenne : ' . $this->mydata->profile_field_up1urlfixe . "\n";
+            $mg .= 'URL pérenne : ' . $this->formdata['urlpfixe'] . $this->mydata->profile_field_up1urlfixe . "\n";
             if (isset($form2['urlmodel']) &&  $form2['urlmodel'] == 'fixe') {
                 $mg .= 'Attention,  l\'url pérenne de l\'EPI modèle est transférée à ce nouvel EPI.' . "\n";
             }
