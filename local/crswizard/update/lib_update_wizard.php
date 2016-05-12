@@ -45,13 +45,6 @@ function wizard_get_course($id) {
             $SESSION->wizard['form_step2']['all-rof'] = wizard_get_rof();
             $SESSION->wizard['init_course']['form_step2']['item'] = $SESSION->wizard['form_step2']['item'];
 
-            //url fixe
-            $SESSION->wizard['form_step2']['urlok'] = 0;
-            if (isset($course->profile_field_up1urlfixe) && $course->profile_field_up1urlfixe != '') {
-                $SESSION->wizard['form_step2']['urlok'] = 1;
-                $SESSION->wizard['form_step2']['myurl'] = $course->profile_field_up1urlfixe;
-            }
-
         } elseif($SESSION->wizard['wizardcase'] == 3) {
             if (isset($course->profile_field_up1categoriesbis)) {
                 $SESSION->wizard['form_step3']['rattachements'] = explode(';', $course->profile_field_up1categoriesbis);
@@ -71,6 +64,13 @@ function wizard_get_course($id) {
             //metadonnees indexation pour cas 3 + gestion hybride
             wizard_get_metadonnees_indexation($course);
             //fin metadonnees indexation pour cas 3 + gestion hybride
+        }
+
+        //url fixe
+        $SESSION->wizard['form_step2']['urlok'] = 0;
+        if (isset($course->profile_field_up1urlfixe) && $course->profile_field_up1urlfixe != '') {
+            $SESSION->wizard['form_step2']['urlok'] = 1;
+            $SESSION->wizard['form_step2']['myurl'] = $course->profile_field_up1urlfixe;
         }
 
         //inscription cohortes

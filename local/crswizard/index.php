@@ -116,6 +116,7 @@ switch ($stepin) {
             $PAGE->requires->js_init_code(file_get_contents(__DIR__ . '/js/include-for-rofform.js'), true);
             $editform = new course_wizard_step2_rof_form(NULL, array('editoroptions' => $editoroptions));
         }
+        $PAGE->requires->js_init_code(file_get_contents(__DIR__ . '/js/include-for-urlfixe.js'), true);
 
         $data = $editform->get_data();
         if ($data){

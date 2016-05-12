@@ -241,14 +241,6 @@ class wizard_core {
             $this->mydata->profile_field_up1complement = trim($form2['complement']);
             $this->mydata->profile_field_up1generateur = 'Manuel via assistant (cas n°2 ROF)';
 
-            //url fixe
-            if (isset($form2['urlok']) && $form2['urlok'] == 1) {
-                if (isset($form2['urlmodel']) && $form2['urlmodel'] == 'fixe') {
-                    $this->mydata->profile_field_up1urlfixe = trim($form2['modelurlfixe']);
-                } else {
-                    $this->mydata->profile_field_up1urlfixe = trim($form2['myurl']);
-                }
-            }
         } else { // cas 3
             $this->mydata->course_nom_norme = $form2['fullname'];
             $this->mydata->profile_field_up1generateur = 'Manuel via assistant (cas n°3 hors ROF)';
@@ -266,6 +258,15 @@ class wizard_core {
         $this->mydata->profile_field_up1datefermeture = $form2['up1datefermeture'];
         $this->mydata->summary = $form2['summary_editor']['text'];
         $this->mydata->summaryformat = $form2['summary_editor']['format'];
+
+        //url fixe
+        if (isset($form2['urlok']) && $form2['urlok'] == 1) {
+            if (isset($form2['urlmodel']) && $form2['urlmodel'] == 'fixe') {
+                $this->mydata->profile_field_up1urlfixe = trim($form2['modelurlfixe']);
+            } else {
+                $this->mydata->profile_field_up1urlfixe = trim($form2['myurl']);
+            }
+        }
 
         // cours doit être validé
         $this->set_metadata_cycle_life();
@@ -900,12 +901,6 @@ class wizard_core {
                 $this->formdata['modif']['attach'] = true;
             }
 
-            if (isset($form2['urlok']) == false || $form2['urlok'] == 0) {
-                $this->mydata->profile_field_up1urlfixe = '';
-            } elseif($form2['urlok'] == 1) {
-                $this->mydata->profile_field_up1urlfixe = trim($form2['myurl']);
-            }
-
         } else { // cas 3
             $this->mydata->course_nom_norme = $form2['fullname'];
             //rattachement hybride
@@ -985,6 +980,12 @@ class wizard_core {
         $this->mydata->profile_field_up1datefermeture = $form2['up1datefermeture'];
         $this->mydata->summary = $form2['summary_editor']['text'];
         $this->mydata->summaryformat = $form2['summary_editor']['format'];
+
+        if (isset($form2['urlok']) == false || $form2['urlok'] == 0) {
+            $this->mydata->profile_field_up1urlfixe = '';
+        } elseif($form2['urlok'] == 1) {
+            $this->mydata->profile_field_up1urlfixe = trim($form2['myurl']);
+        }
 
         return $this->mydata;
     }

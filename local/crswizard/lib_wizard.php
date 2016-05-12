@@ -214,10 +214,8 @@ function wizard_get_metadonnees() {
                         if (isset($SESSION->wizard['form_step2']['myurl']) == false || $SESSION->wizard['form_step2']['myurl'] == '') {
                             $SESSION->wizard['form_step2']['myurl'] = $SESSION->wizard['form_step2']['modelurl'];
                         }
-                        if (isset($course->profile_field_up1urlfixe) && $course->profile_field_up1urlfixe != '') {
-                            $SESSION->wizard['form_step2']['modelurlfixe'] = $course->profile_field_up1urlfixe;
-                        }
                         break;
+
                     case 3:
                         $SESSION->wizard['form_step2']['category'] = $course->category;
                         $SESSION->wizard['init_course']['category'] = $course->category;
@@ -233,6 +231,9 @@ function wizard_get_metadonnees() {
                         wizard_get_metadonnees_indexation($course);
                         //fin metadonnees indexation pour cas 3 + gestion hybride
                         break;
+                }
+                if (isset($course->profile_field_up1urlfixe) && $course->profile_field_up1urlfixe != '') {
+                    $SESSION->wizard['form_step2']['modelurlfixe'] = $course->profile_field_up1urlfixe;
                 }
             }
         }
@@ -1350,6 +1351,52 @@ function make_url_fixe($composante, $typeRof, $nomRof) {
 }
 
 /**
+ * retourne les consignes d'utilisation des URL pérenne
+ * @return array $html
+ */
+function wizard_urlfixe_info() {
+    $html = [];
+    $htmlUrl = '<div id="blocUrl" class="cache"><div class="urlHeader">Qu’est-ce qu’une URL pérenne ? </div>';
+    $htmlUrl .= '<p>Une URL pérenne (ou fixe) est un lien permanent que vous pourrez transmettre à '
+        . 'vos étudiants et à vos collègues inscrits à votre EPI. <br/><font color="red">Fonctionnant comme un alias, l’URL '
+        . 'pérenne permet notamment de réutiliser une même adresse d’une année sur l’autre : </font></p>';
+    $htmlUrl .= '<ul>'
+        . '<li>lors de la duplication, l’URL pérenne pointera automatiquement vers le nouvel EPI,</li>'
+        . '<li>les liens créés avec votre URL pérenne resteront à jour.</li>'
+        . '</ul>';
+    $htmlUrl .= '<div class="urlHeader">Comment rédiger votre URL pérenne ?</div>';
+    $htmlUrl .= '<p>L’URL pérenne doit être complète, courte et explicite.<br/>'
+        . 'Elle doit notamment permettre, le cas échéant, d\'identifier l\'UFR et le niveau de l\'EPI '
+        . '(à la fois pour éviter toute confusion avec un EPI au titre similaire et pour situer l\'EPI dans le ROF).</p>';
+    $htmlUrl .= '<p><u>Voici quelques exemples d’URL pérennes bien écrites : </u></p>'
+        . '<ul>'
+        . '<li>02-L2-economie-politiques-europeennes</li>'
+        . '<li>08-L1-initiation-histoire-economique-europe-USA</li>'
+        . '<li>13-M2-management-RH-responsabilite-sociale-entreprise</li>'
+        . '<li>11-M2-politique-comparee-monde-arabe-contemporain</li>'
+        . '</ul>';
+    $htmlUrl .= '<div class="urlHeader">Compléter le champ ci-dessous avec l’URL souhaitée</div>';
+
+    $html[1] = $htmlUrl;
+
+    $htmlUrl2 = '<p>Veuillez respecter la charte suivante : </p>';
+    $htmlUrl2 .= '<div class="bloc_pink"><ul>'
+        . '<li>laissez votre numéro d\'UFR et le niveau d\'enseignement pré-remplis,</li>'
+        . '<li>complétez le titre court de votre enseignement,</li>'
+        . '<li>ne mettez pas d\'accents, pas d\'apostrophe ni signes de ponctuation dans vos URL,</li>'
+        . '<li>ne mettez pas d\'espaces et utilisez le tiret simple (ou tiret du 6) comme séparateur,</li>'
+        . '<li>n\'excédez pas 50 caractères tout compris.</li>'
+        . '</ul></div>';
+    $htmlUrl2 .= '<p>NB : Les URL pérennes ne sont pas recommandées pour les TD. '
+        . 'Si toutefois vous avez besoin d\'une URL pérenne pour un TD, veuillez '
+        . 'lui attribuer une extension comportant le n° de TD.<br/>'
+        . 'Exemple : 04-L3-analyse-cinema-experimental-TD2</p>';
+    $htmlUrl2 .= '</div>';
+    $html[2] = $htmlUrl2;
+    return $html;
+}
+
+/**
  * retourne la chaine de caratère sans caratères spéciaux ni caractères accentués
  * et dont les espaces sont remplacés par -
  * @param string $chaine
@@ -1361,6 +1408,42 @@ function wizard_normalize($chaine) {
     $chaine = iconv("UTF-8", "ASCII//TRANSLIT", $chaine);
     $chaine = preg_replace('/[^-_A-Za-z0-9]*/', '', $chaine);
     return $chaine;
+}
+
+/**
+ * vérifie si $url est une URL pérenne conforme
+ * @param string $url
+ * @param bool||id identifiant du cours
+ * @return array $myerrors
+ */
+function wizard_form2_validation_myurl($url, $idcourse) {
+    global $DB, $SESSION;
+    $myerrors = [];
+    if (strlen($url) > 50) {
+        $myerrors[] = 'L\'URL ne doit pas faire plus de 50 caractères';
+    }
+    if (strpos($url, ' ') != false) {
+        $myerrors[] = 'L\'URL ne doit contenir d\'espaces';
+    }
+    $url1 = iconv("UTF-8", "ASCII//TRANSLIT", $url);
+    $url1 = preg_replace('/[^-_A-Za-z0-9]*/', '', $url1);
+    if ($url1 != $url) {
+        $myerrors[] = 'L\'URL ne doit pas contenir de caratères accentués ou spéciaux';
+    }
+
+    $samecourse = '';
+    if ($idcourse) {
+        $samecourse = ' AND objectid != ' . $idcourse . ' ';
+    }
+    $sql = "SELECT count(objectid) FROM {custom_info_field} cf "
+        . "JOIN {custom_info_data} cd ON (cf.id = cd.fieldid) "
+        . "WHERE cf.objectname='course' AND cd.objectname='course' "
+        . $samecourse . "AND cf.shortname=? AND data =?";
+    $res = $DB->get_field_sql($sql, array('up1urlfixe', $url));
+    if ($res) {
+        $myerrors[] = 'Désolé, cette URL est déjà utilisée. Veuillez choisir un autre nom';
+    }
+    return $myerrors;
 }
 
 class my_elements_config {

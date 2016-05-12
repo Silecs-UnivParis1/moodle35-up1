@@ -10,6 +10,7 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->libdir . '/completionlib.php');
+require_once('lib_wizard.php');
 
 class course_wizard_step2_form extends moodleform {
 
@@ -19,6 +20,12 @@ class course_wizard_step2_form extends moodleform {
         $isnew = TRUE;
         if (isset($SESSION->wizard['idcourse'])) {
             $isnew = FALSE;
+        }
+
+        $urlPfixe = $SESSION->wizard['urlpfixe'];
+        $urlfixeExist = false;
+        if (isset($SESSION->wizard['form_step2']['modelurlfixe']) && $SESSION->wizard['form_step2']['modelurlfixe'] != '') {
+            $urlfixeExist = true;
         }
 
         $mform = $this->_form;
@@ -69,6 +76,36 @@ class course_wizard_step2_form extends moodleform {
         $datefermeture = 'up1datefermeture';
         $mform->addElement('date_selector', $datefermeture, get_string('up1datefermeture', 'local_crswizard'));
         $mform->setDefault($datefermeture, time());
+
+        $mform->addElement('header', 'URL', 'Souhaitez-vous utiliser une URL pérenne ?');
+        $mform->setExpanded('URL');
+
+        $urloklabel = 'Je souhaite utiliser une URL pérenne';
+        if ($isnew == false && $SESSION->wizard['form_step2']['urlok'] == 1) {
+            $urloklabel = 'J\'utilise une URL pérenne';
+        }
+        $mform->addElement('checkbox', 'urlok', $urloklabel);
+        $mform->setDefault('urlok', 0);
+
+        $infoHtml = wizard_urlfixe_info();
+        $mform->addElement('html', $infoHtml[1]);
+
+        if ($urlfixeExist) {
+            $htmlMyUrlModel = '<div id="myurlmodel">L\'URL pérenne de l\'EPI modèle sélectionné est la suivante : <b>'.
+                $urlPfixe . $SESSION->wizard['form_step2']['modelurlfixe'].'</b></div>';
+            $mform->addElement('hidden', 'modelurlfixe', null);
+            $mform->setType('modelurlfixe', PARAM_MULTILANG);
+            $mform->setConstant('modelurlfixe', $SESSION->wizard['form_step2']['modelurlfixe']);
+
+            $mform->addElement('html', $htmlMyUrlModel);
+            $mform->addElement('radio', 'urlmodel', '', 'Je souhaite transférer cette l\'URL pérenne au nouveau cours',  'fixe');
+            $mform->addElement('radio', 'urlmodel', '', 'Je souhaitre utiliser une autre URL pérenne',  'myurl');
+        }
+
+        $mform->addElement('text', 'myurl', '<span title="Partie fixe de l\'URL">' . $urlPfixe . '</span>',
+            'maxlength="50" size="50" title="Extension à compléter par l\'expression résumée de votre cours en 50 caractères maximum"');
+        $mform->setType('myurl', PARAM_MULTILANG);
+        $mform->addElement('html', $infoHtml[2]);
 
         /**
          * liste des paramètres de cours ayant une valeur par défaut
@@ -164,6 +201,23 @@ class course_wizard_step2_form extends moodleform {
             $this->validation_shortname($data['shortname'], $errors);
             $this->validation_category($data['category'], $errors);
         }
+        $urlok = 0;
+        $myurl = '';
+        $urlmodel = '';
+        $modelurlfixe = '';
+        if (isset($data['urlok'])) {
+            $urlok = $data['urlok'];
+        }
+        if (isset($data['myurl'])) {
+            $myurl = $data['myurl'];
+        }
+        if (isset($data['urlmodel'])) {
+            $urlmodel = $data['urlmodel'];
+        }
+        if (isset($data['modelurlfixe'])) {
+            $modelurlfixe = $data['modelurlfixe'];
+        }
+        $this->validation_myurl($urlok, $myurl, $urlmodel, $modelurlfixe, $errors);
         return $errors;
     }
 
@@ -197,5 +251,28 @@ class course_wizard_step2_form extends moodleform {
             $errors['category'] = get_string('categoryerrormsg2', 'local_crswizard');
         }
         return $errors;
+    }
+
+    private function validation_myurl($urlok, $myurl, $urlmodel, $modelurlfixe, &$errors) {
+        global $DB, $SESSION;
+        if ($urlok == 1) {
+            $url = trim($myurl);
+            if ($modelurlfixe != '' && $urlmodel == '') {
+                $errors['urlmodel'] = 'Vous devez sélectionner une URL pérenne';
+            } elseif($urlmodel != 'fixe') {
+                if ($url == '') {
+                    $errors['myurl'] = 'Vous devez défnir une L’URL pérenne';
+                } else {
+                    $idcourse = false;
+                    if (isset($SESSION->wizard['idcourse'])) {
+                        $idcourse = $SESSION->wizard['idcourse'];
+                    }
+                    $myerrors = wizard_form2_validation_myurl($url, $idcourse);
+                    if (count($myerrors)) {
+                        $errors['myurl'] = implode(',<br/>', $myerrors);
+                    }
+                }
+            }
+        }
     }
 }
