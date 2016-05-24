@@ -184,7 +184,7 @@ class course_wizard_step2_rof_form extends moodleform {
             $mform->setConstant('modelurlfixe', $SESSION->wizard['form_step2']['modelurlfixe']);
 
             $mform->addElement('html', $htmlMyUrlModel);
-            $mform->addElement('radio', 'urlmodel', '', 'Je souhaite transférer cette l\'URL pérenne au nouveau cours',  'fixe');
+            $mform->addElement('radio', 'urlmodel', '', 'Je souhaite transférer cette URL pérenne au nouveau cours',  'fixe');
             $mform->addElement('radio', 'urlmodel', '', 'Je souhaitre utiliser une autre URL pérenne',  'myurl');
         }
 

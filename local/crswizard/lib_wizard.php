@@ -234,6 +234,8 @@ function wizard_get_metadonnees() {
                 }
                 if (isset($course->profile_field_up1urlfixe) && $course->profile_field_up1urlfixe != '') {
                     $SESSION->wizard['form_step2']['modelurlfixe'] = $course->profile_field_up1urlfixe;
+                    $SESSION->wizard['form_step2']['urlok'] = 1;
+                    $SESSION->wizard['form_step2']['urlmodel'] = 'fixe';
                 }
             }
         }
