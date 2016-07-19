@@ -14,23 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * Defines the version of newmodule
- *
- * This code fragment is called by moodle_needs_upgrading() and
- * /admin/index.php
+ * Lightbox gallery version info.
  *
  * @package   mod_lightboxgallery
- * @copyright 2011 NetSpot Pty Ltd
+ * @copyright 2014 NetSpot Pty Ltd
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version  = 2013112501;  // The current module version (Date: YYYYMMDDXX).
-$module->requires = 2012062500;  // Requires this Moodle version.
-$module->cron     = 0;           // Period for cron to check this module (secs).
+$plugin->version  = 2016071200;  // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires = 2014111000;  // Requires this Moodle version.
+$plugin->cron     = 0;           // Period for cron to check this plugin (secs).
 
-$module->component = 'mod_lightboxgallery';
-$module->maturity = MATURITY_STABLE;
+$plugin->component = 'mod_lightboxgallery';
+$plugin->maturity = MATURITY_STABLE;
+$plugin->release = '2.8.0.7';
