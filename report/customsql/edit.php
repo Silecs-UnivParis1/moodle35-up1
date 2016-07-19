@@ -31,6 +31,7 @@ require_login();
 $context = context_system::instance();
 $PAGE->set_url(new moodle_url('/report/customsql/edit.php'));
 $PAGE->set_context($context);
+$PAGE->set_pagelayout('admin');
 require_capability('report/customsql:definequeries', $context);
 
 $relativeurl = 'edit.php';
@@ -65,6 +66,9 @@ if ($mform->is_cancelled()) {
 }
 
 if ($newreport = $mform->get_data()) {
+    $newreport->descriptionformat = $newreport->description['format'];
+    $newreport->description = $newreport->description['text'];
+
     // Set the following fields to empty strings if the report is running manually.
     if ($newreport->runable === 'manual') {
         $newreport->at = '';
@@ -115,6 +119,7 @@ echo $OUTPUT->header().
      $OUTPUT->heading(get_string('editingareport', 'report_customsql'));
 
 if ($report) {
+    $report->description = array('text' => $report->description, 'format' => $report->descriptionformat);
     $mform->set_data($report);
 }
 

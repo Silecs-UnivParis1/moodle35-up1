@@ -14,9 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$settings = null;
+/**
+ * Definition of Report Custom SQL scheduled tasks.
+ *
+ * @package report_customsql
+ * @category task
+ * @copyright 2015 The Open University
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
-$ADMIN->add('reports', new admin_externalpage('report_customsql',
-        get_string('pluginname', 'report_customsql'),
-        new moodle_url('/report/customsql/index.php'),
-        'report/customsql:view'));
+defined('MOODLE_INTERNAL') || die();
+
+$tasks = array(
+    array(
+        'classname' => 'report_customsql\task\run_reports',
+        'blocking' => 0,
+        'minute' => '10',
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*'
+    )
+);
