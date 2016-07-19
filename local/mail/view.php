@@ -26,27 +26,29 @@ require_once('locallib.php');
 require_once('labels_form.php');
 require_once('label_form.php');
 
-$type       = required_param('t', PARAM_ALPHA);
-$messageid  = optional_param('m', 0, PARAM_INT);
-$courseid   = optional_param('c', 0, PARAM_INT);
-$labelid    = optional_param('l', 0, PARAM_INT);
-$delete     = optional_param('delete', false, PARAM_ALPHA);
-$forward    = optional_param('forward', false, PARAM_BOOL);
-$offset     = optional_param('offset', 0, PARAM_INT);
-$nextpage   = optional_param('nextpage', false, PARAM_BOOL);
-$prevpage   = optional_param('prevpage', false, PARAM_BOOL);
-$reply      = optional_param('reply', false, PARAM_BOOL);
-$replyall   = optional_param('replyall', false, PARAM_BOOL);
-$starred    = optional_param('starred', false, PARAM_INT);
-$msgs       = optional_param_array('msgs', array(), PARAM_INT);
-$read       = optional_param('read', false, PARAM_ALPHA);
-$unread     = optional_param('unread', false, PARAM_ALPHA);
-$perpage    = optional_param('perpage', false, PARAM_INT);
-$assignlbl  = optional_param('assignlbl', false, PARAM_BOOL);
-$editlbl    = optional_param('editlbl', false, PARAM_BOOL);
-$removelbl  = optional_param('removelbl', false, PARAM_BOOL);
-$confirmlbl = optional_param('confirmlbl', false, PARAM_BOOL);
-$goback     = optional_param('goback', false, PARAM_BOOL);
+$type        = required_param('t', PARAM_ALPHA);
+$messageid   = optional_param('m', 0, PARAM_INT);
+$courseid    = optional_param('c', 0, PARAM_INT);
+$labelid     = optional_param('l', 0, PARAM_INT);
+$delete      = optional_param('delete', false, PARAM_ALPHA);
+$discard     = optional_param('discard', false, PARAM_ALPHA);
+$forward     = optional_param('forward', false, PARAM_BOOL);
+$offset      = optional_param('offset', 0, PARAM_INT);
+$nextpage    = optional_param('nextpage', false, PARAM_BOOL);
+$prevpage    = optional_param('prevpage', false, PARAM_BOOL);
+$reply       = optional_param('reply', false, PARAM_BOOL);
+$replyall    = optional_param('replyall', false, PARAM_BOOL);
+$starred     = optional_param('starred', false, PARAM_INT);
+$msgs        = optional_param_array('msgs', array(), PARAM_INT);
+$read        = optional_param('read', false, PARAM_ALPHA);
+$unread      = optional_param('unread', false, PARAM_ALPHA);
+$perpage     = optional_param('perpage', false, PARAM_INT);
+$assignlbl   = optional_param('assignlbl', false, PARAM_BOOL);
+$editlbl     = optional_param('editlbl', false, PARAM_BOOL);
+$removelbl   = optional_param('removelbl', false, PARAM_BOOL);
+$confirmlbl  = optional_param('confirmlbl', false, PARAM_BOOL);
+$goback      = optional_param('goback', false, PARAM_BOOL);
+$downloadall = optional_param('downloadall', false, PARAM_BOOL);
 
 $url = new moodle_url('/local/mail/view.php', array('t' => $type));
 $offset = max(0, $offset);
@@ -127,6 +129,7 @@ if ($removelbl) {
     $customdata["editlbl"] = $editlbl;
     $customdata["offset"] = $offset;
     $customdata["colors"] = array();
+    $customdata["colors"][''] = get_string('nocolor', 'local_mail');
     foreach ($colors as $color) {
         $customdata["colors"][$color] = $color;
     }
@@ -143,10 +146,10 @@ if ($removelbl) {
             $data->labelname = trim(clean_param($data->labelname, PARAM_TEXT));
             $labels = local_mail_label::fetch_user($USER->id);
             $repeatedname = false;
-            foreach ($labels as $label) {
-                $repeatedname = $repeatedname || ($label->name() === $data->labelname);
+            foreach ($labels as $lbl) {
+                $repeatedname = $repeatedname || (($lbl->name() === $data->labelname) and ($lbl->id() != $labelid));
             }
-            if (!$repeatedname and $data->labelname and in_array($data->labelcolor, $colors)) {
+            if (!$repeatedname and $data->labelname and (!$data->labelcolor or in_array($data->labelcolor, $colors))) {
                 $label->save($data->labelname, $data->labelcolor);
             }
         }
@@ -188,20 +191,20 @@ if ($removelbl) {
 
     // Set up form
     $customdata = array();
-    $customdata["assignlbl"] = $assignlbl;
-    $customdata["t"] = $type;
-    $customdata["c"] = $courseid;
-    $customdata["offset"] = $offset;
-    $customdata["colors"] = array();
+    $customdata['assignlbl'] = $assignlbl;
+    $customdata['t'] = $type;
+    $customdata['c'] = $courseid;
+    $customdata['offset'] = $offset;
+    $customdata['colors'] = array();
     $colors = local_mail_label::valid_colors();
     if ($messageid) {
-        $customdata["m"] = $messageid;
+        $customdata['m'] = $messageid;
     } else {
-        $customdata["msgs"] = $msgs;
+        $customdata['msgs'] = $msgs;
     }
-    $customdata["colors"][""] = get_string('nocolor', 'local_mail');
+    $customdata['colors'][''] = get_string('nocolor', 'local_mail');
     foreach ($colors as $color) {
-        $customdata["colors"][$color] = $color;
+        $customdata['colors'][$color] = $color;
     }
 
     $labels = local_mail_label::fetch_user($USER->id);
@@ -218,10 +221,10 @@ if ($removelbl) {
             }
         }
     }
-    $customdata["labelids"] = array();
+    $customdata['labelids'] = array();
     if ($labels) {
-        $ids = array_keys($labels);
         foreach ($labels as $label) {
+            array_push($customdata['labelids'], $label->id());
             $customdata['labelname'.$label->id()] = $label->name();
             $customdata['color'.$label->id()] = $label->color();
             if (!isset($messages)) {
@@ -234,7 +237,6 @@ if ($removelbl) {
                 }
             }
         }
-        $customdata["labelids"] = $ids;
     }
 
     // Create form
@@ -312,6 +314,8 @@ if ($removelbl) {
     echo $OUTPUT->footer();
 
 } else if ($messageid) {
+    local_mail_setup_page($SITE, new moodle_url($url, array('m' => $messageid)));
+
     // Fetch message
 
     $message = local_mail_message::fetch($messageid);
@@ -319,7 +323,6 @@ if ($removelbl) {
         print_error('invalidmessage', 'local_mail');
     }
 
-    local_mail_setup_page($SITE, new moodle_url($url, array('m' => $messageid)));
     navigation_node::override_active_url($url);
 
     $message->set_unread($USER->id, false);
@@ -368,6 +371,11 @@ if ($removelbl) {
         redirect($url);
     }
 
+    // Downloadall
+    if ($downloadall) {
+        local_mail_downloadall($message);
+    }
+
     $jslabels = local_mail_js_labels();
     $url->param('m', $message->id());
     // Display page
@@ -384,7 +392,8 @@ if ($removelbl) {
         ), 'local_mail');
     $PAGE->requires->strings_for_js(array(
         'submit',
-        'cancel'
+        'cancel',
+        'maximumchars'
         ), 'moodle');
     form_init_date_js();
     $PAGE->requires->js_init_code($jslabels);
@@ -501,6 +510,25 @@ if ($removelbl) {
         redirect($url);
     }
 
+    // Remove
+    if ($discard) {
+        require_sesskey();
+        foreach ($messages as $message) {
+            if (in_array($message->id(), $msgs)) {
+                if ($message->viewable($USER->id) and $message->draft()) {
+                    $message->discard();
+                }
+                $totalcount -= 1;
+            }
+        }
+        if ($offset > $totalcount - 1) {
+            $url->offset = min(0, $offset - $mailpagesize);
+        } else {
+            $url->offset = $offset;
+        }
+        redirect($url);
+    }
+
     // Starred
     if ($starred) {
         require_sesskey();
@@ -547,8 +575,11 @@ if ($removelbl) {
         'undorestore',
         'unstarred'
         ), 'local_mail');
-    $PAGE->requires->string_for_js('submit', 'moodle');
-    $PAGE->requires->string_for_js('cancel', 'moodle');
+     $PAGE->requires->strings_for_js(array(
+        'submit',
+        'cancel',
+        'maximumchars'
+        ), 'moodle');
     form_init_date_js();
     $PAGE->requires->js_init_code($jslabels);
     $mailoutput = $PAGE->get_renderer('local_mail');

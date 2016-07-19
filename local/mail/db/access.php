@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
 
-    'loca/mail:addinstance' => array(
+    'local/mail:addinstance' => array(
         'riskbitmask' => RISK_XSS,
 
         'captype' => 'write',
@@ -39,6 +39,19 @@ $capabilities = array(
     ),
 
     'local/mail:usemail' => array(
+        'riskbitmask'  => RISK_SPAM | RISK_XSS,
+
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes'   => array(
+            'student'        => CAP_ALLOW,
+            'teacher'        => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager'        => CAP_ALLOW
+        )
+    ),
+
+    'local/mail:mailsamerole' => array(
         'riskbitmask'  => RISK_SPAM | RISK_XSS,
 
         'captype'      => 'write',

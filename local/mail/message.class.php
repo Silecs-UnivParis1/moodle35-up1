@@ -396,13 +396,13 @@ class local_mail_message {
         return $this->has_user($userid) and $this->role[$userid] != 'from';
     }
 
-    public function has_attachment() {
+    public function has_attachment($refs = true) {
         global $DB;
 
         if ($DB->record_exists('local_mail_index', array('type' => 'attachment', 'messageid' => $this->id, 'item' => true))) {
             return true;
         }
-        if (!empty($this->refs)) {
+        if ($refs and !empty($this->refs)) {
             list($sqlmessageids, $messageidparams) = $DB->get_in_or_equal($this->refs, SQL_PARAMS_NAMED, 'messageid');
             $sql = 'SELECT count(*)'
                 . ' FROM {local_mail_index}'
@@ -840,8 +840,10 @@ class local_mail_message {
             array_filter(array_map('fullname', $users), $matchtext)) {
             return true;
         }
-
-        $html = format_text($this->content(), $this->format());
+        $context = context_course::instance($this->course->id);
+        $content = file_rewrite_pluginfile_urls($this->content, 'pluginfile.php', $context->id,
+                                            'local_mail', 'message', $this->id);
+        $html = format_text($content, $this->format());
         return $matchtext(html_to_text($html));
     }
 

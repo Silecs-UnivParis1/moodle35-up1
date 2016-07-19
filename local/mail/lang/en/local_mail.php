@@ -16,8 +16,8 @@
 
 /**
  * @package    local-mail
- * @author  Albert Gasset <albert.gasset@gmail.com>
- * @author  Marc Català <reskit@gmail.com>
+ * @author     Albert Gasset <albert.gasset@gmail.com>
+ * @author     Marc Català <reskit@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -45,6 +45,7 @@ $string['cronstart'] = 'Cron start';
 $string['cronstop'] = 'Cron stop';
 $string['delete'] = 'Delete';
 $string['discard'] = 'Discard';
+$string['downloadall'] = 'Download all';
 $string['draft'] = 'Draft';
 $string['drafts'] = 'Drafts';
 $string['editlabel'] = 'Edit label';
@@ -57,6 +58,7 @@ $string['errorrepeatedlabelname'] = 'Label name already exists';
 $string['errorinvalidcolor'] = 'Invalid color';
 $string['filterbydate'] = 'Date (up to the day):';
 $string['from'] = 'From';
+$string['hasattachments'] = '(Message with attachments)';
 $string['inbox'] = 'Inbox';
 $string['invalidlabel'] = 'Invalid label';
 $string['invalidmessage'] = 'Invalid message';
@@ -65,9 +67,11 @@ $string['labelname'] = 'Name';
 $string['labelcolor'] = 'Color';
 $string['labels'] = 'Labels';
 $string['mail:addinstance'] = 'Add a new mail';
+$string['mail:mailsamerole'] = 'Send mails to users with same role';
 $string['mail:usemail'] = 'Use mail';
 $string['mailupdater'] = 'Mail updater';
 $string['markasread'] = 'Mark as read';
+$string['markasread_help'] = 'If enabled, all new messages will be marked as read';
 $string['markasstarred'] = 'Mark as starred';
 $string['markasunread'] = 'Mark as unread';
 $string['markasunstarred'] = 'Mark as unstarred';
@@ -89,9 +93,11 @@ $string['noselectedmessages'] = 'No messages selected';
 $string['nosubject'] = '(no subject)';
 $string['notificationbody'] = '- From: {$a->user}
 
-- Subject: {$a->subject}';
-$string['notificationbodyhtml'] = '<p>From: {$a->user}</p>
-<p>Subject: <a href="{$a->url}">{$a->subject}</a></p>';
+- Subject: {$a->subject}
+
+{$a->content}';
+$string['notificationbodyhtml'] = '<p>From: {$a->user}</p><p>Subject: <a href="{$a->url}">{$a->subject}</a></p><p>{$a->content}</p>';
+$string['notificationpref'] = 'Send notifications';
 $string['notificationsubject'] = 'New mail message in {$a}';
 $string['notingroup'] = 'You are not part of any group';
 $string['pagingsingle'] = '{$a->index} of {$a->total}';

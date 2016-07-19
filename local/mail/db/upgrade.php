@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local
- * @subpackage mail
+ * @package    local-mail
  * @author     Marc Català <reskit@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -39,6 +38,14 @@ function xmldb_local_mail_upgrade($oldversion) {
 
         // Mail savepoint reached.
         upgrade_plugin_savepoint(true, 2014030600, 'local', 'mail');
+    }
+
+    if ($oldversion < 2015121400) {
+
+        // Clean obsolete local_mail_fullmessage preference
+        $DB->execute('DELETE FROM {user_preferences} WHERE name="local_mail_fullmessage"');
+
+        upgrade_plugin_savepoint(true, 2015121400, 'local', 'mail');
     }
 
     return true;

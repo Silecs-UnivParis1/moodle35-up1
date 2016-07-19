@@ -16,14 +16,22 @@
 
 /**
  * @package    local-mail
- * @author     Albert Gasset <albert.gasset@gmail.com>
- * @author     Marc Català <reskit@gmail.com>
+ * @copyright  Marc Català <reskit@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version = 2016060100;
-$plugin->requires = 2015051100;
-$plugin->cron = 0;
-$plugin->component = 'local_mail';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.8.2';
+require_once($CFG->libdir . '/formslib.php');
+
+class local_mail_preferences_form extends moodleform {
+
+    public function definition() {
+        $mform = $this->_form;
+
+        $mform->addElement('header', 'general', get_string('notificationpref', 'local_mail'));
+
+        $mform->addElement('checkbox', 'markasread', get_string('markasread', 'local_mail'));
+        $mform->addHelpButton('markasread', 'markasread', 'local_mail');
+
+        $this->add_action_buttons(true, get_string('savechanges'));
+    }
+}
