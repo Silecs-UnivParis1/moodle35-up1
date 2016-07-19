@@ -51,12 +51,12 @@ function hotpot_supports($feature) {
     // they are not all defined in Moodle 2.0, so we
     // check each one is defined before trying to use it
     $constants = array(
-        'FEATURE_ADVANCED_GRADING' => true, // default=false
+        'FEATURE_ADVANCED_GRADING' => false,
         'FEATURE_BACKUP_MOODLE2'   => true, // default=false
         'FEATURE_COMMENT'          => true,
-        'FEATURE_COMPLETION_HAS_RULES' => false, // requires "hotpot_get_completion_state()"
+        'FEATURE_COMPLETION_HAS_RULES' => true,
         'FEATURE_COMPLETION_TRACKS_VIEWS' => true,
-        'FEATURE_CONTROLS_GRADE_VISIBILITY' => true,
+        'FEATURE_CONTROLS_GRADE_VISIBILITY' => false,
         'FEATURE_GRADE_HAS_GRADE'  => true, // default=false
         'FEATURE_GRADE_OUTCOMES'   => true,
         'FEATURE_GROUPINGS'        => true, // default=false
@@ -1458,6 +1458,14 @@ function hotpot_pluginfile_externalfile($context, $component, $filearea, $filepa
             $type = ''; // shouldn't happen !!
     }
 
+    // "user" and "coursefiles" repositories
+    // will set this flag to TRUE
+    $encodepath = false;
+
+    // "filesytem" repository on Moodle >= 3.1
+    // will set this flag to 'browse'
+    $nodepathmode = '';
+
     // set paths (within repository) to required file
     // how we do this depends on the repository $typename
     // "filesystem" path is in plain text, others are encoded
@@ -1465,14 +1473,16 @@ function hotpot_pluginfile_externalfile($context, $component, $filearea, $filepa
     $mainreference = $mainfile->get_reference();
     switch ($type) {
         case 'filesystem':
-            $maindirname   = dirname($mainreference);
-            $encodepath    = false;
+            $maindirname = dirname($mainreference);
+            if (method_exists($repository, 'build_node_path')) {
+                $nodepathmode = 'browse';
+            }
             break;
         case 'coursefiles':
         case 'user':
-            $params        = file_storage::unpack_reference($mainreference, true);
-            $maindirname   = $params['filepath'];
-            $encodepath    = true;
+            $params      = file_storage::unpack_reference($mainreference, true);
+            $maindirname = $params['filepath'];
+            $encodepath  = true;
             break;
         default:
             echo 'unknown repository type in hotpot_pluginfile_externalfile(): '.$type;
@@ -1550,7 +1560,7 @@ function hotpot_pluginfile_externalfile($context, $component, $filearea, $filepa
 
     foreach ($paths as $path => $source) {
 
-        if (! hotpot_pluginfile_dirpath_exists($path, $repository, $type, $encodepath, $params)) {
+        if (! hotpot_pluginfile_dirpath_exists($path, $repository, $type, $encodepath, $nodepathmode, $params)) {
             continue;
         }
 
@@ -1558,6 +1568,13 @@ function hotpot_pluginfile_externalfile($context, $component, $filearea, $filepa
             $params['filepath'] = '/'.$path.($path=='' ? '' : '/');
             $params['filename'] = '.'; // "." signifies a directory
             $path = base64_encode(json_encode($params));
+        }
+
+        if ($nodepathmode) {
+            // for "filesystem" repository on Moodle >= 3.1
+            // the following code mimics the protected method
+            // $repository->build_node_path($nodepathmode, $dirpath)
+            $path = $nodepathmode.':'.base64_encode($path).':';
         }
 
         $listing = $repository->get_listing($path);
@@ -1608,7 +1625,7 @@ function hotpot_pluginfile_externalfile($context, $component, $filearea, $filepa
  * @param array    $params
  * @return boolean true if dir path exists in repository, false otherwise
  */
-function hotpot_pluginfile_dirpath_exists($dirpath, $repository, $type, $encodepath, $params) {
+function hotpot_pluginfile_dirpath_exists($dirpath, $repository, $type, $encodepath, $nodepathmode, $params) {
     $dirs = explode('/', $dirpath);
     foreach ($dirs as $i => $dir) {
         $dirpath = implode('/', array_slice($dirs, 0, $i));
@@ -1617,6 +1634,13 @@ function hotpot_pluginfile_dirpath_exists($dirpath, $repository, $type, $encodep
             $params['filepath'] = '/'.$dirpath.($dirpath=='' ? '' : '/');
             $params['filename'] = '.'; // "." signifies a directory
             $dirpath = base64_encode(json_encode($params));
+        }
+
+        if ($nodepathmode) {
+            // for "filesystem" repository on Moodle >= 3.1
+            // the following code mimics the protected method
+            // $repository->build_node_path($nodepathmode, $dirpath)
+            $dirpath = $nodepathmode.':'.base64_encode($dirpath).':';
         }
 
         $exists = false;
@@ -2194,20 +2218,80 @@ function hotpot_add_to_log($courseid, $module, $action, $url='', $info='', $cmid
 }
 
 /**
- * Obtains the automatic completion state for this hotpot based on the condition
- * in hotpot settings.
+ * Obtains the automatic completion state for this hotpot
+ * based on the conditions in hotpot settings.
  *
- * @param object  $course record from "course" table
- * @param object  $cm     record from "course_modules" table
- * @param integer $userid id from "user" table
- * @param bool $type Type of comparison (or/and; can be used as return value if no conditions)
- * @return bool True if completed, false if not, $type if conditions not set
+ * @param  object  $course record from "course" table
+ * @param  object  $cm     record from "course_modules" table
+ * @param  integer $userid id from "user" table
+ * @param  bool    $type   of comparison (used as return value if there are no conditions)
+ *                         COMPLETION_AND (=true) or COMPLETION_OR (=false)
+ * @return mixed   TRUE if completed, FALSE if not, or $type if no conditions are set
  */
 function hotpot_get_completion_state($course, $cm, $userid, $type) {
     global $CFG, $DB;
     require_once($CFG->dirroot.'/mod/hotpot/locallib.php');
-    $params = array('hotpotid'   => $cm->instance,
-                    'userid'     => $userid,
-                    'status'     => hotpot::STATUS_COMPLETED);
-    return $DB->record_exists('hotpot_attempts', $params);
+
+    // set default return $state
+    $state = $type;
+
+    // get the hotpot record
+    if ($hotpot = $DB->get_record('hotpot', array('id' => $cm->instance))) {
+
+        // get grade, if necessary
+        $grade = false;
+        if ($hotpot->completionmingrade > 0.0 || $hotpot->completionpass) {
+            require_once($CFG->dirroot.'/lib/gradelib.php');
+            $params = array('courseid'     => $course->id,
+                            'itemtype'     => 'mod',
+                            'itemmodule'   => 'hotpot',
+                            'iteminstance' => $cm->instance);
+            if ($grade_item = grade_item::fetch($params)) {
+                $grades = grade_grade::fetch_users_grades($grade_item, array($userid), false);
+                if (isset($grades[$userid])) {
+                    $grade = $grades[$userid];
+                }
+                unset($grades);
+            }
+            unset($grade_item);
+        }
+
+        // the HotPot completion conditions
+        $conditions = array('completionmingrade',
+                            'completionpass',
+                            'completioncompleted');
+
+        foreach ($conditions as $condition) {
+            // decimal (e.g. completionmingrade) fields are returned by MySQL as a string
+            // and since empty('0.0') returns false (!!), so we must use numeric comparison
+            if (empty($hotpot->$condition) || floatval($hotpot->$condition)==0.0) {
+                continue;
+            }
+            switch ($condition) {
+                case 'completionmingrade':
+                    $state = ($grade && $grade->finalgrade >= $hotpot->completionmingrade);
+                    break;
+                case 'completionpass':
+                    $state = ($grade && $grade->is_passed());
+                    break;
+                case 'completioncompleted':
+                    $params = array('hotpotid' => $cm->instance,
+                                    'userid'   => $userid,
+                                    'status'   => hotpot::STATUS_COMPLETED);
+                    $state = $DB->record_exists('hotpot_attempts', $params);
+                    break;
+
+            }
+            // finish early if possible
+            if ($type==COMPLETION_AND && $state==false) {
+                return false;
+            }
+            if ($type==COMPLETION_OR && $state) {
+                return true;
+            }
+        }
+    }
+
+    return $state;
 }
+
