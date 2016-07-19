@@ -94,7 +94,7 @@ class cavej_duplicate_course {
         require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
         // Check if we need to unzip the file because the backup temp dir does not contains backup files.
         if (!file_exists($this->backupbasepath . "/moodle_backup.xml")) {
-            $this->file->extract_to_pathname(get_file_packer(), $this->backupbasepath);
+            $this->file->extract_to_pathname(get_file_packer('application/x-gzip'), $this->backupbasepath);
         }
 
         $newcourseid = restore_dbops::create_new_course($this->mydata->fullname,
