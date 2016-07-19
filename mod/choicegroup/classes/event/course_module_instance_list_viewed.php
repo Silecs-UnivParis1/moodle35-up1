@@ -15,22 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * The mod_forum instance list viewed event.
  *
- * @package    mod
- * @subpackage choicegroup
- * @copyright  2013-2015 Université de Lausanne
- * @author     Nicolas Dunand <Nicolas.Dunand@unil.ch>
+ * @package    mod_forum
+ * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_choicegroup\event;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2015121000;
-$plugin->requires  = 2014050800; // Moodle 2.7
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release = '1.9 for Moodle 2.7-3.0 (Build: 2015121000)';
-
-$plugin->component = 'mod_choicegroup';
-$plugin->cron = 0;
-
+/**
+ * The mod_forum instance list viewed event class.
+ *
+ * @package    mod_forum
+ * @since      Moodle 2.7
+ * @copyright  2014 Dan Poltawski <dan@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class course_module_instance_list_viewed extends \core\event\course_module_instance_list_viewed {
+    // No need for any code here as everything is handled by the parent class.
+}
