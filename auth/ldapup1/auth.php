@@ -3,7 +3,7 @@
 /**
  * @package    auth
  * @subpackage ldapup1
- * @copyright  2012-2013 Silecs {@link http://www.silecs.info/societe}
+ * @copyright  2012-2016 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * derived from official auth_ldap
  */
@@ -23,6 +23,7 @@ if (!defined('AUTH_GID_NOGROUP')) {
 require_once($CFG->libdir.'/authlib.php');
 require_once($CFG->libdir.'/ldaplib.php');
 require_once('auth_trivial.php'); // all trivial methods
+require_once($CFG->dirroot . '/local/cohortsyncup1/lib.php');
 
 /**
  * LDAP authentication plugin.
@@ -236,7 +237,7 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
         global $CFG, $DB;
 
         print_string('connectingldap', 'auth_ldapup1');
-        add_to_log(0, 'auth_ldapup1', 'sync:begin', '', "since $since");
+        $ldaplogid = up1_cohortsync_addlog(null, 'ldap:sync', "since $since");
         $logmsg = '';
         $ldapconnection = $this->ldap_connect();
 
@@ -315,7 +316,7 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
         if ($count < 1) {
             //print_string('didntgetusersfromldap', 'auth_ldapup1');
        $dbman->drop_table($table);
-            add_to_log(0, 'auth_ldapup1', 'sync:end', '', 'temp table empty. Exit.');
+            up1_cohortsync_addlog($ldaplogid, 'ldap:sync', 'temp table empty. Exit.');
             exit;
         } else {
             print_string('gotcountrecordsfromldap', 'auth_ldapup1', $count);
@@ -499,7 +500,7 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
 
         $dbman->drop_table($table);
         $this->ldap_close();
-        add_to_log(0, 'auth_ldapup1', 'sync:end', '', $logmsg);
+        up1_cohortsync_addlog($ldaplogid, 'ldap:sync', $logmsg);
 
         return true;
     }
@@ -938,14 +939,13 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
     function get_last_sync() {
         global $DB;
 
-        $sql = "SELECT MAX(time) FROM {log} WHERE module=? AND action=?";
-        $begin = $DB->get_field_sql($sql, array('auth_ldapup1', 'sync:begin'));
-        $end = $DB->get_field_sql($sql, array('auth_ldapup1', 'sync:end'));
+        $sql = "SELECT MAX(timebegin) AS begin, MAX(timeend) AS end FROM {up1_cohortsync_log} WHERE action=?";
+        $record = $DB->get_record_sql($sql, ['ldap:sync']);
         // if not found, null -> 19700101010000Z : ok
         date_default_timezone_set('UTC');
         $res = array(
-            'begin' => date("YmdHis", $begin) . 'Z',
-            'end' => date("YmdHis", $end) . 'Z',
+            'begin' => date("YmdHis", $record->begin) . 'Z',
+            'end' => date("YmdHis", $record->end) . 'Z',
         );
         return $res;
     }
