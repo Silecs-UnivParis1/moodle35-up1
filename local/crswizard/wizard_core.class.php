@@ -385,11 +385,17 @@ class wizard_core {
                 $this->set_wizard_session($rof2['rofchemin'], 'rattachement2', 'form_step2');
             }
             if (isset($rof2['rofid'])) {
+                if (isset($this->mydata->profile_field_up1rofid) == false) {
+                    $this->mydata->profile_field_up1rofid = '';
+                }
                 foreach($rof2['rofid'] as $rofid) {
                     $this->mydata->profile_field_up1rofid .= ';' . $rofid;
                 }
             }
             if (isset($rof2['rofpathid'])) {
+                if (isset($this->mydata->profile_field_up1rofpathid) == false) {
+                    $this->mydata->profile_field_up1rofpathid = '';
+                }
                 foreach($rof2['rofpathid'] as $rofpath) {
                     $this->mydata->profile_field_up1rofpathid .= ';' . $rofpath;
                 }
