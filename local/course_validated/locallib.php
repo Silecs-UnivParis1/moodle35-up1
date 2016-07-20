@@ -379,7 +379,7 @@ function validate_course($crsid) {
  */
 function send_notification_validation($crsid) {
     global $DB;
-    
+
     $msg = message_notification_validation($crsid);
     $summary = $DB->get_field('crswizard_summary', 'txt', array('courseid' => $crsid)); //récapitulatif
     $DB->delete_records('crswizard_summary', array('courseid' => $crsid));
@@ -398,7 +398,7 @@ function send_notification_validation($crsid) {
             $recipients[] = $userid;
         }
     }
-    $eventdata = new object();
+    $eventdata = new stdClass();
     $eventdata->component = 'moodle';
     $eventdata->name = 'courserequested';
     $eventdata->userfrom = 2;

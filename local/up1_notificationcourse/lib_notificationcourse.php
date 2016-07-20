@@ -12,7 +12,7 @@
  * @return object $message
  */
 function get_notificationcourse_message($subject, $msgbodyinfo, $complement) {
-    $message = new object();
+    $message = new stdClass();
     $message->subject = $subject;
     $message->from = $msgbodyinfo['shortnamesite'];
     $comhtml = '';

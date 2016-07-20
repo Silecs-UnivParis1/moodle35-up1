@@ -88,7 +88,7 @@ function cavej_duplicate_course($course, $newidcat) {
     $sql = "SELECT count(id) FROM {course} WHERE shortname like ?";
     $nb = $DB->get_field_sql($sql, array($shorname . "%"));
 
-    $newcourse= new object();
+    $newcourse= new stdClass();
     $newcourse = $course;
     $newcourse->shortname = $shorname . ($nb==0?'1':$nb+1);
     $newcourse->category = $newidcat;

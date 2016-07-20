@@ -7,7 +7,7 @@
  */
 
 function get_notification_message($formdata, $params) {
-    $message = new object();
+    $message = new stdClass();
     $message->type = $formdata->message;
     $sitename = '[' . format_string(get_site()->shortname) . '] ';
     if ($formdata->message && $formdata->message==1) {

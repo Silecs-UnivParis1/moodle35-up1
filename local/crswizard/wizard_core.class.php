@@ -740,7 +740,7 @@ class wizard_core {
     */
     public function send_message_notification($idcourse, $mgc, $mgv, $remarques=false) {
         global $DB;
-        $userfrom = new object();
+        $userfrom = new stdClass();
         static $supportuser = null;
         if (!empty($supportuser)) {
             $userfrom = $supportuser;
@@ -758,7 +758,7 @@ class wizard_core {
         }
         $subject = $this->get_email_subject($idcourse, $typeMessage);
         if ($remarques) $subject.= ' (REMARQUES ASSOCIEES)';
-        $eventdata = new object();
+        $eventdata = new stdClass();
         $eventdata->component = 'moodle';
         $eventdata->name = 'courserequested';
         $eventdata->userfrom = $userfrom;
@@ -815,7 +815,7 @@ class wizard_core {
     */
     function send_message_autovalidation($idcourse, $mgc) {
         global $DB;
-        $userfrom = new object();
+        $userfrom = new stdClass();
         static $supportuser = null;
         if (!empty($supportuser)) {
             $userfrom = $supportuser;
@@ -825,7 +825,7 @@ class wizard_core {
 
         $subject = $this->get_email_subject($idcourse, 'Création');
 
-        $eventdata = new object();
+        $eventdata = new stdClass();
         $eventdata->component = 'moodle';
         $eventdata->name = 'courserequested';
         $eventdata->userfrom = $userfrom;
