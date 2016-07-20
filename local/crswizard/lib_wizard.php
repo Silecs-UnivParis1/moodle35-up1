@@ -348,7 +348,7 @@ function wizard_redirect_creation($url, $message='', $delay=5) {
     global $OUTPUT, $PAGE, $SESSION, $CFG;
 
     $localoutput = $OUTPUT;
-    $localoutput->page = $PAGE;
+    $localpage = $PAGE;
 
     if ($url instanceof moodle_url) {
         $url = $url->out(false);
@@ -376,8 +376,7 @@ function wizard_redirect_creation($url, $message='', $delay=5) {
 
     if (!$debugdisableredirect) {
         // Don't use exactly the same time here, it can cause problems when both redirects fire at the same time.
-        $localoutput->metarefreshtag = '<meta http-equiv="refresh" content="'. $delay .'; url='. $encodedurl .'" />'."\n";
-        $localoutput->page->requires->js_function_call('document.location.replace', array($url), false, ($delay + 3));
+        $localpage->requires->js_function_call('document.location.replace', array($url), false, ($delay + 3));
     }
     $PAGE->requires->css(new moodle_url('/local/crswizard/css/crswizard.css'));
 
