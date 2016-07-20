@@ -25,14 +25,11 @@ function get_cohort_last_sync($synctype) {
     if ( ! in_array($synctype, $allowedSyncs)) {
         throw new coding_exception('unknown sync type: ['. $synctype . '].');
     }
-    $sql = "SELECT MAX(time) FROM {log} WHERE module=? AND action=?";
-    $begin = $DB->get_field_sql($sql, array('local_cohortsyncup1', $synctype.':begin'));
-    if ($begin === null) $begin=0;
-    $end = $DB->get_field_sql($sql, array('local_cohortsyncup1', $synctype.':end'));
-    if ($end === null) $end=0;
+    $sql = "SELECT MAX(timebegin) AS begin, MAX(timeend) AS end FROM {up1_cohortsync_log} WHERE action=? ";
+    $record = $DB->get_record_sql($sql, ['cohort:' . $synctype]);
         $res = array(
-            'begin' => $begin,
-            'end' => $end,
+            'begin' => $record->begin,
+            'end' => $record->end,
         );
         return $res;
 }

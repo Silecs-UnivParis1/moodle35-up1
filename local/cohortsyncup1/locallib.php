@@ -72,14 +72,12 @@ function safe_delete_cohort($cohortid) {
  */
 function cli_delete_missing_cohorts($verbose) {
     echo "Connect webservice... ";
-    add_to_log(0, 'local_cohortsyncup1', 'delMissingCohorts:begin', '', "");
     list($curlinfo, $wsdata) = get_ws_data(get_config('local_cohortsyncup1', 'ws_allGroups'));
     echo "OK. \n";
 
     $cnt = delete_missing_cohorts($wsdata, $verbose);
     $logmsg = "parsed cohorts : " . $cnt['delete']. " deleted, " . $cnt['keep']. " kept.";
     echo "\n =>  $logmsg\n\n";
-    add_to_log(0, 'local_cohortsyncup1', 'delMissingCohorts:end', '', $logmsg);
     return true;
 }
 
@@ -134,7 +132,7 @@ function sync_cohorts_all_groups($timelast=0, $limit=0, $verbose=0)
     $count = 0;
     date_default_timezone_set('UTC');
     $ldaptimelast = date("YmdHis", $timelast) . 'Z';
-    add_to_log(0, 'local_cohortsyncup1', 'syncAllGroups:begin', '', "From allGroups since $timelast");
+    $cohortlogid = up1_cohortsync_addlog(null, 'cohort:syncAllGroups', "From allGroups since $timelast");
 
     list($curlinfo, $wsdata) = get_ws_data(get_config('local_cohortsyncup1', 'ws_allGroups'));
     // $data = array( stdClass( $key => '...', $name => '...', $modifyTimestamp => 'ldapTime' $description => '...'
@@ -159,7 +157,7 @@ function sync_cohorts_all_groups($timelast=0, $limit=0, $verbose=0)
         $logmsg = "\nUnable to fetch data from: " . $ws_allGroups . "\n" ;
     }
     echo "\n\n$logmsg\n\n";
-    add_to_log(0, 'local_cohortsyncup1', 'syncAllGroups:end', '', $logmsg);
+    up1_cohortsync_addlog($cohortlogid, 'cohort:syncAllGroups', $logmsg);
 }
 
 
@@ -209,7 +207,8 @@ function sync_cohorts_from_users($timelast=0, $limit=0, $verbose=0)
     global $CFG, $DB;
 
     update_period($verbose);
-    add_to_log(0, 'local_cohortsyncup1', 'syncFromUsers:begin', '', "since $timelast");
+    $cohortlogid = up1_cohortsync_addlog(null, 'cohort:syncFromUsers', "since $timelast");
+
     $ws_userGroupsAndRoles = get_config('local_cohortsyncup1', 'ws_userGroupsAndRoles');
     // $ws_userGroupsAndRoles = 'http://ticetest.univ-paris1.fr/web-service-groups/userGroupsAndRoles';
     $ref_plugin = 'auth_ldapup1';
@@ -274,7 +273,8 @@ function sync_cohorts_from_users($timelast=0, $limit=0, $verbose=0)
         . "Cohorts : " . count($cntCohortUsers) . " encountered. $cntCrcohorts created.  "
         . "Membership: +$cntAddmembers  -$cntRemovemembers.";
     echo "\n\n$logmsg\n\n";
-    add_to_log(0, 'local_cohortsyncup1', 'syncFromUsers:end', '', $logmsg);
+    up1_cohortsync_addlog($cohortlogid, 'cohort:syncFromUsers', $logmsg);
+
 }
 
 
