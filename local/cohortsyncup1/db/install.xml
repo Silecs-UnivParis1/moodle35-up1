@@ -15,5 +15,18 @@
         <KEY NAME="oldu" TYPE="unique" FIELDS="old" />
       </KEYS>
     </TABLE>
+
+    <TABLE NAME="up1_cohortsync_log" COMMENT="record logs for synchronizations handled by auth_ldapup1 and local_cohortsyncup1">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
+        <FIELD NAME="timebegin" TYPE="int" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="timeend" TYPE="int" NOTNULL="true" SEQUENCE="false" />
+		<FIELD NAME="action" TYPE="text" NOTNULL="true" SEQUENCE="false" />
+		<FIELD NAME="info" TYPE="text" NOTNULL="true" SEQUENCE="false" />
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+      </KEYS>
+    </TABLE>
   </TABLES>
 </XMLDB>

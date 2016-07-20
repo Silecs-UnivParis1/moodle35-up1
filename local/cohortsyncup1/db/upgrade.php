@@ -39,5 +39,20 @@ function xmldb_local_cohortsyncup1_upgrade($oldversion) {
             $dbman->add_field($table, $field1);
         }
     }
+
+    if ($oldversion < 2016072000) {
+        $table = new xmldb_table('up1_cohortsync_log');
+
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('timebegin', XMLDB_TYPE_INTEGER, '10', true, XMLDB_NOTNULL, false, '0');
+        $table->add_field('timeend', XMLDB_TYPE_INTEGER, '10', true, XMLDB_NOTNULL, false, '0');
+        $table->add_field('action', XMLDB_TYPE_CHAR, '100', null, null, false, '');
+        $table->add_field('info', XMLDB_TYPE_TEXT, 'big', null, null, false, null);
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+		$dbman->create_table($table);
+		upgrade_plugin_savepoint(true, 2016072000, 'local', 'cohortsyncup1');
+    }
+
     return true;
 }
