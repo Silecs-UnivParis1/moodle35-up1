@@ -29,14 +29,14 @@ $url = "$CFG->wwwroot/report/up1userstats/index.php";
 
 echo "<h3>Last LDAP synchronizations</h3>\n";
 $table = new html_table();
-$table->head = array('Begin', 'End', 'Module', 'Info');
-$table->data = report_up1userstats_syncs("auth_ldapup1", $howmany);
+$table->head = array('Début', 'Fin', 'Action', 'Info');
+$table->data = report_up1userstats_syncs("ldap", $howmany);
 echo html_writer::table($table);
 
 echo "<h3>Last cohort synchronizations</h3>\n";
 $table = new html_table();
-$table->head = array('Begin', 'End', 'Module', 'Info');
-$table->data = report_up1userstats_syncs("local_cohortsyncup1", $howmany);
+$table->head = array('Début', 'Fin', 'Action', 'Info');
+$table->data = report_up1userstats_syncs("cohort", $howmany);
 echo html_writer::table($table);
 
 echo $OUTPUT->footer();

@@ -5,7 +5,7 @@
  *
  * @package    report
  * @subpackage up1userstats
- * @copyright  2012-2014 Silecs {@link http://www.silecs.info/societe}
+ * @copyright  2012-2016 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -169,46 +169,24 @@ function report_up1userstats_last_sync() {
     return $res;
 }
 
+/**
+ *
+ * @param string $plugin "ldap" or "cohort" : prefix for the 'action' column
+ * @param int $howmany
+ * @return array
+ */
 function report_up1userstats_syncs($plugin, $howmany) {
     global $DB;
 
     $res = array();
-    $sql = "SELECT * FROM {log} WHERE action LIKE ? AND module LIKE ? ORDER BY id DESC LIMIT ". (2*$howmany);
-    $logs = $DB->get_records_sql($sql, array('sync%', $plugin));
-    $datebegin = '?';
+    $sql = "SELECT * FROM {up1_cohortsync_log} WHERE action LIKE ? ORDER BY id DESC LIMIT ". $howmany;
+    $logs = $DB->get_records_sql($sql, [$plugin . ':%']);
 
     $logs = array_reverse($logs);
     foreach($logs as $log) {
-        if (preg_match('/:begin/', $log->action)) {
-            $datebegin = date('Y-m-d H:i:s ', $log->time);
-        }
-        if (preg_match('/(.*):end/', $log->action, $matches)) {
-            $res[] = array($datebegin, date('Y-m-d H:i:s ', $log->time), $matches[1], $log->info);
-            $datebegin = '?';
-        }
+        $begin = ($log->timebegin== 0 ? '?' : date('Y-m-d H:i:s ', $log->timebegin));
+        $end = ($log->timeend == 0 ? '?' : date('Y-m-d H:i:s ', $log->timeend));
+        $res[] = array($begin, $end, $log->action, $log->info);
     }
-    return $res;
-}
-
-
-
-/*
- * Obsolete functions since up1* fields have been added
- */
-
-function report_up1userstats_cohorts_prefix() {
-    global $DB, $cohortPrefixes;
-    $res = array();
-
-    $wherediff = '';
-    foreach ($cohortPrefixes as $prefix) {
-        $sql = "SELECT COUNT(*) FROM {cohort} c WHERE idnumber LIKE '".$prefix."%' ";
-        $count = $DB->count_records_sql($sql);
-        $res[] = array($prefix, $count);
-        $wherediff .= " AND idnumber NOT LIKE '" . $prefix."%' ";
-    }
-    $sql = "SELECT COUNT(*) FROM {cohort} c WHERE TRUE" . $wherediff;
-    $count = $DB->count_records_sql($sql);
-    $res[] = array('Autres', $count);
     return $res;
 }
