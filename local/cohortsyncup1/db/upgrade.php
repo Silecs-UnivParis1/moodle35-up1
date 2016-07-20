@@ -9,6 +9,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once(__DIR__ . '/../locallib.php');
+require_once(__DIR__ . '/../upgradelib.php');
 
 function xmldb_local_cohortsyncup1_upgrade($oldversion) {
     global $CFG, $DB;
@@ -40,6 +41,8 @@ function xmldb_local_cohortsyncup1_upgrade($oldversion) {
         }
     }
 
+
+
     if ($oldversion < 2016072000) {
         $table = new xmldb_table('up1_cohortsync_log');
 
@@ -52,6 +55,14 @@ function xmldb_local_cohortsyncup1_upgrade($oldversion) {
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
 		$dbman->create_table($table);
 		upgrade_plugin_savepoint(true, 2016072000, 'local', 'cohortsyncup1');
+    }
+
+    if ($oldversion < 2016072001) {
+        $cnt = upgrade_logs_to_specific_table('local_cohortsyncup1', 'cohort');
+        echo "Migrated cohort sync logs: " . $cnt['begin'] . " begins / " . $cnt['end'] . " ends. \n";
+
+        $cnt = upgrade_logs_to_specific_table('auth_ldapup1', 'ldap');
+        echo "Migrated ldap sync logs: " . $cnt['begin'] . " begins / " . $cnt['end'] . " ends. \n";        
     }
 
     return true;

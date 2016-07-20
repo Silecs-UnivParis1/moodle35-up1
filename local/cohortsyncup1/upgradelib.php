@@ -93,3 +93,35 @@ function fix_user_sync($dryrun=false) {
     }
     return $diag;
 }
+
+/**
+ * upgrade logs storage from (legacy) table log to table up1_cohortsync_log
+ * @param string $module 'auth_ldapup1' or 'local_cohortsyncup1'
+ * @param string actionprefix eg. 'ldap' or 'cohort'
+ */
+function upgrade_logs_to_specific_table($module, $actionprefix) {
+    global $DB;
+    $sql = "SELECT time, action, info "
+            . "FROM {log} l "
+            . "WHERE module=? ";
+    $logs = $DB->get_recordset_sql($sql, [$module]);
+    $cnt = ['begin' => 0, 'end' => 0];
+
+    foreach ($logs as $log) {
+        list($action, $beginend) = explode(':', $log->action);
+        if ($action == 'delMissingCohorts') {
+            continue;
+        }
+        if ($beginend == 'begin') {
+            $lastid = up1_cohortsync_addlog(null, $actionprefix . ':' . $action, $log->info, $log->time);
+            $cnt['begin']++;
+        } elseif ($beginend == 'end') {
+            up1_cohortsync_addlog($lastid, $actionprefix . ':' . $action, $log->info, $log->time);
+            $cnt['end']++;
+        } else {
+            echo "Unknown action: $beginend !" ;
+            var_dump($log);
+        }
+    }
+    return $cnt;
+}
