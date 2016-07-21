@@ -61,24 +61,18 @@ $PAGE->set_title(format_string($module->name));
 $PAGE->requires->css(new moodle_url('/local/up1_notificationcourse/notificationcourse.css'));
 
 $recipicents = '';
-$students = array();
+$students = get_users_from_course($course, 'student');
+$notifiedStudents = [];
 
-$allstudent = TRUE;
-if (!empty($CFG->enablegroupmembersonly)) {
-    if ($cm->groupmembersonly == 1) {
-        $allstudent = FALSE;
-    }
-}
-if ($allstudent) {
-    // pas de groupe, envoyé à tous les étudiants
-    $students = get_users_from_course($course, 'student');
-    $recipicents = get_label_destinataire(count($students), $cm->groupingid, $msgbodyinfo);
-} elseif ($cm->groupingid != 0) {
-    //envoyé au groupe
-    $students = groups_get_grouping_members($cm->groupingid);
-    $recipicents = get_label_destinataire(count($students), $cm->groupingid, $msgbodyinfo);
-} else {
+$modinfo = get_fast_modinfo($course)->get_cm($cm->id);
+$info = new \core_availability\info_module($modinfo);
+$notifiedStudents = $info->filter_user_list($students);
+$nbNotifiedStudents = count($notifiedStudents);
+
+if (count($notifiedStudents) == 0) {
     $recipicents = get_string('norecipient', 'local_up1_notificationcourse');
+} else {
+    $recipicents = get_label_destinataire($nbNotifiedStudents, $cm->availability, $msgbodyinfo);
 }
 
 $mform = new local_up1_notificationcourse_notificationcourse_form(null,
@@ -88,15 +82,14 @@ $newformdata = array('id'=>$id, 'mod' => $moduletype);
 $mform->set_data($newformdata);
 $formdata = $mform->get_data();
 
-
 if ($mform->is_cancelled()) {
     redirect($urlcourse);
 }
 
 if ($formdata) {
     $msg = get_notificationcourse_message($mailsubject, $msgbodyinfo, $formdata->complement);
-    if (count($students)) {
-        $msgresult = send_notificationcourse($students, $msg, $infolog);
+    if (count($notifiedStudents)) {
+        $msgresult = send_notificationcourse($notifiedStudents, $msg, $infolog);
     }
 }
 

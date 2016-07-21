@@ -36,11 +36,11 @@ function get_notificationcourse_message($subject, $msgbodyinfo, $complement) {
  * construit le messsage d'interface du nombre et de la qualité des
  * destinataires du message
  * @param int $nbdest
- * @param int $groupingid
+ * @param string $availability
  * @param array $msgbodyinfo
  * @return string $label
  */
-function get_label_destinataire($nbdest, $groupingid, $msgbodyinfo) {
+function get_label_destinataire($nbdest, $availability, $msgbodyinfo) {
     $label = '';
     if ($nbdest == 0) {
         return get_string('norecipient', 'local_up1_notificationcourse');
@@ -53,11 +53,12 @@ function get_label_destinataire($nbdest, $groupingid, $msgbodyinfo) {
     }
     $label = 'Le message suivant sera transmis ' . $x
         . 'utilisateur' . $s;
-    if ($groupingid == 0) {
-        $label .= ' inscrit' . $s . ' à cet espace.';
-    } else {
+    if ($availability) {
         $label .= ' concerné' . $s . ' par <a href="' . $msgbodyinfo['urlactivite']
             . '">' . $msgbodyinfo['nomactivite'] . '.</a>';
+
+    } else {
+        $label .= ' inscrit' . $s . ' à cet espace.';
     }
     return $label;
 }
