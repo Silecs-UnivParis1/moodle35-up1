@@ -19,8 +19,12 @@ class course_wizard_step2_rof_form extends moodleform {
         $isnew = TRUE;
         $urlPfixe = $SESSION->wizard['urlpfixe'];
         $urlfixeExist = false;
+        $oldmyurl = false;
         if (isset($SESSION->wizard['form_step2']['modelurlfixe']) && $SESSION->wizard['form_step2']['modelurlfixe'] != '') {
             $urlfixeExist = true;
+        }
+        if (isset($SESSION->wizard['form_step2']['oldmyurl']) && $SESSION->wizard['form_step2']['oldmyurl'] != '') {
+            $oldmyurl = true;
         }
 
         $mform = $this->_form;
@@ -186,6 +190,13 @@ class course_wizard_step2_rof_form extends moodleform {
             $mform->addElement('html', $htmlMyUrlModel);
             $mform->addElement('radio', 'urlmodel', '', 'Je souhaite transférer cette URL pérenne au nouveau cours',  'fixe');
             $mform->addElement('radio', 'urlmodel', '', 'Je souhaitre utiliser une autre URL pérenne',  'myurl');
+        }
+
+        if ($oldmyurl) {
+            $mform->addElement('hidden', 'oldmyurl', null, array('id' => 'id_oldmyurl'));
+            $mform->setType('oldmyurl', PARAM_MULTILANG);
+            $mform->setConstant('oldmyurl', $SESSION->wizard['form_step2']['oldmyurl']);
+            $mform->addElement('html', '<p>coucou : '.$SESSION->wizard['form_step2']['oldmyurl'].'</p>');
         }
 
         $mform->addElement('text', 'myurl', '<span title="Partie fixe de l\'URL">' . $urlPfixe . '</span>',

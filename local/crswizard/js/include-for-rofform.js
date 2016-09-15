@@ -54,7 +54,10 @@ $(document).ready(function() {
         var intitule = select.children('div[class=intitule-selected]').text();
         if (intitule == '') {
             $('#id_complement').val(intitule);
-            $('#id_myurl').val('');
+            var isoldmyurl = $("#id_oldmyurl").size();
+            if (isoldmyurl == 0) {
+                $('#id_myurl').val('');
+            }
         }
         $('#fullname').val(intitule);
         $('#fullnamelab').empty();
