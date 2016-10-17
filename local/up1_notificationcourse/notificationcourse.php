@@ -69,7 +69,7 @@ $info = new \core_availability\info_module($modinfo);
 $notifiedStudents = $info->filter_user_list($students);
 $nbNotifiedStudents = count($notifiedStudents);
 
-if (count($notifiedStudents) == 0) {
+if ($nbNotifiedStudents == 0) {
     $recipicents = get_string('norecipient', 'local_up1_notificationcourse');
 } else {
     $recipicents = get_label_destinataire($nbNotifiedStudents, $cm->availability, $msgbodyinfo);

@@ -53,10 +53,10 @@ function get_label_destinataire($nbdest, $availability, $msgbodyinfo) {
     }
     $label = 'Le message suivant sera transmis ' . $x
         . 'utilisateur' . $s;
+
     if ($availability) {
         $label .= ' concerné' . $s . ' par <a href="' . $msgbodyinfo['urlactivite']
             . '">' . $msgbodyinfo['nomactivite'] . '.</a>';
-
     } else {
         $label .= ' inscrit' . $s . ' à cet espace.';
     }
