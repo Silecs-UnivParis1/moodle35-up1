@@ -2,7 +2,7 @@
 /**
  * @package    local
  * @subpackage up1_notificationcourse
- * @copyright  2012-2013 Silecs {@link http://www.silecs.info/societe}
+ * @copyright  2012-2016 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 //It must be included from a Moodle page
@@ -25,20 +25,40 @@ class local_up1_notificationcourse_notificationcourse_form extends moodleform {
         $mform->addElement('hidden', 'mod');
         $mform->setType('mod', PARAM_ALPHA);
 
-        $mform->addElement('textarea', 'complement', null, array('rows' => 3,
+        $radioarray = array();
+        $radioarray[] = $mform->createElement('radio', 'destinataire', '', get_string('item_all', 'local_up1_notificationcourse')
+            . ' (' . $this->_customdata['nbNotifiedStudents'] . ')', 0);
+        $radioarray[] = $mform->createElement('radio', 'destinataire', '', get_string('item_viewed', 'local_up1_notificationcourse')
+            . ' (' . $this->_customdata['nbViewedstudents'] . ')', 1);
+        $radioarray[] = $mform->createElement('radio', 'destinataire', '', get_string('item_notviewed', 'local_up1_notificationcourse')
+            . ' (' . $this->_customdata['nbNotviewedstudents'] . ')', 2);
+        $mform->addGroup($radioarray, 'radioar', get_string('label_destinataire', 'local_up1_notificationcourse'), array(' ', ' '), false);
+
+        $msgarray = array();
+        $msgarray[] = $mform->createElement('radio', 'message', '', get_string('item_invitation', 'local_up1_notificationcourse') , 0);
+        $msgarray[] = $mform->createElement('radio', 'message', '', get_string('item_relance', 'local_up1_notificationcourse'), 1);
+        $mform->addGroup($msgarray, 'msgar', get_string('label_message', 'local_up1_notificationcourse'), array(' ', ' '), false);
+
+        $mform->addElement('text', 'msginvitationsubject', get_string('subject', 'local_up1_notificationcourse'), 'maxlength="254" size="50" class="obligatoire"');
+        $mform->setType('msginvitationsubject', PARAM_MULTILANG);
+        $mform->setDefault('msginvitationsubject', get_config('local_up1_notificationcourse','invitation_subject'));
+
+        $mform->addElement('textarea', 'msginvitationbody', get_string('body', 'local_up1_notificationcourse'), array('rows' => 15,
             'cols' => 80));
-        $mform->setType('complement',PARAM_RAW);
+        $mform->setType('msginvitationbody', PARAM_TEXT);
+        $mform->setDefault('msginvitationbody', get_config('local_up1_notificationcourse','invitation_body'));
 
-        $urlactivity = html_writer::link($this->_customdata['urlactivite'], $this->_customdata['urlactivite']);
 
-        $htmlinfo = html_writer::empty_tag('br');
-        $htmlinfo .= html_writer::tag(
-            'p',
-            $this->_customdata['coursepath'] .  html_writer::empty_tag('br') . $urlactivity,
-            array('class' => 'notificationlabel')
-        );
+        $mform->addElement('text', 'msgrelancesubject', get_string('subject', 'local_up1_notificationcourse'), 'maxlength="254" size="50"');
+        $mform->setType('msgrelancesubject', PARAM_MULTILANG);
+        $mform->setDefault('msgrelancesubject', get_config('local_up1_notificationcourse','relance_subject'));
 
-        $mform->addElement('html', $htmlinfo);
+        $mform->addElement('textarea', 'msgrelancebody', get_string('body', 'local_up1_notificationcourse'), array('rows' => 15,
+            'cols' => 80));
+        $mform->setType('msgrelancebody', PARAM_TEXT);
+        $mform->setDefault('msgrelancebody', get_config('local_up1_notificationcourse','relance_body'));
+
+        $mform->addElement('checkbox', 'copie', get_string('label_copie', 'local_up1_notificationcourse'));
 
         //-------------------------------------------------------------------------------
         // buttons

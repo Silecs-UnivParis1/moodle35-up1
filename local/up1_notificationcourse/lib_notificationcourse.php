@@ -2,7 +2,7 @@
 /**
  * @package    local
  * @subpackage up1_notificationcourse
- * @copyright  2012-2013 Silecs {@link http://www.silecs.info/societe}
+ * @copyright  2012-2016 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -11,26 +11,39 @@
  * @param string $subject
  * @return object $message
  */
-function get_notificationcourse_message($subject, $msgbodyinfo, $complement) {
-    $message = new stdClass();
-    $message->subject = $subject;
-    $message->from = $msgbodyinfo['shortnamesite'];
-    $comhtml = '';
-    $comtext = '';
-    if (trim($complement) !='') {
-        $comhtml .= '<p>' . $complement . '</p>';
-        $comtext .= "\n\n" . $complement;
+function get_notificationcourse_message($formdata, $params) {
+    $message = new object();
+    $message->type = $formdata->message;
+    $message->from = $params['shortnamesite'];
+    if ($formdata->message && $formdata->message==1) {
+        $message->subject = $formdata->msgrelancesubject;
+        $message->body = $formdata->msgrelancebody;
+        $message->info = get_string('word_relance', 'local_up1_notificationcourse');
+    } else {
+        $message->subject = $formdata->msginvitationsubject;
+        $message->body = $formdata->msginvitationbody;
+        $message->info = get_string('word_invitation', 'local_up1_notificationcourse');
     }
-    $message->bodyhtml = '<p>' . get_email_body($msgbodyinfo, 'html') . '</p>' . $comhtml;
-    $message->bodytext = get_email_body($msgbodyinfo, 'text') . $comtext;
 
-    $message->bodyhtml .= '<p>' . $msgbodyinfo['coursepath']
-        . '<br/><a href="' . $msgbodyinfo['urlactivite']
-        . '">' . $msgbodyinfo['urlactivite'] . '</a></p>';
-    $message->bodytext .= "\n\n" . $msgbodyinfo['coursepath']
-        . "\n" . $msgbodyinfo['urlactivite'];
+    $message->subject = str_replace('[[siteshortname]]', $params['shortnamesite'], $message->subject);
+    $message->subject = str_replace('[[courseshortname]]', $params['shortnamecourse'], $message->subject);
+    $message->subject = str_replace('[[activitename]]', $params['nomactivite'], $message->subject);
+    $message->body = str_replace('[[sender]]', $params['user'], $message->body);
+    $message->body = str_replace('[[courseshortname]]', $params['shortnamecourse'], $message->body);
+    $message->body = str_replace('[[activitename]]', $params['nomactivite'], $message->body);
+
+    $message->bodyhtml = $message->body ;
+    $message->body = str_replace('[[linkactivity]]', $params['urlactivite'], $message->body);
+    $message->body = str_replace('[[linkcourse]]', $params['urlcourse'], $message->body);
+    $message->bodyhtml = str_replace('[[linkactivity]]', '<a href="' . $params['urlactivite'] . '>'
+        . $params['urlactivite'] . '</a>', $message->bodyhtml);
+    $message->bodyhtml = str_replace('[[linkcourse]]', '<a href="' . $params['urlcourse'] . '>'
+        . $params['urlcourse'] . '</a>', $message->bodyhtml);
+
+    $message->bodyhtml = str_replace("\n", '<br />', $message->bodyhtml);
     return $message;
 }
+
 
 /**
  * construit le messsage d'interface du nombre et de la qualité des
@@ -45,21 +58,14 @@ function get_label_destinataire($nbdest, $availability, $msgbodyinfo) {
     if ($nbdest == 0) {
         return get_string('norecipient', 'local_up1_notificationcourse');
     }
-    $x = 'à l\'';
-    $s = '';
-    if ($nbdest > 1) {
-        $x = 'aux ' . $nbdest . ' ';
-        $s = 's';
-    }
-    $label = 'Le message suivant sera transmis ' . $x
-        . 'utilisateur' . $s;
-
+    $label = 'Nombre d\'utilisateurs ';
     if ($availability) {
-        $label .= ' concerné' . $s . ' par <a href="' . $msgbodyinfo['urlactivite']
-            . '">' . $msgbodyinfo['nomactivite'] . '.</a>';
+        $label .= ' concernés par <a href="' . $msgbodyinfo['urlactivite']
+            . '">' . $msgbodyinfo['nomactivite'] . '</a> : ';
     } else {
-        $label .= ' inscrit' . $s . ' à cet espace.';
+        $label .= ' inscrits à cet espace : ';
     }
+    $label .= $nbdest;
     return $label;
 }
 
@@ -106,8 +112,14 @@ function send_notificationcourse($users, $msg, $infolog) {
             ++$nb;
         }
     }
-    notificationcourse_send_email($USER, $msg);
+
+    if (isset($infolog['copie'])) {
+        notificationcourse_send_email($USER, $msg);
+        $infolog['copie'] = 1;
+    }
     $infolog['nb'] = $nb;
+    $infolog['typemsg'] = $msg->info;
+
     return get_result_action_notificationcourse($infolog);
 }
 
@@ -120,7 +132,16 @@ function get_result_action_notificationcourse($infolog) {
     if ($infolog['nb'] == 0) {
         return get_string('nomessagesend', 'local_up1_notificationcourse');
     }
-    $message = get_string('numbernotification', 'local_up1_notificationcourse', $infolog['nb']);
+    if ($infolog['typemsg'] == 'invitation') {
+        $message = get_string('numbernotificationinvitation', 'local_up1_notificationcourse', $infolog['nb']);
+    } else {
+        $message = get_string('numbernotificationrelance', 'local_up1_notificationcourse', $infolog['nb']);
+    }
+
+    if (isset($infolog['copie'])) {
+        $message .= get_string('copie', 'local_up1_notificationcourse') . $infolog['userfullname'];
+    }
+
     return $message;
 }
 
@@ -135,22 +156,9 @@ function notificationcourse_send_email($user, $msg) {
         return false;
     }
     $emailform = $msg->from;
-    return email_to_user($user, $emailform, $msg->subject, $msg->bodytext, $msg->bodyhtml);
+    return email_to_user($user, $emailform, $msg->subject, $msg->body, $msg->bodyhtml);
 }
 
-/**
- * construit le sujet du mail envoyé
- * @param string $siteshortname
- * @param string $courseshortname
- * @param string $activitename
- * @return string
- */
-function get_email_subject($siteshortname, $courseshortname, $activitename) {
-    $subject = '';
-    $subject .='['. $siteshortname . '] '. get_string('notification', 'local_up1_notificationcourse')
-        . $courseshortname . ' - ' . $activitename;
-    return $subject;
-}
 
 /**
  * construit le
@@ -193,4 +201,62 @@ function get_pathcategories_course($categories, $course) {
     }
     $path .= $course->shortname;
     return $path;
+}
+
+/**
+ * renvoie les identifiant des inscrits n'ayant pas consulté la ressource
+ * @param int $instanceid
+ * @param object courseContext $courseContext
+ * @return array
+ */
+function get_not_viewer_yet($instanceid, $courseContext) {
+    global $DB, $CFG;
+    require_once("$CFG->dirroot/report/participation/locallib.php");
+
+    $logtable = report_participation_get_log_table_name();
+    $usernamefields = get_all_user_name_fields(true, 'u');
+
+    list($relatedctxsql, $params) = $DB->get_in_or_equal($courseContext->get_parent_context_ids(true), SQL_PARAMS_NAMED, 'relatedctx');
+    $params['instanceid'] = $instanceid;
+    $params['timefrom'] = 0;
+    $params['edulevel'] = core\event\base::LEVEL_PARTICIPATING;
+    $params['contextlevel'] = CONTEXT_MODULE;
+
+    list($crudsql, $crudparams) = report_participation_get_crud_sql('view');
+    $params = array_merge($params, $crudparams);
+
+    $sql = "SELECT ra.userid, $usernamefields, u.idnumber, COUNT(DISTINCT l.timecreated) AS vue
+        FROM {user} u
+        JOIN {role_assignments} ra ON u.id = ra.userid AND ra.contextid $relatedctxsql
+        LEFT JOIN {" . $logtable . "} l
+            ON l.contextinstanceid = :instanceid
+            AND l.timecreated > :timefrom" . $crudsql ."
+            AND l.edulevel = :edulevel
+            AND l.anonymous = 0
+            AND l.contextlevel = :contextlevel
+            AND (l.origin = 'web' OR l.origin = 'ws')
+            AND l.userid = ra.userid";
+
+
+    $groupbysql = " GROUP BY ra.userid, $usernamefields, u.idnumber";
+    $sql .= $groupbysql;
+    $sql .= " having vue = 0";
+
+    $users = $DB->get_records_sql($sql, $params);
+    return array_keys($users);
+}
+
+//old
+/**
+ * construit le sujet du mail envoyé
+ * @param string $siteshortname
+ * @param string $courseshortname
+ * @param string $activitename
+ * @return string
+ */
+function get_email_subject($siteshortname, $courseshortname, $activitename) {
+    $subject = '';
+    $subject .='['. $siteshortname . '] '. get_string('notification', 'local_up1_notificationcourse')
+        . $courseshortname . ' - ' . $activitename;
+    return $subject;
 }
