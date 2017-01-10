@@ -222,7 +222,7 @@ function get_not_viewer_yet($instanceid, $courseContext) {
     $params['edulevel'] = core\event\base::LEVEL_PARTICIPATING;
     $params['contextlevel'] = CONTEXT_MODULE;
 
-    list($crudsql, $crudparams) = report_participation_get_crud_sql('view');
+    list($crudsql, $crudparams) = report_participation_get_crud_sql('');
     $params = array_merge($params, $crudparams);
 
     $sql = "SELECT ra.userid, $usernamefields, u.idnumber, COUNT(DISTINCT l.timecreated) AS vue
