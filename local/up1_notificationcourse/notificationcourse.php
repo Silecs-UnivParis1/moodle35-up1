@@ -56,7 +56,7 @@ $PAGE->requires->js(new moodle_url('/local/jquery/jquery.js'), true);
 $PAGE->requires->js_init_code(file_get_contents(__DIR__ . '/js/include-for-notificationcourse-form.js'));
 
 $recipicents = '';
-$students = get_users_from_course($course, 'student');
+$students = get_users_from_course($course);
 $notifiedStudents = [];
 
 $modinfo = get_fast_modinfo($course)->get_cm($cm->id);

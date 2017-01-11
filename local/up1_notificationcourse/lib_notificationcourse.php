@@ -76,24 +76,30 @@ function get_label_destinataire($nbdest, $availability, $msgbodyinfo) {
  * @param string $rolename shortname du rôle
  * @return array de $user
  */
-function get_users_from_course($course, $rolename) {
+function get_users_from_course($course, $rolename='') {
     global $DB;
     $coursecontext = context_course::instance($course->id);
-    $rolestudent = $DB->get_record('role', array('shortname'=> $rolename));
-    $studentcontext = get_users_from_role_on_context($rolestudent, $coursecontext);
+    $allIdUsers = array();
 
-    if (count($studentcontext) == 0) {
-        return $studentcontext;
+    if ($rolename == '') {
+        return get_enrolled_users($coursecontext);
+    } else {
+        $rolestudent = $DB->get_record('role', array('shortname'=> $rolename));
+        $allIdUsers = get_users_from_role_on_context($rolestudent, $coursecontext);
+    }
+
+    if (count($allIdUsers) == 0) {
+        return $allIdUsers;
     }
     $ids = '';
-    foreach ($studentcontext as $sc) {
+    foreach ($allIdUsers as $sc) {
         $ids .= $sc->userid . ',';
     }
     $ids = substr($ids, 0, -1);
     $sql = "SELECT * FROM {user} WHERE id IN ({$ids})";
-    $students = $DB->get_records_sql($sql);
+    $allUsers = $DB->get_records_sql($sql);
 
-    return $students;
+    return $allUsers;
 }
 
 /**
