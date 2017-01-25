@@ -1017,21 +1017,28 @@ function wizard_preselected_users() {
  */
 function wizard_preselected_rof($form_step = 'form_step2') {
     global $SESSION;
+    if (isset($SESSION->wizard[$form_step]['broken-rof'])) {
+        unset($SESSION->wizard[$form_step]['broken-rof']);
+    }
     if (!isset($SESSION->wizard[$form_step]['all-rof'])) {
         return '[]';
     }
     $liste = array();
     if (!empty($SESSION->wizard[$form_step]['all-rof'])) {
         foreach ($SESSION->wizard[$form_step]['all-rof'] as $rofpath => $rof) {
-            $object = $rof['object'];
-            $tabrof = rof_get_combined_path(explode('_', $rof['path']));
-            $chemin = substr(rof_format_path($tabrof, 'name', false, ' > '), 3);
-            $liste[] = array(
-                    "label" => rof_combined_name($object->localname, $object->name),
-                    "path" => $rof['path'],
-                    "nature" => $rof['nature'],
-                    "chemin" => $chemin,
+            if (isset($rof['object'])) {
+                $object = $rof['object'];
+                $tabrof = rof_get_combined_path(explode('_', $rof['path']));
+                $chemin = substr(rof_format_path($tabrof, 'name', false, ' > '), 3);
+                $liste[] = array(
+                        "label" => rof_combined_name($object->localname, $object->name),
+                        "path" => $rof['path'],
+                        "nature" => $rof['nature'],
+                        "chemin" => $chemin,
                 );
+            } else {
+                $SESSION->wizard[$form_step]['broken-rof'][] = $rof;
+            }
         }
     }
     return json_encode($liste);

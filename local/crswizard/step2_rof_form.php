@@ -27,8 +27,9 @@ class course_wizard_step2_rof_form extends moodleform {
             $oldmyurl = true;
         }
 
-        $mform = $this->_form;
+        $preselected = wizard_preselected_rof();
 
+        $mform = $this->_form;
         $editoroptions = $this->_customdata['editoroptions'];
 
         $bockhelpE2 = get_string('bockhelpE2Rof1', 'local_crswizard');
@@ -79,7 +80,15 @@ class course_wizard_step2_rof_form extends moodleform {
         $mform->addElement('html',  $labelrof);
         $mform->addElement('html', '<div id="mgerrorrof"></div>');
 
-        $preselected = wizard_preselected_rof();
+        if (isset($SESSION->wizard['form_step2']['broken-rof']) && count($SESSION->wizard['form_step2']['broken-rof'])) {
+            $brokenrof = '<div class="felement fselect error"><span class="error">Attention, références cassées :</span><ul>';
+            foreach ($SESSION->wizard['form_step2']['broken-rof'] as $broken) {
+                $brokenrof .= '<li>' . strip_tags($broken['chemin']) . '</li>';
+            }
+            $brokenrof .= '</ul></div>';
+            $mform->addElement('html', $brokenrof);
+        }
+
         $codeJ = '<script type="text/javascript">' . "\n"
             . '//<![CDATA['."\n"
             . 'jQuery(document).ready(function () {'
