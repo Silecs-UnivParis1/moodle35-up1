@@ -206,6 +206,9 @@ function wizard_get_metadonnees() {
                         $SESSION->wizard['form_step2']['all-rof'] = wizard_get_rof();
                         $SESSION->wizard['init_course']['form_step2']['item'] = $SESSION->wizard['form_step2']['item'];
 
+                        //ajout complément
+                        $SESSION->wizard['form_step2']['complement'] = $course->profile_field_up1complement;
+
                         //ajout champ urlfixe
                         $SESSION->wizard['form_step2']['modelurl'] = make_url_fixe(
                             $course->profile_field_up1composante,
