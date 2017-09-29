@@ -45,7 +45,7 @@ function teacherstats_enrolments_roles($crsid) {
     $sql = "SELECT ra.roleid, r.name AS name, COUNT(DISTINCT ra.userid) AS cnt "
          . "FROM {role_assignments} ra JOIN {context} cx ON (cx.id = ra.contextid AND contextlevel = ?) "
          . "JOIN {role} r ON (ra.roleid = r.id) "
-         . "JOIN {log} l ON (l.userid = ra.userid AND l.course = cx.instanceid) "
+         . "JOIN {logstore_standard_log} l ON (l.userid = ra.userid AND l.courseid = cx.instanceid) "
          . "WHERE cx.instanceid = ? GROUP BY ra.roleid";
     $cntactive = $DB->get_records_sql($sql, array(CONTEXT_COURSE, $crsid));
 
@@ -77,13 +77,13 @@ function teacherstats_enrolments_groups($crsid) {
          . "FROM {groups_members} gm JOIN {groups} g on (gm.groupid = g.id) "
          . "WHERE g.courseid = ? GROUP BY g.id";
     $cntall = $DB->get_records_sql($sql, array($crsid));
-    
+
     $sql = "SELECT g.id, g.name, COUNT(DISTINCT gm.id) AS cnt "
          . "FROM {groups_members} gm JOIN {groups} g on (gm.groupid = g.id) "
-         . "JOIN {log} l ON (l.userid = gm.userid AND l.course = g.courseid) "
-         . "WHERE l.module = 'course' AND l.action = 'view' AND g.courseid = ? GROUP BY g.id";
+         . "JOIN {logstore_standard_log} l ON (l.userid = gm.userid AND l.courseid = g.courseid) "
+         . "WHERE l.component = 'core' AND l.action = 'viewed' AND g.courseid = ? GROUP BY g.id";
     $cntactive = $DB->get_records_sql($sql, array($crsid));
-    
+
     $res = teacherstats_active_table($cntall, $cntactive);
     return $res;
 }
@@ -99,19 +99,18 @@ function teacherstats_resources_top($crsid, $limit) {
     global $DB;
     $res = array();
 
-    $resourcenames = array('book', 'folder', 'label', 'page', 'resource', 'url');
-    $resources = get_assoc_resources($resourcenames);
-    $sql = "SELECT CONCAT(module, cmid), COUNT(id) AS cnt, module, cmid FROM {log} "
-         . "WHERE course=? AND action like 'view%' AND module IN ('" . implode("','", $resourcenames) . "') "
-         . "GROUP BY module, cmid ORDER BY cnt DESC LIMIT " . $limit;
+    $components = array('mod_book', 'mod_folder', 'mod_page', 'mod_resource', 'mod_url');
+    $sql = "SELECT CONCAT(component, contextinstanceid), COUNT(id) AS cnt, component, contextinstanceid FROM {logstore_standard_log} "
+         . "WHERE courseid=? AND action like 'view%' AND component IN ('" . implode("','", $components) . "') "
+         . "GROUP BY component, contextinstanceid ORDER BY cnt DESC LIMIT " . $limit;
     $logtop = $DB->get_records_sql($sql, array($crsid));
     $cnt = 0;
     foreach ($logtop as $log) {
         $cnt++;
         $res[] = array(
             $cnt,
-            get_module_title($log->module, $log->cmid),
-            get_string('modulename', $log->module),
+            get_module_title(substr($log->component, 4), $log->contextinstanceid),
+            get_string('modulename', $log->component),
             $log->cnt,
         );
     }
@@ -127,7 +126,7 @@ function teacherstats_resources_top($crsid, $limit) {
 function teacherstats_assignments($crsid) {
     global $DB;
     $res = array('global' => null, 'groups' => null);
-    
+
     // $sql = "SELECT a.id, a.name, FROM_UNIXTIME(a.duedate) AS due, SUM(IF(ass.status = 'submitted', 1, 0)) AS cntas, COUNT(DISTINCT ag.id) AS cntag "
     $sql = "SELECT a.id, a.name, FROM_UNIXTIME(a.duedate) AS due, "
            . "COUNT(DISTINCT ass.id) AS cntas, COUNT(DISTINCT ag.id) AS cntag "
@@ -177,24 +176,28 @@ function teacherstats_activities($crsid) {
     global $DB;
     $res = array();
     $modulenames = array('chat', 'data', 'forum', 'glossary', 'wiki');
+    $components = array('mod_chat', 'mod_data', 'mod_forum', 'mod_glossary', 'mod_wiki');
 
     foreach ($modulenames as $modulename) {
         $moduletitle[$modulename] = $DB->get_records_menu($modulename, array('course' => $crsid), null, 'id, name');
     }
 
-    $sql = "SELECT l.cmid, l.module, cm.instance, COUNT(DISTINCT l.id) AS edits, COUNT(DISTINCT l.userid) AS users "
-         . "FROM {log} l JOIN {course_modules} cm ON  (cm.id = l.cmid) "
-         . "WHERE l.module IN ('" . implode("','", $modulenames) . "') "
-         . "  AND l.course=? AND ( action like 'add%' OR action IN ('edit', 'talk') ) "
-         . "GROUP BY cmid ORDER BY module, cmid";
+    $sql = "SELECT l.contextinstanceid, l.component, cm.instance, COUNT(DISTINCT l.id) AS edits, COUNT(DISTINCT l.userid) AS users "
+         . "FROM {logstore_standard_log} l JOIN {course_modules} cm ON  (cm.id = l.contextinstanceid) "
+         . "WHERE l.component IN ('" . implode("','", $components) . "') "
+         . "  AND l.courseid=? AND l.action IN ('sent', 'created', 'updated') "
+         . "GROUP BY contextinstanceid ORDER BY component, contextinstanceid";
     $activities = $DB->get_records_sql($sql, array($crsid));
     foreach ($activities as $activity) {
-        $res[] = array(
-            $moduletitle[$activity->module][$activity->instance],
-            get_string('modulename', $activity->module),
-            $activity->edits - 1, // sinon la création est comptée comme contribution
-            $activity->users - 1, // idem
-        );
+        $module = substr($activity->component, 4);
+        if (isset($moduletitle[$module][$activity->instance])) {
+            $res[] = array(
+                $moduletitle[$module][$activity->instance],
+                get_string('modulename', $module),
+                $activity->edits - 1, // sinon la création est comptée comme contribution
+                $activity->users - 1, // idem
+            );
+        }
     }
     return $res;
 }
@@ -210,29 +213,36 @@ function teacherstats_activities($crsid) {
 function teacherstats_questionnaires($crsid) {
     global $DB;
     $res = array();
-    $modulenames = array('quiz', 'survey', 'feedback', 'choice');
+    $modulenames = array('quiz', 'feedback', 'choice');
+    $components = array('mod_quiz', 'mod_survey', 'mod_feedback', 'mod_choice');
 
     foreach ($modulenames as $modulename) {
-        $moduletitle[$modulename] = $DB->get_records_menu($modulename, array('course' => $crsid), null, 'id, name');
+        $moduletitle[$modulename] = $DB->get_records_select($modulename, 'course = ?', array($crsid), '', 'id, name, timeclose as until');
     }
+    $moduletitle['survey'] = $DB->get_records_select('survey', 'course = ?', array($crsid), '', 'id, name, 0 as until');
 
-    $sql = "SELECT l.cmid, l.module, cm.instance, COUNT(DISTINCT l.userid) AS users, FROM_UNIXTIME(availableuntil) AS until "
-         . "FROM {log} l JOIN {course_modules} cm ON  (cm.id = l.cmid) "
-         . "WHERE l.module IN ('" . implode("','", $modulenames) . "') "
-         . "  AND l.course=? AND ( action IN ('close attempt', 'submit', 'choose') ) "
-         . "GROUP BY cmid ORDER BY module, cmid";
+    $sql = "SELECT l.contextinstanceid, l.component, cm.instance, COUNT(DISTINCT l.userid) AS users "
+         . "FROM {logstore_standard_log} l JOIN {course_modules} cm ON  (cm.id = l.contextinstanceid) "
+         . "WHERE l.component IN ('" . implode("','", $components) . "') "
+         . "  AND l.courseid=? AND ( l.action = 'submitted' ) "
+         . "GROUP BY l.contextinstanceid ORDER BY l.component, l.contextinstanceid";
+
     $activities = $DB->get_records_sql($sql, array($crsid));
+
     foreach ($activities as $activity) {
-        $res[] = array(
-            $moduletitle[$activity->module][$activity->instance],
-            get_string('modulename', $activity->module),
-            $activity->users,
-            $activity->until,
-        );
+        $module = substr($activity->component, 4);
+        if (isset($moduletitle[$module][$activity->instance])) {
+            $activite = $moduletitle[$module][$activity->instance];
+            $res[] = array(
+                $activite->name,
+                get_string('modulename', $module),
+                $activity->users,
+                $activite->until > 0 ? date('d-m-Y H:i', $activite->until) : 'Aucune',
+            );
+        }
     }
     return $res;
 }
-
 
 /**
  * returns an associative array of ($id => $name) for the modules (table module)
