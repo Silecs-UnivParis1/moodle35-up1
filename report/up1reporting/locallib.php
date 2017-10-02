@@ -258,7 +258,7 @@ function get_users_from_role_course($roleid, $courseid, $neverconnected=false) {
     if ($neverconnected) {
         $where = "u.lastlogin = 0";
     }
-    $dbusers = get_role_users($roleid, $context, false, 'u.id', null, false, '', '', '', $where);
+    $dbusers = get_role_users($roleid, $context, false, 'u.id', 'u.id', false, '', '', '', $where);
     $res = array();
 
     //** @todo optimize with an array_map ? (projection)
@@ -356,9 +356,9 @@ function count_inner_activity_instances($course, $module=null) {
 
 function count_inner_activity_views($course, $module=null) {
     global $DB;
-    $sql = "SELECT COUNT(l.id) FROM {log} l " .
-           ($module === null ? '' : "JOIN {modules} m ON (l.module=m.name) ") .
-           " WHERE course=? AND action LIKE ? " .
+    $sql = "SELECT COUNT(l.id) FROM {logstore_standard_log} l " .
+           ($module === null ? '' : "JOIN {modules} m ON (l.component=concat('mod_', m.name)) ") .
+           " WHERE l.courseid=? AND l.action LIKE ? " .
            ($module === null ? '' : " AND m.name=?");
     $res = $DB->get_field_sql($sql, array($course, 'view%', $module), MUST_EXIST);
     return $res;

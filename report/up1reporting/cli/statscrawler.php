@@ -15,6 +15,9 @@ require_once($CFG->libdir . '/clilib.php');      // cli only functions
 require_once(dirname(__DIR__) . '/locallib.php');
 require_once(dirname(__DIR__) . '/ExportReportingCsv.php');
 
+require_once($CFG->dirroot . '/local/coursehybridtree/libcrawler.php');
+require_once($CFG->dirroot . '/local/rof_sync/locallib.php');
+
 // now get cli options
 list($options, $unrecognized) = cli_get_params(array(
         'help'=>false, 'metastats'=>0, 'verb'=>1, 'config'=>0,
