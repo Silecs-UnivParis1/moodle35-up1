@@ -249,7 +249,8 @@ function wizard_get_metadonnees() {
 }
 
 /**
- * Récupère les idnumber des cohortes inscrites a cours d'idnetifiant $courseid
+ * Récupère les idnumber des cohortes de role student ou guest
+ * inscrites a cours d'identifiant $courseid
  * @param int $courseid : identifiant du cours
  * @return array - un tableau de tableau array('role' => array())
  */
@@ -266,7 +267,7 @@ function wizard_get_cohorts($courseid) {
     $enrols = $DB->get_records('enrol', array('courseid' => $courseid, 'enrol' => 'cohort'));
     foreach ($enrols as $enrol) {
         $cohortname = $DB->get_field('cohort', 'idnumber', array('id' => $enrol->customint1));
-        if ($cohortname) {
+        if (isset($roleint[$enrol->roleid]) && $cohortname) {
             $list[$roleint[$enrol->roleid]][] = $cohortname;
         }
     }
