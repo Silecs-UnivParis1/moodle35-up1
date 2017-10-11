@@ -152,6 +152,9 @@ function wizard_clear_metadonnees() {
             $SESSION->wizard['init_course']['form_step2']['item'] = NULL;
             $SESSION->wizard['form_step2']['item'] = NULL;
         }
+        if (isset($SESSION->wizard['form_step4']['users-inactif'])) {
+            $SESSION->wizard['form_step4']['users-inactif'] = null;
+        }
 }
 
 /**

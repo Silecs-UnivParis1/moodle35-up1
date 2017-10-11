@@ -91,7 +91,7 @@ function get_selected_etablissement_id() {
  * Récupère les utilisateurs ayant des rôles de type teachers dans le cours d'identifiant $courseid
  * les utilisateurs de rôle ens_epi_archive deviennent editingteacher
  * @param int $courseid : identifiant du cours
- * @return array $users (utilisateurs non suspendus)
+ * @return array $users
  */
 function wizard_get_teachers($courseid) {
     global $DB, $USER;
@@ -108,21 +108,22 @@ function wizard_get_teachers($courseid) {
             if (count($ra)) {
                 foreach ($ra as $r) {
                    $user = $DB->get_record('user', array('id'=>$r->userid), '*', MUST_EXIST);
-                    if ($user && $user->deleted ==0 && $user->suspended == 0) {
+                    if ($user) {
+                        $nature = ($user->deleted ==0 && $user->suspended == 0 ? 'actif' : 'inactif');
                         $rolename = $role['shortname'];
                         if ($rolename == 'ens_epi_archive') {
                             $rolename = 'editingteacher';
                         }
-                        $users[$rolename][$user->username] = $user;
+                        $users[$nature][$rolename][$user->username] = $user;
                     }
                 }
             }
         }
     }
-    if (count($users)) {
+    if (isset($users['actif']) && count($users['actif'])) {
         $code = 'editingteacher';
         $user = $DB->get_record('user', array('username' => $USER->username));
-        $users[$code][$user->username] = $user;
+        $users['actif'][$code][$user->username] = $user;
     }
     return $users;
 }
@@ -173,8 +174,11 @@ function wizard_get_metadonnees() {
 
             //inscriptions teachers
             $teachers = wizard_get_teachers($course->id);
-            if (count($teachers)) {
-                $SESSION->wizard['form_step4']['all-users'] = $teachers;
+            if (isset($teachers['actif']) && count($teachers['actif'])) {
+                $SESSION->wizard['form_step4']['all-users'] = $teachers['actif'];
+            }
+            if (isset($teachers['inactif']) && count($teachers['inactif'])) {
+                $SESSION->wizard['form_step4']['users-inactif'] = $teachers['inactif'];
             }
 
             // cohortes
@@ -742,7 +746,7 @@ function wizard_role($labels) {
     foreach (array_keys($labels) as $key) {
         $record = $DB->get_record_sql($sql, array($key));
         if ($record != false) {
-            $roles[] = array(
+            $roles[$record->shortname] = array(
                 'shortname' => $record->shortname,
                 'name' => $record->name,
                 'id' => $record->id

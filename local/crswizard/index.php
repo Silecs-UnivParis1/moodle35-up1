@@ -194,7 +194,7 @@ switch ($stepin) {
         }
         break;
     case 4:
-        if (!isset($SESSION->wizard['form_step4'])) {
+        if (!isset($SESSION->wizard['form_step4']['all-users'])) {
             $SESSION->wizard['form_step4']['all-users'] = wizard_enrolement_user();
         }
         if (isset($_POST['step'])) {

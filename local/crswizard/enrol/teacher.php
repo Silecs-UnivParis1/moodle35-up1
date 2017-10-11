@@ -28,6 +28,21 @@ echo $OUTPUT->box(get_string('wizardcourse', 'local_crswizard'), 'titlecrswizard
 echo $OUTPUT->box(get_string('enrolteachers', 'local_crswizard'), 'titlecrswizard');
 echo $OUTPUT->box(get_string('bockhelpE4', 'local_crswizard'), '');
 
+$myconfig = new my_elements_config();
+$labels = $myconfig->role_teachers;
+$roles = wizard_role($labels);
+
+if (isset($SESSION->wizard['form_step4']['users-inactif']) && count($SESSION->wizard['form_step4']['users-inactif'])) {
+    echo '<p>' . get_string('labelteachersuspended', 'local_crswizard') . '</p>';
+    echo '<ul>';
+    foreach ($SESSION->wizard['form_step4']['users-inactif'] as $role => $users) {
+        $labelrole = isset($roles[$role]['name']) ? $roles[$role]['name'] : $role;
+        foreach ($users as $user) {
+            echo '<li>' . fullname($user) .  ' — ' . $user->username . ' (' . $labelrole . ')  </li>';
+        }
+    }
+    echo '</ul>';
+}
 echo '<form action="' . $CFG->wwwroot . '/local/crswizard/index.php" method="post">';
 ?>
 
@@ -39,9 +54,6 @@ echo '<form action="' . $CFG->wwwroot . '/local/crswizard/index.php" method="pos
 <h3>Choisir un rôle</h3>
 	<select name="role" size="1" id="roleteacher">
         <?php
-		$myconfig = new my_elements_config();
-        $labels = $myconfig->role_teachers;
-        $roles = wizard_role($labels);
         foreach ($roles as $r) {
             $label = $r['name'];
             echo '<option value="' . s($r['shortname']) . '">' . format_string($label) . '</option>';

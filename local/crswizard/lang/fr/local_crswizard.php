@@ -116,6 +116,7 @@ $string['guest'] = 'Visiteur anonyme';
 $string['guestkey'] = 'Clé d\'inscription pour le rôle "visiteur anonyme"';
 $string['indexationE3'] = 'Métadonnées d\'indexation';
 $string['labelE7ratt2'] = 'Autre(s) rattachement(s) de l\'espace : ';
+$string['labelteachersuspended'] = 'Les enseignant suivants ne sont plus valables : ';
 $string['managecourseblock'] = 'Informations concernant la demande';
 $string['msgredirect'] = 'L\'espace a bien a été créé.';
 $string['nextstage'] = 'Étape suivante';
