@@ -155,6 +155,9 @@ function wizard_clear_metadonnees() {
         if (isset($SESSION->wizard['form_step4']['users-inactif'])) {
             $SESSION->wizard['form_step4']['users-inactif'] = null;
         }
+        if(isset($SESSION->wizard['modelecase'])) {
+            $SESSION->wizard['modelecase'] = null;
+        }
 }
 
 /**

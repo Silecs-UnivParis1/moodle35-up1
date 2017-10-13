@@ -101,6 +101,11 @@ switch ($stepin) {
         get_selected_model();
         //fin vérifier si modele de cours
         wizard_get_metadonnees();
+        $factCopy = wizard_is_fastCopy();
+        if ($factCopy) {
+            wizard_get_default_metadata();
+            redirect($CFG->wwwroot . '/local/crswizard/index.php?stepin=7');
+        }
 
         $steptitle = get_string('coursedefinition', 'local_crswizard');
         $editoroptions = array(

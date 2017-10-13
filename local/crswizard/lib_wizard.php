@@ -168,6 +168,7 @@ function wizard_get_metadonnees() {
         }
         $SESSION->wizard['modele'] = $id;
         $course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
+        $SESSION->wizard['modelecase'] = null;
         if ($course) {
             $custominfo_data = custominfo_data::type('course');
             $custominfo_data->load_data($course);
@@ -193,6 +194,7 @@ function wizard_get_metadonnees() {
 			$SESSION->wizard['form_step2']['summary_editor'] = $summary;
 
             $case = wizard_get_generateur($course);
+            $SESSION->wizard['modelecase'] = $case;
             if ($case == $SESSION->wizard['wizardcase']) {
                 switch ($case) {
                     case 2:
@@ -1268,7 +1270,6 @@ function wizard_get_rattachement_fieldup1($tabcat, $tabcategories) {
     $fieldup1 = array();
     $niveau = isset($tabcategories[3]) ? $tabcategories[3] : '';
     $composante = isset($tabcategories[2]) ? $tabcategories[2] : '';
-
     $listecat = '';
     if (count($tabcat)) {
         $listecat = implode(",", $tabcat);
@@ -1466,6 +1467,117 @@ function wizard_form2_validation_myurl($url, $idcourse) {
         $myerrors[] = 'Désolé, cette URL est déjà utilisée. Veuillez choisir un autre nom';
     }
     return $myerrors;
+}
+
+/**
+ * Renvoie vrai si le cours peut être dupliqué rapidement
+ * @return bool
+ */
+function wizard_is_fastCopy() {
+    global $SESSION;
+    if (!isset($SESSION->wizard['modele'])) {
+        return false;
+    }
+    if ($SESSION->wizard['modele'] == 0) {
+        return false;
+    }
+    //le cours ne correspond à aucun modele
+    if (!isset($SESSION->wizard['modelecase'])) {
+        return false;
+    }
+    if ($SESSION->wizard['modelecase'] != $SESSION->wizard['wizardcase']) {
+        return false;
+    }
+    if ($SESSION->wizard['wizardcase'] == 3) {
+        $newcategory = wizard_get_current_category($SESSION->wizard['form_step2']['category']);
+        if ($newcategory) {
+            $SESSION->wizard['form_step2']['category'] = $newcategory->id;
+        } else {
+            //TODO ajouter un message
+            return false;
+        }
+    }
+
+    if (isset($SESSION->wizard['form_step4']['users-inactif']) && count($SESSION->wizard['form_step4']['users-inactif'])) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * complète le paramètre $SESSION->wizard avec les données obligatoire
+ * pour une duplication rapide
+ */
+function wizard_get_default_metadata() {
+    global $SESSION;
+    $SESSION->wizard['form_step2']['startdate'] = time();
+    $SESSION->wizard['form_step2']['up1datefermeture'] = strtotime(date('m') <= 6 ? "July 31" : "next year January 31");
+    $SESSION->wizard['form_step2']['visible'] = 0;
+    if (isset($SESSION->wizard['wizardcase']) && $SESSION->wizard['wizardcase'] == 2) {
+        $idetab = get_config('local_crswizard','cas2_default_etablissement');
+        if (isset($SESSION->wizard['form_step2']['category'])  && $SESSION->wizard['form_step2']['category'] != $idetab) {
+            $SESSION->wizard['form_step2']['category'] = $idetab;
+        }
+        //auto-validation par défaut
+        $SESSION->wizard['form_step3'] = ['autovalidation' => 'on']; // si up1demandeurid = up1approbateurpropid
+    }
+
+    if (isset($SESSION->wizard['wizardcase']) && $SESSION->wizard['wizardcase'] == 3) {
+        //TODO shortname et fullname à retravailler
+        $SESSION->wizard['form_step2']['fullname'] = $SESSION->wizard['form_step1']['coursemodelfullname'];
+        $SESSION->wizard['form_step2']['shortname'] = $SESSION->wizard['form_step1']['coursemodelshortname'] . time();
+        //attachement secondaires
+        if (isset($SESSION->wizard['form_step3']['rattachements']) && count($SESSION->wizard['form_step3']['rattachements'])) {
+            $attachements = [];
+            foreach ($SESSION->wizard['form_step3']['rattachements'] as $attachement) {
+                if ($attachement != '') {
+                    $newattachement = wizard_get_current_category($attachement);
+                    if ($newattachement) {
+                        $attachements[] = $newattachement->id;
+                    }
+                }
+            }
+            $SESSION->wizard['form_step3']['rattachements'] = $attachements;
+        }
+    }
+
+    if (isset($SESSION->wizard['form_step4']['all-users']) && count($SESSION->wizard['form_step4']['all-users'])) {
+        $teachers = [];
+        foreach ($SESSION->wizard['form_step4']['all-users'] as $role => $users) {
+            foreach ($users as $user) {
+                $teachers[$role][] = $user->username;
+            }
+        }
+        $SESSION->wizard['form_step4']['user'] = $teachers;
+    }
+}
+
+/**
+ * renvoie l'indentifiant de la catégorie correspondant à l'établissement
+ * défini par cas2_default_etablissement
+ * @param int $idcategory
+ * @return object course_categories or false
+*/
+function wizard_get_current_category($idcategory) {
+    global $DB;
+    $idetab = get_config('local_crswizard','cas2_default_etablissement');
+    $category = $DB->get_record('course_categories', array('id'=>$idcategory), '*');
+    if ($category) {
+        $path = explode('/', $category->path);
+        if (isset($path[2]) && $path[2] == $idetab) {
+            return $category;
+        }
+        $idnumber = explode('/', $category->idnumber);
+        $etab = $DB->get_record('course_categories', array('id'=>$idetab), '*', MUST_EXIST);
+        $newidnumber = $category->depth . substr($etab->idnumber, 1);
+        foreach ($idnumber as $pos => $label) {
+            if ($pos >= $etab->depth) {
+                $newidnumber .= '/' . $label;
+            }
+        }
+        return $DB->get_record('course_categories', array('idnumber'=>$newidnumber), '*', MUST_EXIST);
+    }
+    return false;
 }
 
 class my_elements_config {
