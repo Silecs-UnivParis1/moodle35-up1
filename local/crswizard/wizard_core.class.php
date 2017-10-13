@@ -441,6 +441,9 @@ class wizard_core {
                     if (isset($this->mydata->$fieldname) && trim($this->mydata->$fieldname) != '') {
                         $this->mydata->$fieldname .= ';';
                     }
+                    if (!isset($this->mydata->$fieldname)) {
+                        $this->mydata->$fieldname = '';
+                    }
                     $this->mydata->$fieldname .= $value;
                 }
             }
@@ -449,6 +452,9 @@ class wizard_core {
                 foreach ($this->mydata->rattachements as $rattachement) {
                     if (isset($this->mydata->profile_field_up1categoriesbis) && trim($this->mydata->profile_field_up1categoriesbis) != '') {
                         $this->mydata->profile_field_up1categoriesbis .= ';';
+                    }
+                    if (!isset($this->mydata->profile_field_up1categoriesbis)) {
+                        $this->mydata->profile_field_up1categoriesbis = '';
                     }
                     $this->mydata->profile_field_up1categoriesbis .= $rattachement;
                 }
@@ -575,9 +581,11 @@ class wizard_core {
         if (isset($form3['rattachements']) && count($form3['rattachements'])) {
             $first = true;
             foreach ($form3['rattachements'] as $ratt) {
-                $mg .= ($first?get_string('labelE7ratt2', 'local_crswizard') . ' : ' : ', ')
-                    . $displaylist[$ratt];
-                $first = false;
+                if (isset($displaylist[$ratt])) {
+                    $mg .= ($first?get_string('labelE7ratt2', 'local_crswizard') . ' : ' : ', ')
+                        . $displaylist[$ratt];
+                    $first = false;
+                }
             }
             $mg .=  "\n";
         }
@@ -671,7 +679,7 @@ class wizard_core {
         }
 
         // liste des groupes
-        $form5 = $this->formdata['form_step5']; // ou $SESSION->wizard['form_step5']
+        $form5 = isset($this->formdata['form_step5']) ?  $this->formdata['form_step5'] : [];
         $mg .= get_string('cohorts', 'local_crswizard') . "\n";
         if (!empty($form5['all-cohorts'])) {
             $groupsbyrole = $form5['all-cohorts'];

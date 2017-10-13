@@ -1258,16 +1258,22 @@ function wizard_prepare_rattachement_second($form) {
     return $rof2;
 }
 
+/**
+ * @param array $tabcat rattachements supplémentaires
+ * @param array $tabcategories rattachements associés à la catégorie principale
+ * @return array
+ */
 function wizard_get_rattachement_fieldup1($tabcat, $tabcategories) {
    global $DB;
     $fieldup1 = array();
-    $niveau = '';
-    $composante = $tabcategories[2];
-    if (isset($tabcategories[3])) {
-        $niveau = $tabcategories[3];
-    }
+    $niveau = isset($tabcategories[3]) ? $tabcategories[3] : '';
+    $composante = isset($tabcategories[2]) ? $tabcategories[2] : '';
+
+    $listecat = '';
     if (count($tabcat)) {
         $listecat = implode(",", $tabcat);
+    }
+    if ($listecat != '') {
         $sqlcatComp = "SELECT DISTINCT name FROM {course_categories} WHERE id IN (" . $listecat . ") AND depth=3";
         $catComp = array();
         $catComp = $DB->get_fieldset_sql($sqlcatComp);

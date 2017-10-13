@@ -49,12 +49,14 @@ class course_wizard_step_confirm extends moodleform {
             $paths = wizard_get_myComposantelist($SESSION->wizard['form_step2']['category'], true);
             $first = true;
             foreach ($SESSION->wizard['form_step3']['rattachements'] as $pathid) {
-                $select = $mform->createElement('text', "rattachements$pathid",
-                    ($first? get_string('labelE7ratt2', 'local_crswizard') : ''), 'size="100"');
-                $select->setType("rattachements$pathid", PARAM_TEXT);
-                $select->setValue($paths[$pathid]);
-                $mform->addElement($select);
-                $first = false;
+                if ($pathid != '') {
+                    $select = $mform->createElement('text', "rattachements$pathid",
+                        ($first? get_string('labelE7ratt2', 'local_crswizard') : ''), 'size="100"');
+                    $select->setType("rattachements$pathid", PARAM_TEXT);
+                    $select->setValue($paths[$pathid]);
+                    $mform->addElement($select);
+                    $first = false;
+                }
             }
         }
 
@@ -68,9 +70,11 @@ class course_wizard_step_confirm extends moodleform {
                         $donnees = $donnees . $elem . ';';
                     }
                     $donnees = substr($donnees, 0, -1);
-                    $mform->addElement('text', $key, $label, 'maxlength="40" size="30", disabled="disabled"');
-                    $mform->setType($key, PARAM_TEXT);
-                    $mform->setConstant($key , $donnees);
+                    if ($donnees != '') {
+                        $mform->addElement('text', $key, $label, 'maxlength="40" size="30", disabled="disabled"');
+                        $mform->setType($key, PARAM_TEXT);
+                        $mform->setConstant($key , $donnees);
+                    }
                 }
             }
         }
