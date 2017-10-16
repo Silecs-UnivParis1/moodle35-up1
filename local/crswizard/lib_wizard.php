@@ -1251,8 +1251,10 @@ function wizard_prepare_rattachement_second($form) {
                     $rof2['rofchemin'][] = $chemin;
                 }
                 if ($rofid !== FALSE) {
-                    $rofobjet =  $form['all-rof'][$rofpath]['object'];
-                    $rof2['rofname'][] = rof_combined_name($rofobjet->localname, $rofobjet->name);
+                    if (isset($form['all-rof'][$rofpath]['object'])) {
+                        $rofobjet =  $form['all-rof'][$rofpath]['object'];
+                        $rof2['rofname'][] = rof_combined_name($rofobjet->localname, $rofobjet->name);
+                    }
                 }
             }
         }
@@ -1495,6 +1497,13 @@ function wizard_is_fastCopy() {
         } else {
             //TODO ajouter un message
             return false;
+        }
+    }
+    if ($SESSION->wizard['wizardcase'] == 2 && isset($SESSION->wizard['form_step2']['all-rof'])) {
+        foreach ($SESSION->wizard['form_step2']['all-rof'] as $rofpath => $rof) {
+            if (!isset($rof['object'])) { // && $rof['nature'] == 'p'
+                return false;
+            }
         }
     }
 
