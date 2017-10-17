@@ -1510,6 +1510,13 @@ function wizard_is_fastCopy() {
     if (isset($SESSION->wizard['form_step4']['users-inactif']) && count($SESSION->wizard['form_step4']['users-inactif'])) {
         return false;
     }
+    if (isset($SESSION->wizard['form_step5']['groupmsg']) && count($SESSION->wizard['form_step5']['groupmsg'])) {
+        foreach ($SESSION->wizard['form_step5']['groupmsg'] as $infos) {
+            if (isset($infos['notfound']) && count($infos['notfound'])) {
+                return false;
+            }
+        }
+    }
     return true;
 }
 
