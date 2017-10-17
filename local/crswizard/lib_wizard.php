@@ -1495,7 +1495,7 @@ function wizard_is_fastCopy() {
         if ($newcategory) {
             $SESSION->wizard['form_step2']['category'] = $newcategory->id;
         } else {
-            //TODO ajouter un message
+            $SESSION->wizard['form_step2']['lostcategory'] = $SESSION->wizard['form_step2']['category'];
             return false;
         }
     }
@@ -1584,7 +1584,23 @@ function wizard_get_current_category($idcategory) {
                 $newidnumber .= '/' . $label;
             }
         }
-        return $DB->get_record('course_categories', array('idnumber'=>$newidnumber), '*', MUST_EXIST);
+        return $DB->get_record('course_categories', array('idnumber'=>$newidnumber), '*');
+    }
+    return false;
+}
+
+/**
+ * renvoie la période correspondant à l'établissement par défaut défini
+ * par le paramètre "Valeur par défaut de l'établissement" de l'assistant de cours
+ * @return object or false
+ */
+function wizard_get_default_periode() {
+    global $DB;
+    $idetab = get_config('local_crswizard','cas2_default_etablissement');
+    if (isset($idetab) && $idetab) {
+        $sql = "SELECT p.name FROM {course_categories} c JOIN {course_categories} p "
+            . "ON (c.parent = p.id) WHERE c.id = ?";
+        return $DB->get_record_sql($sql, array($idetab));
     }
     return false;
 }

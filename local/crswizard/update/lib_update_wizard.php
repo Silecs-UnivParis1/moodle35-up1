@@ -132,6 +132,7 @@ function wizard_get_metadonnees_indexation($course) {
 function wizard_clear_metadonnees() {
         global $SESSION;
         if ($SESSION->wizard['wizardcase'] == 3) {
+            $SESSION->wizard['form_step2']['lostcategory'] = null;
             $SESSION->wizard['form_step3']['rattachements'] = NULL;
             $SESSION->wizard['form_step3']['all-rof'] = NULL;
             $SESSION->wizard['init_course']['form_step3']['item'] = NULL;

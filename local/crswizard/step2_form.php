@@ -45,6 +45,17 @@ class course_wizard_step2_form extends moodleform {
         $mform->addRule('category', "Ces 4 champs doivent tous être remplis.", 'required', null, 'client');
         $mform->addRule('category', "Ces 4 champs doivent tous être remplis.", 'nonzero', null, 'client');
 
+        if (isset($SESSION->wizard['form_step2']['lostcategory']) && $SESSION->wizard['form_step2']['lostcategory'] != '') {
+            $lostcategory = '<div class="felement fselect error"><span class="error">'
+                . 'Attention, catégorie de rattachement inexistante pour la période ';
+            $periode = wizard_get_default_periode();
+            if ($periode) {
+                $lostcategory .= $periode->name;
+            }
+            $lostcategory .= '</div>';
+            $mform->addElement('html', $lostcategory);
+        }
+
         $mform->addElement('header', 'general', get_string('generalinfoblock', 'local_crswizard'));
 
         $coursegeneralhelp = get_string('coursegeneralhelp', 'local_crswizard');
