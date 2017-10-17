@@ -38,9 +38,10 @@ function get_cohort_last_sync($synctype) {
 /**
  * search "new" cohorts equivalent to "old" ones, for yearly cohorts
  * @param array $old_idnumbers
+ * @param bool $verbose
  * @return assoc. array (array)
  */
-function get_equivalent_cohorts($old_idnumbers) {
+function get_equivalent_cohorts($old_idnumbers, $verbose=true) {
     global $DB;
 
     $res = array('new' => array(), 'notfound' => array(), 'unchanged' => array());
@@ -60,11 +61,15 @@ function get_equivalent_cohorts($old_idnumbers) {
                 if ($DB->get_manager()->table_exists($tablemigrate) ) {
                     $rawNew = $DB->get_field($tablemigrate, 'new', array('old' => $raw));
                     if ($rawNew) {
-                        echo "$raw has changed code, it is now $rawNew\n";
+                        if ($verbose) {
+                            echo "$raw has changed code, it is now $rawNew\n";
+                        }
                         $raw = $rawNew;
                     }
                 } else {
-                    echo "Warning: table $tablemigrate does not exist.";
+                    if ($verbose) {
+                        echo "Warning: table $tablemigrate does not exist.";
+                    }
                 }
                 $potidnumber = $raw . '-' . $curyear; // potential idnumber
                 if ( $DB->record_exists('cohort', array('idnumber' => $potidnumber)) ) {

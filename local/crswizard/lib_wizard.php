@@ -139,7 +139,7 @@ function wizard_get_equivalent_cohorts($courseid) {
     $oldcohorts = wizard_get_cohorts($courseid);
     foreach ($oldcohorts as $role => $cohorts) {
         if (count($cohorts)) {
-            $res = get_equivalent_cohorts($cohorts);
+            $res = get_equivalent_cohorts($cohorts, false);
             $resultat['msg'][$role] = $res;
             foreach ($res as $co) {
                 foreach ($co as $c) {
