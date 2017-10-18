@@ -1540,8 +1540,8 @@ function wizard_get_default_metadata() {
 
     if (isset($SESSION->wizard['wizardcase']) && $SESSION->wizard['wizardcase'] == 3) {
         //TODO shortname et fullname à retravailler
-        $SESSION->wizard['form_step2']['fullname'] = $SESSION->wizard['form_step1']['coursemodelfullname'];
-        $SESSION->wizard['form_step2']['shortname'] = $SESSION->wizard['form_step1']['coursemodelshortname'] . time();
+        $SESSION->wizard['form_step2']['fullname'] = wizard_get_new_course_name($SESSION->wizard['form_step1']['coursemodelfullname']);
+        $SESSION->wizard['form_step2']['shortname'] = wizard_get_new_course_name($SESSION->wizard['form_step1']['coursemodelshortname']);
         //attachement secondaires
         if (isset($SESSION->wizard['form_step3']['rattachements']) && count($SESSION->wizard['form_step3']['rattachements'])) {
             $attachements = [];
@@ -1597,6 +1597,25 @@ function wizard_get_current_category($idcategory) {
 }
 
 /**
+ * Adapte le nom du cours à la période sélectionnée par défaut
+ * @param string $name
+ * @return string $newname
+ */
+function wizard_get_new_course_name($name) {
+    $periode = wizard_get_default_periode();
+    $years = substr($periode->idnumber, 2);
+    $newname = '';
+    if ( preg_match('@^(.+?)(20[0-9][0-9])([-_ /]*)(20[0-9][0-9])$@', $name, $matches) ) {
+        $newname = trim($matches[1]);
+    } elseif (preg_match('@^(.+?)([-_ /]*)(20[0-9][0-9])$@', $name, $matches)) {
+        $newname = trim($matches[1]);
+    } else {
+        $newname = trim($name);
+    }
+    return $newname . ' ' . $years;
+}
+
+/**
  * renvoie la période correspondant à l'établissement par défaut défini
  * par le paramètre "Valeur par défaut de l'établissement" de l'assistant de cours
  * @return object or false
@@ -1605,7 +1624,7 @@ function wizard_get_default_periode() {
     global $DB;
     $idetab = get_config('local_crswizard','cas2_default_etablissement');
     if (isset($idetab) && $idetab) {
-        $sql = "SELECT p.name FROM {course_categories} c JOIN {course_categories} p "
+        $sql = "SELECT p.name, p.idnumber FROM {course_categories} c JOIN {course_categories} p "
             . "ON (c.parent = p.id) WHERE c.id = ?";
         return $DB->get_record_sql($sql, array($idetab));
     }
