@@ -262,10 +262,12 @@ class course_wizard_step_confirm extends moodleform {
         $mform->setConstant('stepin', 7);
 
         $buttonarray = array();
-        $buttonarray[] = $mform->createElement(
-            'link', 'previousstage', null,
-            new moodle_url($SESSION->wizard['wizardurl'], array('stepin' => 6)),
-            get_string('previousstage', 'local_crswizard'), array('class' => 'previousstage'));
+        if (!isset($SESSION->wizard['form_step1']['fastcopy'])) {
+            $buttonarray[] = $mform->createElement(
+                'link', 'previousstage', null,
+                new moodle_url($SESSION->wizard['wizardurl'], array('stepin' => 6)),
+                get_string('previousstage', 'local_crswizard'), array('class' => 'previousstage'));
+        }
         $buttonarray[] = $mform->createElement('submit', 'stepgo_8', get_string('finish', 'local_crswizard'));
         $mform->addGroup($buttonarray, 'buttonar', '', null, false);
         $mform->closeHeaderBefore('buttonar');

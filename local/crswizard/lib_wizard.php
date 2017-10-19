@@ -1530,6 +1530,7 @@ function wizard_is_fastCopy() {
  */
 function wizard_get_default_metadata() {
     global $SESSION, $USER, $DB;
+    $SESSION->wizard['form_step1']['fastcopy'] = true;
     $SESSION->wizard['form_step2']['startdate'] = time();
     $SESSION->wizard['form_step2']['up1datefermeture'] = strtotime(date('m') <= 6 ? "July 31" : "next year January 31");
     $SESSION->wizard['form_step2']['visible'] = 0;

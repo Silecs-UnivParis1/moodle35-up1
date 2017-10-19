@@ -156,11 +156,14 @@ function wizard_clear_metadonnees() {
     if (isset($SESSION->wizard['form_step4']['users-inactif'])) {
         $SESSION->wizard['form_step4']['users-inactif'] = null;
     }
-    if(isset($SESSION->wizard['modelecase'])) {
+    if (isset($SESSION->wizard['modelecase'])) {
         $SESSION->wizard['modelecase'] = null;
     }
     if (isset($SESSION->wizard['form_step3']['up1approbateurpropid'])) {
         $SESSION->wizard['form_step3']['up1approbateurpropid'] = null;
+    }
+    if (isset($SESSION->wizard['form_step1']['fastcopy'])) {
+        $SESSION->wizard['form_step1']['fastcopy'] = null;
     }
 }
 
