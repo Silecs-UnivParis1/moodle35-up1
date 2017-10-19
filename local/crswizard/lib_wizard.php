@@ -223,6 +223,10 @@ function wizard_get_metadonnees() {
                         if (isset($SESSION->wizard['form_step2']['myurl']) == false || $SESSION->wizard['form_step2']['myurl'] == '') {
                             $SESSION->wizard['form_step2']['myurl'] = $SESSION->wizard['form_step2']['modelurl'];
                         }
+                        $SESSION->wizard['form_step3']['up1approbateurpropid'] ='';
+                        if (isset($course->profile_field_up1approbateurpropid)) {
+                            $SESSION->wizard['form_step3']['up1approbateurpropid'] = $course->profile_field_up1approbateurpropid;
+                        }
                         break;
 
                     case 3:
@@ -1525,7 +1529,7 @@ function wizard_is_fastCopy() {
  * pour une duplication rapide
  */
 function wizard_get_default_metadata() {
-    global $SESSION;
+    global $SESSION, $USER, $DB;
     $SESSION->wizard['form_step2']['startdate'] = time();
     $SESSION->wizard['form_step2']['up1datefermeture'] = strtotime(date('m') <= 6 ? "July 31" : "next year January 31");
     $SESSION->wizard['form_step2']['visible'] = 0;
@@ -1534,8 +1538,17 @@ function wizard_get_default_metadata() {
         if (isset($SESSION->wizard['form_step2']['category'])  && $SESSION->wizard['form_step2']['category'] != $idetab) {
             $SESSION->wizard['form_step2']['category'] = $idetab;
         }
-        //auto-validation par défaut
-        $SESSION->wizard['form_step3'] = ['autovalidation' => 'on']; // si up1demandeurid = up1approbateurpropid
+        if (isset($SESSION->wizard['form_step3']['up1approbateurpropid']) && $SESSION->wizard['form_step3']['up1approbateurpropid'] != '') {
+            if ($SESSION->wizard['form_step3']['up1approbateurpropid'] == $USER->id) {
+                $SESSION->wizard['form_step3'] = ['autovalidation' => 'on']; // autovalidation
+            } else {
+                $username = $DB->get_field('user', 'username', array('id' => $SESSION->wizard['form_step3']['up1approbateurpropid']));
+                if ($username) {
+                    $SESSION->wizard['form_step3']['user'][] = $username;
+                    $SESSION->wizard['form_step3']['all-validators'] = wizard_get_validators();
+                }
+            }
+        }
     }
 
     if (isset($SESSION->wizard['wizardcase']) && $SESSION->wizard['wizardcase'] == 3) {
