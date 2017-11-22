@@ -44,6 +44,19 @@ function get_notificationcourse_message($formdata, $params) {
     return $message;
 }
 
+/**
+ * Interpète les paramètres du message et retourne le résultat
+ * @param string $msg
+ * @param array $params
+ * @return string $msg
+ */
+function get_notificationcourse_message_interface($msg, $params) {
+    $msg = str_replace('[[siteshortname]]', $params['shortnamesite'], $msg);
+    $msg = str_replace('[[courseshortname]]', $params['shortnamecourse'], $msg);
+    $msg = str_replace('[[activitename]]', $params['nomactivite'], $msg);
+    $msg = str_replace('[[sender]]', $params['user'], $msg);
+    return $msg;
+}
 
 /**
  * construit le messsage d'interface du nombre et de la qualité des

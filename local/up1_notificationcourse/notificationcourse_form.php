@@ -17,6 +17,7 @@ class local_up1_notificationcourse_notificationcourse_form extends moodleform {
     public function definition() {
 
         $mform =& $this->_form;
+        $params = $this->_customdata;
 
         // hidden elements
         $mform->addElement('hidden', 'id');
@@ -39,24 +40,35 @@ class local_up1_notificationcourse_notificationcourse_form extends moodleform {
         $msgarray[] = $mform->createElement('radio', 'message', '', get_string('item_relance', 'local_up1_notificationcourse'), 1);
         $mform->addGroup($msgarray, 'msgar', get_string('label_message', 'local_up1_notificationcourse'), array(' ', ' '), false);
 
-        $mform->addElement('text', 'msginvitationsubject', get_string('subject', 'local_up1_notificationcourse'), 'maxlength="254" size="50" class="obligatoire"');
+        $mform->addElement('text', 'msginvitationsubject', get_string('subject', 'local_up1_notificationcourse'), 'maxlength="254" size="80" class="obligatoire"');
         $mform->setType('msginvitationsubject', PARAM_MULTILANG);
-        $mform->setDefault('msginvitationsubject', get_config('local_up1_notificationcourse','invitation_subject'));
+        $mform->setDefault('msginvitationsubject', get_notificationcourse_message_interface(
+            get_config('local_up1_notificationcourse','invitation_subject'),
+            $params)
+        );
 
         $mform->addElement('textarea', 'msginvitationbody', get_string('body', 'local_up1_notificationcourse'), array('rows' => 15,
             'cols' => 80));
         $mform->setType('msginvitationbody', PARAM_TEXT);
-        $mform->setDefault('msginvitationbody', get_config('local_up1_notificationcourse','invitation_body'));
+        $mform->setDefault('msginvitationbody', get_notificationcourse_message_interface(
+            get_config('local_up1_notificationcourse','invitation_body'),
+            $params)
+        );
 
-
-        $mform->addElement('text', 'msgrelancesubject', get_string('subject', 'local_up1_notificationcourse'), 'maxlength="254" size="50"');
+        $mform->addElement('text', 'msgrelancesubject', get_string('subject', 'local_up1_notificationcourse'), 'maxlength="254" size="80"');
         $mform->setType('msgrelancesubject', PARAM_MULTILANG);
-        $mform->setDefault('msgrelancesubject', get_config('local_up1_notificationcourse','relance_subject'));
+        $mform->setDefault('msgrelancesubject', get_notificationcourse_message_interface(
+            get_config('local_up1_notificationcourse','relance_subject'),
+            $params)
+        );
 
         $mform->addElement('textarea', 'msgrelancebody', get_string('body', 'local_up1_notificationcourse'), array('rows' => 15,
             'cols' => 80));
         $mform->setType('msgrelancebody', PARAM_TEXT);
-        $mform->setDefault('msgrelancebody', get_config('local_up1_notificationcourse','relance_body'));
+        $mform->setDefault('msgrelancebody', get_notificationcourse_message_interface(
+            get_config('local_up1_notificationcourse','relance_body'),
+            $params)
+        );
 
         $mform->addElement('checkbox', 'copie', get_string('label_copie', 'local_up1_notificationcourse'));
 
