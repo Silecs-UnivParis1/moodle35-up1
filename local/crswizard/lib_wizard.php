@@ -107,7 +107,7 @@ function wizard_get_teachers($courseid) {
             $ra = $DB->get_records('role_assignments', array('roleid' => $role['id'], 'contextid' => $context->id));
             if (count($ra)) {
                 foreach ($ra as $r) {
-                   $user = $DB->get_record('user', array('id'=>$r->userid), '*', MUST_EXIST);
+                   $user = $DB->get_record('user', array('id'=>$r->userid), '*');
                     if ($user) {
                         $nature = ($user->deleted ==0 && $user->suspended == 0 ? 'actif' : 'inactif');
                         $rolename = $role['shortname'];
