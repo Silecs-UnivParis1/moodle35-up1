@@ -101,10 +101,17 @@ switch ($stepin) {
         get_selected_model();
         //fin vérifier si modele de cours
         wizard_get_metadonnees();
-        $factCopy = wizard_is_fastCopy();
-        if ($factCopy) {
-            wizard_get_default_metadata();
-            redirect($CFG->wwwroot . '/local/crswizard/index.php?stepin=7');
+
+        if (!isset($SESSION->wizard['form_step1']['stepgo_2'])) {
+            //copie rapide explicitement demandée
+            $factCopy = wizard_is_fastCopy();
+            if ($factCopy) {
+                wizard_get_default_metadata();
+                redirect($CFG->wwwroot . '/local/crswizard/index.php?stepin=7');
+            } else {
+                $msg = get_string('fastcopyerrormsg', 'local_crswizard');
+                $SESSION->wizard['form_step1']['erreurs'] = $msg;
+            }
         }
 
         $steptitle = get_string('coursedefinition', 'local_crswizard');

@@ -49,6 +49,18 @@ class course_wizard_step_model extends moodleform {
                     'class' => 'transformIntoSubselects boitex',
                 ));
                 $mform->disabledIf('selm2', 'modeletype', 'neq', 'selm2');
+
+                $mform->addElement('html', '<div id="bb_duplication" class="fitem femptylabel">');
+                $mform->addElement('html', '<div class="fitemtitle"><label></label></div>');
+                $mform->addElement('html', '<div class="felement fsubmit">');
+                $mform->addElement('html', '<span class="fake-fitemtitle">'
+                    . '<input type="submit" value="Duplication rapide" id="id_stepgo_22" name="stepgo_22" >'
+                    . '</span>');
+                $mform->addElement('html', '<div class="indented-block-top" style="margin-left: 0.5em;">');
+                $mform->addElement('html', get_string('blocHelp2SModel', 'local_crswizard'));
+                $mform->addElement('html', '</div>');
+                $mform->addElement('html', '</div>');
+                $mform->addElement('html', '</div>');
             }
         }
 
@@ -58,7 +70,8 @@ class course_wizard_step_model extends moodleform {
         $buttonarray[] = $mform->createElement(
             'link', 'previousstage', null,
             new moodle_url($SESSION->wizard['wizardurl'], array('stepin' => 0)),
-            get_string('previousstage', 'local_crswizard'), array('class' => 'previousstage'));
+            get_string('previousstage', 'local_crswizard'), array('class' => 'previousstage')
+        );
         $buttonarray[] = $mform->createElement('submit', 'stepgo_2', get_string('nextstage', 'local_crswizard'));
         $mform->addGroup($buttonarray, 'buttonar', '', null, false);
         $mform->closeHeaderBefore('buttonar');

@@ -32,6 +32,10 @@ class course_wizard_step2_rof_form extends moodleform {
         $mform = $this->_form;
         $editoroptions = $this->_customdata['editoroptions'];
 
+        if (isset($SESSION->wizard['form_step1']['erreurs'])) {
+            $mform->addElement('html', html_writer::tag('div', $SESSION->wizard['form_step1']['erreurs'], array('class' => 'fitem')));
+        }
+
         $bockhelpE2 = get_string('bockhelpE2Rof1', 'local_crswizard');
         $mform->addElement('html', html_writer::tag('div', $bockhelpE2, array('class' => 'fitem')));
 

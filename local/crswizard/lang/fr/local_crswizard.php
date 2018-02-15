@@ -21,6 +21,10 @@ $string['crswizard:duplicate'] = 'Dupliquer le cours avec l\'assistant.';
 $string['blocHelp1SModel'] = 'Vos contenus (textes, documents, fichiers audio-visuels...) sont conservés. ' .
   '<br>Les activités (forums, devoirs...) sont remises à zéro. ' .
   '<br>Vos participants sont conservés et les cohortes sont annualisées.';
+$string['blocHelp2SModel'] = '<ul><li>Si l\'identifiant Apogée (ou ROF) du cours existe toujours dans le cache ROF ;</li>'
+    . '<li>si les cohortes concernées existent encore pour l\'année courante ;</li>'
+    . '<li>si les enseignant.e.s sont les mêmes.</li></ul>'
+    . 'La duplication rapide vous permettra de passer directement à la dernière étape, sinon cliquez sur "étape suivante".';
 $string['blocTitleS1'] = "<h2 class='crswizardWarning'>Bienvenue, laissez-vous guider par l'Assistant de création</h2>";
 $string['blocIntroS1'] = "Vous souhaitez créer un EPI pour : ";
 $string['blocHelloS1'] = '<p>Bienvenue dans l\'assistant de création d\'espace de cours. '
@@ -106,6 +110,7 @@ $string['responsable_epi'] = "Enseignant responsable EPI";
 $string['enrolcohorts'] = 'Étape 5 - inscription des groupes étudiants';
 $string['enrolkey'] = 'Clé d\'inscription';
 $string['enrolteachers'] = 'Étape 4 - désignation des contributeurs enseignants';
+$string['fastcopyerrormsg'] = 'Attention : toutes les conditions ne sont pas remplies pour permettre une duplication rapide';
 $string['findcohort'] = 'Rechercher un groupe d\'étudiants';
 $string['findteacher'] = 'Rechercher un enseignant';
 $string['findvalidator'] = 'Rechercher un approbateur';
