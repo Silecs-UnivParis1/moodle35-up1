@@ -450,7 +450,7 @@ function wizard_get_mydisplaylist() {
 function wizard_get_catlevel2() {
     $displaylist = array();
     $displaylist = coursecat::make_categories_list();
-    $mydisplaylist = array(' - / - ');
+    $mydisplaylist = [];
 
     foreach ($displaylist as $id => $label) {
         if (count(coursecat::get($id)->get_parents()) == 1) {
