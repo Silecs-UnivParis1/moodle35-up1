@@ -66,3 +66,20 @@ function default_subst_roles() {
     }
     return $res;
 }
+
+/**
+ * get default substituion roles for an ad-hoc use (quick & dirty)
+ * @return array('from' => X, 'to' => Y)
+ */
+function default_subst_roles_student() {
+    global $DB;
+    $res = array('from' => '1', 'to' => '1' );
+
+    if ($DB->record_exists('role', array('shortname' => 'student'))) {
+        $res['from'] = $DB->get_field('role', 'id', array('shortname' => 'student'));
+    }
+    if ($DB->record_exists('role', array('shortname' => 'student-epi-archived'))) {
+        $res['to'] = $DB->get_field('role', 'id', array('shortname' => 'student-epi-archived'));
+    }
+    return $res;
+}

@@ -76,6 +76,12 @@ foreach ($actionchecks as $action) {
            $msg .= batchaction_substitute($courses, $rolefrom, $roleto, false) . "<br />\n";
            break;
 
+       case 'substitute2':
+           $rolefrom = optional_param('batchsubst2from', '', PARAM_INT);
+           $roleto = optional_param('batchsubst2to', '', PARAM_INT);
+           $msg .= batchaction_substitute($courses, $rolefrom, $roleto, false) . "<br />\n";
+           break;
+
         case 'archdate':
             $isodate = optional_param('batcharchdate', '', PARAM_RAW);
             $tsdate = isoDateToTs($isodate);
@@ -207,6 +213,15 @@ if (empty($courses)) {
                         echo " par " . html_select('batchsubstto', $roles, $default['to']) ;
                         ?>
                     </li>
+                    <li style="margin-top:1ex">
+                        <input type="checkbox" name="actioncheck[]" value="substitute2" />
+                        <?php
+                        $default = default_subst_roles_student();
+                        echo "Substituer " . html_select('batchsubst2from', $roles, $default['from']);
+                        echo " par " . html_select('batchsubst2to', $roles, $default['to']) ;
+                        ?>
+                    </li>
+
                     <li>
                         <input type="checkbox" name="actioncheck[]" value="archdate">
                         Archiver en date du
