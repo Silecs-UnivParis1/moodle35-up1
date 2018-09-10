@@ -30,6 +30,8 @@ require_once($CFG->dirroot . '/local/cohortsyncup1/lib.php');
  */
 class auth_plugin_ldapup1 extends auth_plugin_trivial{
 
+    protected $verbosity = 1;
+
     /**
      * Init plugin config from database settings depending on the plugin auth type.
      */
@@ -70,6 +72,14 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
         $this->errorlogtag = '[AUTH LDAPUP1] ';
         $this->init_plugin($this->authtype);
         $this->config->{'field_map_emailstop'} = 'accountstatus';
+    }
+
+    /**
+     * set verbosity
+     * @param int $verbosity 0 to 3
+     */
+    public function set_verbosity($verbosity) {
+        $this->verbosity = $verbosity;
     }
 
     /**
@@ -209,7 +219,7 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
      * @param (string|false) $since if set, only updates since this params (syntax LDAP ex. 20120731012345Z)
      * @param string $logoutput ('file' | 'stdout' | 'stderr')
      */
-    function sync_users($do_updates=true, $since=false, $output='file', $verb=1) {
+    function sync_users($do_updates=true, $since=false, $output='file') {
         global $CFG, $DB;
 
         print_string('connectingldap', 'auth_ldapup1');
@@ -279,7 +289,7 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
                     $value = textlib::convert($value[0], $this->config->ldapencoding, 'utf-8');
                     $status = @ldap_get_values_len($ldapconnection, $entry, 'accountStatus'); // active ou disabled ou (non-défini)
                     $status = strtolower($status[0]);
-                    $this->ldap_bulk_insert($value, $status, $verb);
+                    $this->ldap_bulk_insert($value, $status);
                 } while ($entry = ldap_next_entry($ldapconnection, $entry));
             }
             unset($ldap_result); // free mem
@@ -337,7 +347,7 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
 
                 foreach ($users as $user) {
                     $this->do_log($output, get_string('auth_dbupdatinguser', 'auth_db', array('name'=>$user->username, 'id' =>$user->id)) . "\n");
-                    if ($this->update_user_record($user->username, $updatekeys, $verb)) {
+                    if ($this->update_user_record($user->username, $updatekeys)) {
                         //** @todo incorporer ceci à la table user
                         $usersync = $DB->get_record('user_sync', array('userid' => $user->id));
                         if ($usersync) {
@@ -350,7 +360,7 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
                     } else {
                         $this->do_log($output, '     - ' . get_string('skipped') . "\n");
                     }
-                    if ($verb >= 1) echo '.';
+                    if ($this->verbosity >= 1) echo '.';
                     $xcount++;
                 }
                 $transaction->allow_commit();
@@ -411,7 +421,7 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
                         $cidrecord->objectid = $id;
                         $cidrecord->data = $value;
                         $cidrecord->dataformat = 0;
-                        if ($verb >=3) {echo "\n    " . $user->username ." -> ". $cidrecord->data;}
+                        if ($this->verbosity >=3) {echo "\n    " . $user->username ." -> ". $cidrecord->data;}
                         $DB->insert_record('custom_info_data', $cidrecord);
                     }
                 }
@@ -510,7 +520,7 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
      * @param boolean $updatekeys true to update the local record with the external LDAP values.
      */
 
-    function update_user_record($username, $updatekeys = false, $verb=1) {
+    function update_user_record($username, $updatekeys = false) {
         global $CFG, $DB;
 
         // Just in case check text case
@@ -557,7 +567,7 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
                 if ( substr($attr, 0, 3) == 'up1' ) {
                     $fieldid = $DB->get_field('custom_info_field', 'id', array('objectname'=>'user', 'shortname'=>$attr), MUST_EXIST);
                     $DB->set_field('custom_info_data', 'data', $value, array('objectid'=>$userid, 'fieldid'=>$fieldid) );
-                    if ($verb >= 3) {
+                    if ($this->verbosity >= 3) {
                         echo "    $username -> $value\n";
                     }
                 }
@@ -572,14 +582,14 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
     /**
      * Bulk insert in SQL's temp table
      */
-    function ldap_bulk_insert($username, $status, $verb) {
+    function ldap_bulk_insert($username, $status) {
         global $DB, $CFG;
 
         $username = textlib::strtolower($username); // usernames are __always__ lowercase.
         $DB->insert_record_raw('tmp_extuser', array('username' => $username,
                                                     'mnethostid' => $CFG->mnet_localhost_id,
                                                     'accountstatus' => $status), false, true);
-        if ($verb >= 1) {
+        if ($this->verbosity >= 1) {
             echo '.';
         }
     }

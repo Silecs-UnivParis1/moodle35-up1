@@ -56,7 +56,7 @@ DELETE FROM user, user_sync  USING user INNER JOIN user_sync
     WHERE user_sync.ref_plugin = 'auth_ldapup1' AND user.id = user_sync.userid;
 
 Options:
---verb=N              Verbosity (0 to 1), 1 by default
+--verb=N              Verbosity (0 to 3), 1 by default
 --since=(datetime)    Fetch only to users with modifyTimestamp >= given datetime. If not set, use last ldap sync.
                       datetime in LDAP native format, eg '20120930123456Z' = 2012, sept. 30, 12:34:56 UTC
 -i, --init            Apply to all users available in LDAP (no modifyTimestamp filter)
@@ -87,6 +87,7 @@ if (!is_enabled_auth('ldapup1')) {
 }
 
 $ldapauth = get_auth_plugin('ldapup1');
+$ldapauth->set_verbosity($options['verb']);
 
 if ( $options['init'] ) {
     $since = FALSE;
@@ -97,6 +98,6 @@ if ( $options['init'] ) {
     $since = $last['begin'];
 }
 
-$ldapauth->sync_users((! $options['noupdate']), $since, $options['output'], $options['verb']);
+$ldapauth->sync_users((! $options['noupdate']), $since, $options['output']);
 
 
