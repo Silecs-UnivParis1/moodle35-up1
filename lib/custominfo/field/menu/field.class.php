@@ -44,11 +44,10 @@ class profile_field_menu extends custominfo_field_base {
      * @param string $objectname The model that uses custominfo (e.g. user, course)
      * @param integer $fieldid    id of the profile from the custom_info_field table
      * @param integer $objectid   id of the object whose we are displaying data
-     * @param object $fielddata
      */
-    public function __construct($objectname, $fieldid = 0, $userid = 0, $fielddata = null) {
+    public function __construct($objectname, $fieldid = 0, $userid = 0) {
         // First call parent constructor.
-        parent::__construct($objectname, $fieldid, $objectid, $fielddata);
+        parent::__construct($objectname, $fieldid, $objectid);
 
         // Param 1 for menu type is the options.
         if (isset($this->field->param1)) {

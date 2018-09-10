@@ -344,30 +344,33 @@ function user_get_user_details($user, $course = null, array $userfields = array(
     $userdetails['fullname'] = fullname($user, $canviewfullnames);
 
     if (in_array('customfields', $userfields)) {
-        $categories = profile_get_user_fields_with_data_by_category($user->id);
+        $fields = $DB->get_recordset_sql("SELECT f.*
+                                            FROM {custom_info_field} f
+                                            JOIN {custom_info_category} c
+                                                 ON f.categoryid=c.id
+                                           WHERE c.objectname = 'user'
+                                        ORDER BY c.sortorder ASC, f.sortorder ASC");
         $userdetails['customfields'] = array();
-        foreach ($categories as $categoryid => $fields) {
-            foreach ($fields as $field) {
-//** MERGE35 FIXME GA 20180906
-                $formfield = custominfo_field_factory('user', $field->datatype, $field->id, $user->id);
-                if ($formfield->is_visible() and !$formfield->is_empty()) {
+        foreach ($fields as $field) {
+            $formfield = custominfo_field_factory('user', $field->datatype, $field->id, $user->id);
+            if ($formfield->is_visible() and !$formfield->is_empty()) {
 
-                        // TODO: Part of MDL-50728, this conditional coding must be moved to
-                        // proper profile fields API so they are self-contained.
-                        // We only use display_data in fields that require text formatting.
-                        if ($formfield->field->datatype == 'text' or $formfield->field->datatype == 'textarea') {
-                            $fieldvalue = $formfield->display_data();
-                        } else {
-                            // Cases: datetime, checkbox and menu.
-                            $fieldvalue = $formfield->data;
-                        }
-
-                        $userdetails['customfields'][] =
-                            array('name' => $formfield->field->name, 'value' => $fieldvalue,
-                                'type' => $formfield->field->datatype, 'shortname' => $formfield->field->shortname);
-                    }
+                // TODO: Part of MDL-50728, this conditional coding must be moved to
+                // proper profile fields API so they are self-contained.
+                // We only use display_data in fields that require text formatting.
+                if ($field->datatype == 'text' or $field->datatype == 'textarea') {
+                    $fieldvalue = $formfield->display_data();
+                } else {
+                    // Cases: datetime, checkbox and menu.
+                    $fieldvalue = $formfield->data;
                 }
+
+                $userdetails['customfields'][] =
+                    array('name' => $formfield->field->name, 'value' => $fieldvalue,
+                        'type' => $field->datatype, 'shortname' => $formfield->field->shortname);
             }
+        }
+        $fields->close();
         // Unset customfields if it's empty.
         if (empty($userdetails['customfields'])) {
             unset($userdetails['customfields']);

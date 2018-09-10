@@ -4318,6 +4318,7 @@ class settings_navigation extends navigation_node {
         if ($adminoptions->editcompletion) {
             // Add the course completion settings link
             $localcapup1 = 'local/up1_capabilities:course_updatesettings';
+            // MERGE35 FIXME  GA 20180906
             if (get_capability_info($localcapup1)) {
                 if (has_capability($localcapup1, $coursecontext)) {
                     $url = new moodle_url('/course/edit.php', array('id'=>$course->id));
