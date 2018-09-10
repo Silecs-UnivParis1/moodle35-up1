@@ -88,7 +88,7 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
     /**
      * Constructor with initialisation.
      */
-    function auth_plugin_ldapup1() {
+    function __construct() {
         $this->authtype = 'ldapup1';
         $this->roleauth = 'auth_ldapup1';
         $this->errorlogtag = '[AUTH LDAPUP1] ';
