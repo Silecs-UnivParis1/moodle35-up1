@@ -45,7 +45,7 @@ class profile_field_menu extends custominfo_field_base {
      * @param integer $fieldid    id of the profile from the custom_info_field table
      * @param integer $objectid   id of the object whose we are displaying data
      */
-    public function __construct($objectname, $fieldid = 0, $userid = 0) {
+    public function __construct($objectname, $fieldid = 0, $objectid = 0) {
         // First call parent constructor.
         parent::__construct($objectname, $fieldid, $objectid);
 
