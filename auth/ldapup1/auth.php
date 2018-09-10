@@ -508,19 +508,23 @@ class auth_plugin_ldapup1 extends auth_plugin_trivial{
         return $newid;
     }
 
+
     /**
      * Update a local user record from an external source.
      * This is a lighter version of the one in moodlelib -- won't do
      * expensive ops such as enrolment.
      *
-     * If you don't pass $updatekeys, there is a performance hit and
-     * values removed from LDAP won't be removed from moodle.
+     * @todo GA 20180910  rewrite this method using auth_plugin_base::update_user_record()
      *
      * @param string $username username
-     * @param boolean $updatekeys true to update the local record with the external LDAP values.
+     * @param array $updatekeys fields to update, false updates all fields.
+     * @param bool $triggerevent set false if user_updated event should not be triggered.
+     *             This will not affect user_password_updated event triggering.
+     * @param bool $suspenduser Should the user be suspended?
+     * @return stdClass|bool updated user record or false if there is no new info to update.
      */
+    protected function update_user_record($username, $updatekeys = false, $triggerevent = false, $suspenduser = false) {
 
-    function update_user_record($username, $updatekeys = false) {
         global $CFG, $DB;
 
         // Just in case check text case
