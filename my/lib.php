@@ -80,12 +80,16 @@ function my_copy_page($userid, $private=MY_PAGE_PRIVATE, $pagetype='my-index') {
     $blockinstances = $DB->get_records('block_instances', array('parentcontextid' => $systemcontext->id,
                                                                 'pagetypepattern' => $pagetype,
                                                                 'subpagepattern' => $systempage->id));
+    $newblockinstanceids = [];
     foreach ($blockinstances as $instance) {
         $originalid = $instance->id;
         unset($instance->id);
         $instance->parentcontextid = $usercontext->id;
         $instance->subpagepattern = $page->id;
+        $instance->timecreated = time();
+        $instance->timemodified = $instance->timecreated;
         $instance->id = $DB->insert_record('block_instances', $instance);
+        $newblockinstanceids[$originalid] = $instance->id;
         $blockcontext = context_block::instance($instance->id);  // Just creates the context record
         $block = block_instance($instance->blockname, $instance);
         if (!$block->instance_copy($originalid)) {
@@ -94,12 +98,21 @@ function my_copy_page($userid, $private=MY_PAGE_PRIVATE, $pagetype='my-index') {
         }
     }
 
-    // FIXME: block position overrides should be merged in with block instance
-    //$blockpositions = $DB->get_records('block_positions', array('subpage' => $page->name));
-    //foreach($blockpositions as $positions) {
-    //    $positions->subpage = $page->name;
-    //    $DB->insert_record('block_positions', $tc);
-    //}
+    // Clone block position overrides.
+    if ($blockpositions = $DB->get_records('block_positions',
+            ['subpage' => $systempage->id, 'pagetype' => $pagetype, 'contextid' => $systemcontext->id])) {
+        foreach ($blockpositions as &$positions) {
+            $positions->subpage = $page->id;
+            $positions->contextid = $usercontext->id;
+            if (array_key_exists($positions->blockinstanceid, $newblockinstanceids)) {
+                // For block instances that were defined on the default dashboard and copied to the user dashboard
+                // use the new blockinstanceid.
+                $positions->blockinstanceid = $newblockinstanceids[$positions->blockinstanceid];
+            }
+            unset($positions->id);
+        }
+        $DB->insert_records('block_positions', $blockpositions);
+    }
 
     return $page;
 }
@@ -126,6 +139,7 @@ function my_reset_page($userid, $private=MY_PAGE_PRIVATE, $pagetype='my-index') 
                 }
             }
         }
+        $DB->delete_records('block_positions', ['subpage' => $page->id, 'pagetype' => $pagetype, 'contextid' => $context->id]);
         $DB->delete_records('my_pages', array('id' => $page->id));
     }
 
@@ -133,6 +147,17 @@ function my_reset_page($userid, $private=MY_PAGE_PRIVATE, $pagetype='my-index') 
     if (!$systempage = $DB->get_record('my_pages', array('userid' => null, 'private' => $private))) {
         return false; // error
     }
+
+    // Trigger dashboard has been reset event.
+    $eventparams = array(
+        'context' => context_user::instance($userid),
+        'other' => array(
+            'private' => $private,
+            'pagetype' => $pagetype,
+        ),
+    );
+    $event = \core\event\dashboard_reset::create($eventparams);
+    $event->trigger();
     return $systempage;
 }
 
@@ -146,28 +171,21 @@ function my_reset_page($userid, $private=MY_PAGE_PRIVATE, $pagetype='my-index') 
 function my_reset_page_for_all_users($private = MY_PAGE_PRIVATE, $pagetype = 'my-index') {
     global $DB;
 
-    // Find all the user pages.
-    $where = 'userid IS NOT NULL AND private = :private';
-    $params = array('private' => $private);
-    $pages = $DB->get_recordset_select('my_pages', $where, $params, 'id, userid');
-    $pageids = array();
-    $blockids = array();
+    // This may take a while. Raise the execution time limit.
+    core_php_time_limit::raise();
 
-    foreach ($pages as $page) {
-        $pageids[] = $page->id;
-        $usercontext = context_user::instance($page->userid);
-
-        // Find all block instances in that page.
-        $blocks = $DB->get_recordset('block_instances', array('parentcontextid' => $usercontext->id,
-            'pagetypepattern' => $pagetype), '', 'id, subpagepattern');
-        foreach ($blocks as $block) {
-            if (is_null($block->subpagepattern) || $block->subpagepattern == $page->id) {
-                $blockids[] = $block->id;
-            }
-        }
-        $blocks->close();
-    }
-    $pages->close();
+    // Find all the user pages and all block instances in them.
+    $sql = "SELECT bi.id
+        FROM {my_pages} p
+        JOIN {context} ctx ON ctx.instanceid = p.userid AND ctx.contextlevel = :usercontextlevel
+        JOIN {block_instances} bi ON bi.parentcontextid = ctx.id AND
+            bi.pagetypepattern = :pagetypepattern AND
+            (bi.subpagepattern IS NULL OR bi.subpagepattern = " . $DB->sql_concat("''", 'p.id') . ")
+        WHERE p.private = :private";
+    $params = array('private' => $private,
+        'usercontextlevel' => CONTEXT_USER,
+        'pagetypepattern' => $pagetype);
+    $blockids = $DB->get_fieldset_sql($sql, $params);
 
     // Wrap the SQL queries in a transaction.
     $transaction = $DB->start_delegated_transaction();
@@ -178,13 +196,21 @@ function my_reset_page_for_all_users($private = MY_PAGE_PRIVATE, $pagetype = 'my
     }
 
     // Finally delete the pages.
-    if (!empty($pageids)) {
-        list($insql, $inparams) = $DB->get_in_or_equal($pageids);
-        $DB->delete_records_select('my_pages', "id $insql", $pageids);
-    }
+    $DB->delete_records_select('my_pages', 'userid IS NOT NULL AND private = :private', ['private' => $private]);
 
     // We should be good to go now.
     $transaction->allow_commit();
+
+    // Trigger dashboard has been reset event.
+    $eventparams = array(
+        'context' => context_system::instance(),
+        'other' => array(
+            'private' => $private,
+            'pagetype' => $pagetype,
+        ),
+    );
+    $event = \core\event\dashboards_reset::create($eventparams);
+    $event->trigger();
 }
 
 class my_syspage_block_manager extends block_manager {

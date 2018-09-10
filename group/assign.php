@@ -59,6 +59,8 @@ if ($frm = data_submitted() and confirm_sesskey()) {
         // Invalidate the course groups cache seeing as we've changed it.
         cache_helper::invalidate_by_definition('core', 'groupdata', array(), array($courseid));
 
+        // Invalidate the user_group_groupings cache, too.
+        cache_helper::purge_by_definition('core', 'user_group_groupings');
     } else if (isset($frm->remove) and !empty($frm->removeselect)) {
         foreach ($frm->removeselect as $groupid) {
             // Ask this method not to purge the cache, we'll do it ourselves afterwards.
@@ -66,6 +68,9 @@ if ($frm = data_submitted() and confirm_sesskey()) {
         }
         // Invalidate the course groups cache seeing as we've changed it.
         cache_helper::invalidate_by_definition('core', 'groupdata', array(), array($courseid));
+
+        // Invalidate the user_group_groupings cache, too.
+        cache_helper::purge_by_definition('core', 'user_group_groupings');
     }
 }
 
@@ -152,10 +157,10 @@ echo $OUTPUT->header();
           </select></div></td>
       <td id="buttonscell">
         <p class="arrow_button">
-            <input name="add" id="add" type="submit"
+            <input class="btn btn-secondary" name="add" id="add" type="submit"
                    value="<?php echo $OUTPUT->larrow().'&nbsp;'.get_string('add'); ?>"
                    title="<?php print_string('add'); ?>" /><br>
-            <input name="remove" id="remove" type="submit"
+            <input class="btn btn-secondary" name="remove" id="remove" type="submit"
                    value="<?php echo get_string('remove').'&nbsp;'.$OUTPUT->rarrow(); ?>"
                    title="<?php print_string('remove'); ?>" />
         </p>
@@ -173,7 +178,8 @@ echo $OUTPUT->header();
        </td>
     </tr>
     <tr><td colspan="3" id="backcell">
-        <input type="submit" name="cancel" value="<?php print_string('backtogroupings', 'group'); ?>" />
+        <input class="btn btn-secondary" type="submit" name="cancel"
+               value="<?php print_string('backtogroupings', 'group'); ?>" />
     </td></tr>
     </table>
     </div>

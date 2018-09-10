@@ -41,13 +41,14 @@ class profile_field_menu extends custominfo_field_base {
      *
      * Pulls out the options for the menu from the database and sets the the corresponding key for the data if it exists.
      *
-     * @param string $objectname The model has uses custominfo (e.g. user, course)
+     * @param string $objectname The model that uses custominfo (e.g. user, course)
      * @param integer $fieldid    id of the profile from the custom_info_field table
      * @param integer $objectid   id of the object whose we are displaying data
+     * @param object $fielddata
      */
-    function __construct($objectname, $fieldid=0, $objectid=0) {
+    public function __construct($objectname, $fieldid = 0, $userid = 0, $fielddata = null) {
         // First call parent constructor.
-        parent::__construct($objectname, $fieldid, $objectid);
+        parent::__construct($objectname, $fieldid, $objectid, $fielddata);
 
         // Param 1 for menu type is the options.
         if (isset($this->field->param1)) {
@@ -60,7 +61,8 @@ class profile_field_menu extends custominfo_field_base {
             $this->options[''] = get_string('choose').'...';
         }
         foreach ($options as $key => $option) {
-            $this->options[$option] = format_string($option); // Multilang formatting with filters.
+            // Multilang formatting with filters.
+            $this->options[$option] = format_string($option, true, ['context' => context_system::instance()]);
         }
 
         // Set the data key.
@@ -71,16 +73,6 @@ class profile_field_menu extends custominfo_field_base {
                 $this->datakey = $key;
             }
         }
-    }
-
-    /**
-     * Old syntax of class constructor. Deprecated in PHP7.
-     *
-     * @deprecated since Moodle 3.1
-     */
-    public function profile_field_menu($fieldid=0, $userid=0) {
-        debugging('Use of class name as constructor is deprecated', DEBUG_DEVELOPER);
-        self::__construct($fieldid, $userid);
     }
 
     /**
@@ -129,7 +121,7 @@ class profile_field_menu extends custominfo_field_base {
      *
      * @param   object   model object (e.g. user, course)
      */
-    function edit_load_object_data($model) {
+    public function edit_load_user_data($model) {
         $model->{$this->inputname} = $this->datakey;
     }
 
@@ -165,6 +157,17 @@ class profile_field_menu extends custominfo_field_base {
             $retval = null;
         }
         return $retval;
+    }
+
+    /**
+     * Return the field type and null properties.
+     * This will be used for validating the data submitted by a user.
+     *
+     * @return array the param type and null property
+     * @since Moodle 3.2
+     */
+    public function get_field_properties() {
+        return array(PARAM_TEXT, NULL_NOT_ALLOWED);
     }
 }
 

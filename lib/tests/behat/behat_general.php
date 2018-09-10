@@ -87,6 +87,15 @@ class behat_general extends behat_base {
     }
 
     /**
+     * Opens course index page.
+     *
+     * @Given /^I am on course index$/
+     */
+    public function i_am_on_course_index() {
+        $this->getSession()->visit($this->locate_path('/course/index.php'));
+    }
+
+    /**
      * Reloads the current page.
      *
      * @Given /^I reload the page$/
@@ -134,7 +143,7 @@ class behat_general extends behat_base {
 
         // Wait until the URL change is executed.
         if ($this->running_javascript()) {
-            $this->getSession()->wait($waittime * 1000, false);
+            $this->getSession()->wait($waittime * 1000);
 
         } else if (!empty($url)) {
             // We redirect directly as we can not wait for an automatic redirection.
@@ -244,7 +253,7 @@ class behat_general extends behat_base {
      */
     public function i_wait_seconds($seconds) {
         if ($this->running_javascript()) {
-            $this->getSession()->wait($seconds * 1000, false);
+            $this->getSession()->wait($seconds * 1000);
         } else {
             sleep($seconds);
         }
@@ -615,8 +624,19 @@ class behat_general extends behat_base {
             function($context, $args) {
 
                 foreach ($args['nodes'] as $node) {
-                    if ($node->isVisible()) {
-                        throw new ExpectationException('"' . $args['text'] . '" text was found in the page', $context->getSession());
+                    // If element is removed from dom, then just exit.
+                    try {
+                        // If element is visible then throw exception, so we keep spinning.
+                        if ($node->isVisible()) {
+                            throw new ExpectationException('"' . $args['text'] . '" text was found in the page',
+                                $context->getSession());
+                        }
+                    } catch (WebDriver\Exception\NoSuchElement $e) {
+                        // Do nothing just return, as element is no more on page.
+                        return true;
+                    } catch (ElementNotFoundException $e) {
+                        // Do nothing just return, as element is no more on page.
+                        return true;
                     }
                 }
 
@@ -628,7 +648,6 @@ class behat_general extends behat_base {
             false,
             true
         );
-
     }
 
     /**
@@ -952,6 +971,9 @@ class behat_general extends behat_base {
      * @param string $taskname Name of task e.g. 'mod_whatever\task\do_something'
      */
     public function i_run_the_scheduled_task($taskname) {
+        global $CFG;
+        require_once("{$CFG->libdir}/cronlib.php");
+
         $task = \core\task\manager::get_scheduled_task($taskname);
         if (!$task) {
             throw new DriverException('The "' . $taskname . '" scheduled task does not exist');
@@ -978,18 +1000,76 @@ class behat_general extends behat_base {
         }
 
         try {
+            // Prepare the renderer.
+            cron_prepare_core_renderer();
+
             // Discard task output as not appropriate for Behat output!
             ob_start();
             $task->execute();
             ob_end_clean();
 
+            // Restore the previous renderer.
+            cron_prepare_core_renderer(true);
+
             // Mark task complete.
             \core\task\manager::scheduled_task_complete($task);
         } catch (Exception $e) {
+            // Restore the previous renderer.
+            cron_prepare_core_renderer(true);
+
             // Mark task failed and throw exception.
             \core\task\manager::scheduled_task_failed($task);
+
             throw new DriverException('The "' . $taskname . '" scheduled task failed', 0, $e);
         }
+    }
+
+    /**
+     * Runs all ad-hoc tasks in the queue.
+     *
+     * This is faster and more reliable than running cron (running cron won't
+     * work more than once in the same test, for instance). However it is
+     * a little less 'realistic'.
+     *
+     * While the task is running, we suppress mtrace output because it makes
+     * the Behat result look ugly.
+     *
+     * @Given /^I run all adhoc tasks$/
+     * @throws DriverException
+     */
+    public function i_run_all_adhoc_tasks() {
+        global $CFG, $DB;
+        require_once("{$CFG->libdir}/cronlib.php");
+
+        // Do setup for cron task.
+        cron_setup_user();
+
+        // Discard task output as not appropriate for Behat output!
+        ob_start();
+
+        // Run all tasks which have a scheduled runtime of before now.
+        $timenow = time();
+
+        while (!\core\task\manager::static_caches_cleared_since($timenow) &&
+                $task = \core\task\manager::get_next_adhoc_task($timenow)) {
+            // Clean the output buffer between tasks.
+            ob_clean();
+
+            // Run the task.
+            cron_run_inner_adhoc_task($task);
+
+            // Check whether the task record still exists.
+            // If a task was successful it will be removed.
+            // If it failed then it will still exist.
+            if ($DB->record_exists('task_adhoc', ['id' => $task->get_id()])) {
+                // End ouptut buffering and flush the current buffer.
+                // This should be from just the current task.
+                ob_end_flush();
+
+                throw new DriverException('An adhoc task failed', 0);
+            }
+        }
+        ob_end_clean();
     }
 
     /**
@@ -1057,13 +1137,15 @@ class behat_general extends behat_base {
      * Change browser window size small: 640x480, medium: 1024x768, large: 2560x1600, custom: widthxheight
      *
      * Example: I change window size to "small" or I change window size to "1024x768"
+     * or I change viewport size to "800x600". The viewport option is useful to guarantee that the
+     * browser window has same viewport size even when you run Behat on multiple operating systems.
      *
      * @throws ExpectationException
-     * @Then /^I change window size to "(small|medium|large|\d+x\d+)"$/
+     * @Then /^I change (window|viewport) size to "(small|medium|large|\d+x\d+)"$/
      * @param string $windowsize size of the window (small|medium|large|wxh).
      */
-    public function i_change_window_size_to($windowsize) {
-        $this->resize_window($windowsize);
+    public function i_change_window_size_to($windowviewport, $windowsize) {
+        $this->resize_window($windowsize, $windowviewport === 'viewport');
     }
 
     /**
@@ -1538,5 +1620,130 @@ class behat_general extends behat_base {
         $node->keyDown($char, $modifier);
         $node->keyPress($char, $modifier);
         $node->keyUp($char, $modifier);
+    }
+
+    /**
+     * Press tab key on a specific element.
+     *
+     * @When /^I press tab key in "(?P<element_string>(?:[^"]|\\")*)" "(?P<selector_string>[^"]*)"$/
+     * @param string $element Element we look for
+     * @param string $selectortype The type of what we look for
+     * @throws DriverException
+     * @throws ExpectationException
+     */
+    public function i_post_tab_key_in_element($element, $selectortype) {
+        if (!$this->running_javascript()) {
+            throw new DriverException('Tab press step is not available with Javascript disabled');
+        }
+        // Gets the node based on the requested selector type and locator.
+        $node = $this->get_selected_node($selectortype, $element);
+        $driver = $this->getSession()->getDriver();
+        if ($driver instanceof \Moodle\BehatExtension\Driver\MoodleSelenium2Driver) {
+            $driver->post_key("\xEE\x80\x84", $node->getXpath());
+        } else {
+            $driver->keyDown($node->getXpath(), "\t");
+        }
+    }
+
+    /**
+     * Checks if database family used is using one of the specified, else skip. (mysql, postgres, mssql, oracle, etc.)
+     *
+     * @Given /^database family used is one of the following:$/
+     * @param TableNode $databasefamilies list of database.
+     * @return void.
+     * @throws \Moodle\BehatExtension\Exception\SkippedException
+     */
+    public function database_family_used_is_one_of_the_following(TableNode $databasefamilies) {
+        global $DB;
+
+        $dbfamily = $DB->get_dbfamily();
+
+        // Check if used db family is one of the specified ones. If yes then return.
+        foreach ($databasefamilies->getRows() as $dbfamilytocheck) {
+            if ($dbfamilytocheck[0] == $dbfamily) {
+                return;
+            }
+        }
+
+        throw new \Moodle\BehatExtension\Exception\SkippedException();
+    }
+
+    /**
+     * Checks focus is with the given element.
+     *
+     * @Then /^the focused element is( not)? "(?P<node_string>(?:[^"]|\\")*)" "(?P<node_selector_string>[^"]*)"$/
+     * @param string $not optional step verifier
+     * @param string $nodeelement Element identifier
+     * @param string $nodeselectortype Element type
+     * @throws DriverException If not using JavaScript
+     * @throws ExpectationException
+     */
+    public function the_focused_element_is($not, $nodeelement, $nodeselectortype) {
+        if (!$this->running_javascript()) {
+            throw new DriverException('Checking focus on an element requires JavaScript');
+        }
+        list($a, $b) = $this->transform_selector($nodeselectortype, $nodeelement);
+        $element = $this->find($a, $b);
+        $xpath = addslashes_js($element->getXpath());
+        $script = 'return (function() { return document.activeElement === document.evaluate("' . $xpath . '",
+                document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue; })(); ';
+        $targetisfocused = $this->getSession()->evaluateScript($script);
+        if ($not == ' not') {
+            if ($targetisfocused) {
+                throw new ExpectationException("$nodeelement $nodeselectortype is focused", $this->getSession());
+            }
+        } else {
+            if (!$targetisfocused) {
+                throw new ExpectationException("$nodeelement $nodeselectortype is not focused", $this->getSession());
+            }
+        }
+    }
+
+    /**
+     * Checks focus is with the given element.
+     *
+     * @Then /^the focused element is( not)? "(?P<n>(?:[^"]|\\")*)" "(?P<ns>[^"]*)" in the "(?P<c>(?:[^"]|\\")*)" "(?P<cs>[^"]*)"$/
+     * @param string $not string optional step verifier
+     * @param string $element Element identifier
+     * @param string $selectortype Element type
+     * @param string $nodeelement Element we look in
+     * @param string $nodeselectortype The type of selector where we look in
+     * @throws DriverException If not using JavaScript
+     * @throws ExpectationException
+     */
+    public function the_focused_element_is_in_the($not, $element, $selectortype, $nodeelement, $nodeselectortype) {
+        if (!$this->running_javascript()) {
+            throw new DriverException('Checking focus on an element requires JavaScript');
+        }
+        $element = $this->get_node_in_container($selectortype, $element, $nodeselectortype, $nodeelement);
+        $xpath = addslashes_js($element->getXpath());
+        $script = 'return (function() { return document.activeElement === document.evaluate("' . $xpath . '",
+                document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue; })(); ';
+        $targetisfocused = $this->getSession()->evaluateScript($script);
+        if ($not == ' not') {
+            if ($targetisfocused) {
+                throw new ExpectationException("$nodeelement $nodeselectortype is focused", $this->getSession());
+            }
+        } else {
+            if (!$targetisfocused) {
+                throw new ExpectationException("$nodeelement $nodeselectortype is not focused", $this->getSession());
+            }
+        }
+    }
+
+    /**
+     * Manually press tab key.
+     *
+     * @When /^I press( shift)? tab$/
+     * @param string $shift string optional step verifier
+     * @throws DriverException
+     */
+    public function i_manually_press_tab($shift = '') {
+        if (!$this->running_javascript()) {
+            throw new DriverException($shift . ' Tab press step is not available with Javascript disabled');
+        }
+
+        $value = ($shift == ' shift') ? [\WebDriver\Key::SHIFT . \WebDriver\Key::TAB] : [\WebDriver\Key::TAB];
+        $this->getSession()->getDriver()->getWebDriverSession()->activeElement()->postValue(['value' => $value]);
     }
 }

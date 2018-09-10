@@ -107,7 +107,16 @@ class evidence extends persistent {
      * @return competency
      */
     public function get_competency() {
-        return user_competency::get_competency_by_usercompetencyid($this->get_usercompetencyid());
+        return user_competency::get_competency_by_usercompetencyid($this->get('usercompetencyid'));
+    }
+
+    /**
+     * Return the evidence's context.
+     *
+     * @return context
+     */
+    public function get_context() {
+        return context::instance_by_id($this->get('contextid'));
     }
 
     /**
@@ -115,8 +124,8 @@ class evidence extends persistent {
      *
      * @return mixed
      */
-    public function get_desca() {
-        $value = $this->get('desca');
+    protected function get_desca() {
+        $value = $this->raw_get('desca');
         if ($value !== null) {
             $value = json_decode($value);
         }
@@ -138,14 +147,14 @@ class evidence extends persistent {
      * @param mixed $value
      * @return mixed
      */
-    public function set_desca($value) {
+    protected function set_desca($value) {
         if ($value !== null) {
             if (!is_scalar($value) && !is_array($value) && !($value instanceof stdClass)) {
                 throw new coding_exception('$a format not supported.');
             }
             $value = json_encode($value);
         }
-        $this->set('desca', $value);
+        $this->raw_set('desca', $value);
     }
 
     /**
@@ -153,11 +162,11 @@ class evidence extends persistent {
      *
      * @param null|string|moodle_url $url The URL.
      */
-    public function set_url($url) {
+    protected function set_url($url) {
         if ($url instanceof \moodle_url) {
             $url = $url->out(false);
         }
-        $this->set('url', $url);
+        $this->raw_set('url', $url);
     }
 
     /**
@@ -220,7 +229,7 @@ class evidence extends persistent {
      * @return true|lang_string
      */
     protected function validate_descidentifier($value) {
-        if (!$this->get_id() && !get_string_manager()->string_exists($value, $this->get('desccomponent'))) {
+        if (!$this->get('id') && !get_string_manager()->string_exists($value, $this->get('desccomponent'))) {
             return new lang_string('invalidevidencedesc', 'core_competency');
         }
 
@@ -282,6 +291,54 @@ class evidence extends persistent {
      */
     public static function can_delete_user($userid) {
         return has_capability('moodle/competency:evidencedelete', context_user::instance($userid));
+    }
+
+    /**
+     * Load a list of records in a context for a user competency.
+     *
+     * @param int $usercompetencyid The id of the user competency.
+     * @param context $context Context to filter the evidence list.
+     * @param string $sort The field from the evidence table to sort on.
+     * @param string $order The sort direction
+     * @param int $skip Limitstart.
+     * @param int $limit Number of rows to return.
+     *
+     * @return \core_competency\persistent[]
+     */
+    public static function get_records_for_usercompetency($usercompetencyid,
+                                                          \context $context,
+                                                          $sort = '',
+                                                          $order = 'ASC',
+                                                          $skip = 0,
+                                                          $limit = 0) {
+        global $DB;
+
+        $params = array(
+            'usercompid' => $usercompetencyid,
+            'path' => $context->path . '/%',
+            'contextid' => $context->id
+        );
+
+        if (!empty($sort)) {
+            $sort = ' ORDER BY e.' . $sort . ' ' . $order . ', e.id ASC';
+        } else {
+            $sort = ' ORDER BY e.id ASC';
+        }
+
+        $sql = 'SELECT e.*
+                  FROM {' . static::TABLE . '} e
+                  JOIN {context} c ON c.id = e.contextid
+                 WHERE (c.path LIKE :path OR c.id = :contextid)
+                   AND e.usercompetencyid = :usercompid
+                 ' . $sort;
+        $records = $DB->get_records_sql($sql, $params, $skip, $limit);
+        $instances = array();
+
+        foreach ($records as $record) {
+            $newrecord = new static(0, $record);
+            array_push($instances, $newrecord);
+        }
+        return $instances;
     }
 
 }

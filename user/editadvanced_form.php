@@ -71,17 +71,19 @@ class user_editadvanced_form extends moodleform {
         // Print the required moodle fields first.
         $mform->addElement('header', 'moodle', $strgeneral);
 
-        $mform->addElement('text', 'username', get_string('username'), 'size="20"');
-        $mform->addRule('username', $strrequired, 'required', null, 'client');
-        $mform->setType('username', core_user::get_property_type('username'));
-
         $auths = core_component::get_plugin_list('auth');
         $enabled = get_string('pluginenabled', 'core_plugin');
         $disabled = get_string('plugindisabled', 'core_plugin');
         $authoptions = array($enabled => array(), $disabled => array());
         $cannotchangepass = array();
+        $cannotchangeusername = array();
         foreach ($auths as $auth => $unused) {
             $authinst = get_auth_plugin($auth);
+
+            if (!$authinst->is_internal()) {
+                $cannotchangeusername[] = $auth;
+            }
+
             $passwordurl = $authinst->change_password_url();
             if (!($authinst->can_change_password() && empty($passwordurl))) {
                 if ($userid < 1 and $authinst->is_internal()) {
@@ -97,6 +99,15 @@ class user_editadvanced_form extends moodleform {
                 $authoptions[$disabled][$auth] = get_string('pluginname', "auth_{$auth}");
             }
         }
+
+        $mform->addElement('text', 'username', get_string('username'), 'size="20"');
+        $mform->addHelpButton('username', 'username', 'auth');
+        $mform->setType('username', PARAM_RAW);
+
+        if ($userid !== -1) {
+            $mform->disabledIf('username', 'auth', 'in', $cannotchangeusername);
+        }
+
         $mform->addElement('selectgroups', 'auth', get_string('chooseauthmethod', 'auth'), $authoptions);
         $mform->addHelpButton('auth', 'chooseauthmethod', 'auth');
 
@@ -116,6 +127,21 @@ class user_editadvanced_form extends moodleform {
 
         $mform->disabledIf('newpassword', 'auth', 'in', $cannotchangepass);
 
+        // Check if the user has active external tokens.
+        if ($userid and empty($CFG->passwordchangetokendeletion)) {
+            if ($tokens = webservice::get_active_tokens($userid)) {
+                $services = '';
+                foreach ($tokens as $token) {
+                    $services .= format_string($token->servicename) . ',';
+                }
+                $services = get_string('userservices', 'webservice', rtrim($services, ','));
+                $mform->addElement('advcheckbox', 'signoutofotherservices', get_string('signoutofotherservices'), $services);
+                $mform->addHelpButton('signoutofotherservices', 'signoutofotherservices');
+                $mform->disabledIf('signoutofotherservices', 'newpassword', 'eq', '');
+                $mform->setDefault('signoutofotherservices', 1);
+            }
+        }
+
         $mform->addElement('advcheckbox', 'preference_auth_forcepasswordchange', get_string('forcepasswordchange'));
         $mform->addHelpButton('preference_auth_forcepasswordchange', 'forcepasswordchange');
         $mform->disabledIf('preference_auth_forcepasswordchange', 'createpassword', 'checked');
@@ -134,7 +160,7 @@ class user_editadvanced_form extends moodleform {
             $btnstring = get_string('updatemyprofile');
         }
 
-        $this->add_action_buttons(false, $btnstring);
+        $this->add_action_buttons(true, $btnstring);
 
         $this->set_data($user);
     }

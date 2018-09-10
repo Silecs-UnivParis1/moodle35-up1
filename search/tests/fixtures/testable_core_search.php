@@ -29,6 +29,11 @@ require_once(__DIR__ . '/mock_search_engine.php');
 /**
  * Core search class adapted to unit test.
  *
+ * Note that by default all core search areas are returned when calling get_search_areas_list,
+ * if you want to use the mock search area you can use testable_core_search::add_search_area
+ * although if you want to add mock search areas on top of the core ones you should call
+ * testable_core_search::add_core_search_areas before calling testable_core_search::add_search_area.
+ *
  * @package    core_search
  * @copyright  2015 David Monllao {@link http://www.davidmonllao.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -67,19 +72,50 @@ class testable_core_search extends \core_search\manager {
      *
      * @return array
      */
-    public function get_areas_user_accesses($limitcourseids = false) {
-        return parent::get_areas_user_accesses($limitcourseids);
+    public function get_areas_user_accesses($limitcourseids = false, $limitcontextids = false) {
+        return parent::get_areas_user_accesses($limitcourseids, $limitcontextids);
     }
 
     /**
      * Adds an enabled search component to the search areas list.
      *
      * @param string $areaid
-     * @param \core_search\area\base $searcharea
+     * @param \core_search\base $searcharea
      * @return void
      */
-    public function add_search_area($areaid, \core_search\area\base $searcharea) {
+    public function add_search_area($areaid, \core_search\base $searcharea) {
        self::$enabledsearchareas[$areaid] = $searcharea;
        self::$allsearchareas[$areaid] = $searcharea;
+    }
+
+    /**
+     * Loads all core search areas.
+     *
+     * @return void
+     */
+    public function add_core_search_areas() {
+        self::get_search_areas_list(false);
+        self::get_search_areas_list(true);
+    }
+
+    /**
+     * Changes visibility.
+     *
+     * @param string $classname
+     * @return bool
+     */
+    public static function is_search_area($classname) {
+        return parent::is_search_area($classname);
+    }
+
+    /**
+     * Fakes the current time for PHPunit. Turns off faking time if called with default parameter.
+     *
+     * Note: This should be replaced with core functionality once possible (see MDL-60644).
+     *
+     * @param float $faketime Current time
+     */
+    public static function fake_current_time($faketime = 0.0) {
+        static::$phpunitfaketime = $faketime;
     }
 }

@@ -80,6 +80,7 @@ class manager {
             }
 
             self::initialise_user_session($isnewsession);
+            self::$sessionactive = true; // Set here, so the session can be cleared if the security check fails.
             self::check_security();
 
             // Link global $USER and $SESSION,
@@ -97,8 +98,6 @@ class manager {
             self::$sessionactive = false;
             throw $ex;
         }
-
-        self::$sessionactive = true;
     }
 
     /**
@@ -124,28 +123,34 @@ class manager {
     }
 
     /**
+     * Get fully qualified name of session handler class.
+     *
+     * @return string The name of the handler class
+     */
+    public static function get_handler_class() {
+        global $CFG, $DB;
+
+        if (PHPUNIT_TEST) {
+            return '\core\session\file';
+        } else if (!empty($CFG->session_handler_class)) {
+            return $CFG->session_handler_class;
+        } else if (!empty($CFG->dbsessions) and $DB->session_lock_supported()) {
+            return '\core\session\database';
+        }
+
+        return '\core\session\file';
+    }
+
+    /**
      * Create handler instance.
      */
     protected static function load_handler() {
-        global $CFG, $DB;
-
         if (self::$handler) {
             return;
         }
 
         // Find out which handler to use.
-        if (PHPUNIT_TEST) {
-            $class = '\core\session\file';
-
-        } else if (!empty($CFG->session_handler_class)) {
-            $class = $CFG->session_handler_class;
-
-        } else if (!empty($CFG->dbsessions) and $DB->session_lock_supported()) {
-            $class = '\core\session\database';
-
-        } else {
-            $class = '\core\session\file';
-        }
+        $class = self::get_handler_class();
         self::$handler = new $class();
     }
 
@@ -191,9 +196,7 @@ class manager {
     protected static function prepare_cookies() {
         global $CFG;
 
-        if (!isset($CFG->cookiesecure) or (!is_https() and empty($CFG->sslproxy))) {
-            $CFG->cookiesecure = 0;
-        }
+        $cookiesecure = is_moodle_cookie_secure();
 
         if (!isset($CFG->cookiehttponly)) {
             $CFG->cookiehttponly = 0;
@@ -254,7 +257,7 @@ class manager {
 
         // Set configuration.
         session_name($sessionname);
-        session_set_cookie_params(0, $CFG->sessioncookiepath, $CFG->sessioncookiedomain, $CFG->cookiesecure, $CFG->cookiehttponly);
+        session_set_cookie_params(0, $CFG->sessioncookiepath, $CFG->sessioncookiedomain, $cookiesecure, $CFG->cookiehttponly);
         ini_set('session.use_trans_sid', '0');
         ini_set('session.use_only_cookies', '1');
         ini_set('session.hash_function', '0');        // For now MD5 - we do not have room for sha-1 in sessions table.
@@ -709,6 +712,7 @@ class manager {
      * @param \stdClass $user record
      */
     public static function set_user(\stdClass $user) {
+        global $ADMIN;
         $GLOBALS['USER'] = $user;
         unset($GLOBALS['USER']->description); // Conserve memory.
         unset($GLOBALS['USER']->password);    // Improve security.
@@ -719,6 +723,9 @@ class manager {
 
         // Relink session with global $USER just in case it got unlinked somehow.
         $_SESSION['USER'] =& $GLOBALS['USER'];
+
+        // Nullify the $ADMIN tree global. If we're changing users, then this is now stale and must be generated again if needed.
+        $ADMIN = null;
 
         // Init session key.
         sesskey();
@@ -772,7 +779,7 @@ class manager {
                 foreach ($authplugins as $authplugin) {
                     /** @var \auth_plugin_base $authplugin*/
                     if ($authplugin->ignore_timeout_hook($user, $user->sid, $user->s_timecreated, $user->s_timemodified)) {
-                        continue;
+                        continue 2;
                     }
                 }
                 self::kill_session($user->sid);
@@ -832,9 +839,10 @@ class manager {
      * Login as another user - no security checks here.
      * @param int $userid
      * @param \context $context
+     * @param bool $generateevent Set to false to prevent the loginas event to be generated
      * @return void
      */
-    public static function loginas($userid, \context $context) {
+    public static function loginas($userid, \context $context, $generateevent = true) {
         global $USER;
 
         if (self::is_loggedinas()) {
@@ -856,21 +864,27 @@ class manager {
         // Let enrol plugins deal with new enrolments if necessary.
         enrol_check_plugins($user);
 
-        // Create event before $USER is updated.
-        $event = \core\event\user_loggedinas::create(
-            array(
-                'objectid' => $USER->id,
-                'context' => $context,
-                'relateduserid' => $userid,
-                'other' => array(
-                    'originalusername' => fullname($USER, true),
-                    'loggedinasusername' => fullname($user, true)
+        if ($generateevent) {
+            // Create event before $USER is updated.
+            $event = \core\event\user_loggedinas::create(
+                array(
+                    'objectid' => $USER->id,
+                    'context' => $context,
+                    'relateduserid' => $userid,
+                    'other' => array(
+                        'originalusername' => fullname($USER, true),
+                        'loggedinasusername' => fullname($user, true)
+                    )
                 )
-            )
-        );
+            );
+        }
+
         // Set up global $USER.
         \core\session\manager::set_user($user);
-        $event->trigger();
+
+        if ($generateevent) {
+            $event->trigger();
+        }
     }
 
     /**

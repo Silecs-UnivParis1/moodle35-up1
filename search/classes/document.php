@@ -79,6 +79,14 @@ class document implements \renderable, \templatable {
     protected $files = array();
 
     /**
+     * Change list (for engine implementers):
+     * 2017091700 - add optional field groupid
+     *
+     * @var int Schema version number (update if any change)
+     */
+    const SCHEMA_VERSION = 2017091700;
+
+    /**
      * All required fields any doc should contain.
      *
      * We have to choose a format to specify field types, using solr format as we have to choose one and solr is the
@@ -159,6 +167,11 @@ class document implements \renderable, \templatable {
             'stored' => true,
             'indexed' => true
         ),
+        'groupid' => array(
+            'type' => 'int',
+            'stored' => true,
+            'indexed' => true
+        ),
         'description1' => array(
             'type' => 'text',
             'stored' => true,
@@ -231,6 +244,8 @@ class document implements \renderable, \templatable {
 
                 if ($file = $fs->get_file_by_id($id)) {
                     $this->files[$id] = $file;
+                } else {
+                    unset($this->files[$id]); // Index is out of date and referencing a file that does not exist.
                 }
             }
         }
@@ -276,8 +291,21 @@ class document implements \renderable, \templatable {
         if ($fielddata['type'] === 'int' || $fielddata['type'] === 'tdate') {
             $this->data[$fieldname] = intval($value);
         } else {
+            // Remove disallowed Unicode characters.
+            $value = \core_text::remove_unicode_non_characters($value);
+
             // Replace all groups of line breaks and spaces by single spaces.
-            $this->data[$fieldname] = preg_replace("/\s+/", " ", $value);
+            $this->data[$fieldname] = preg_replace("/\s+/u", " ", $value);
+            if ($this->data[$fieldname] === null) {
+                if (isset($this->data['id'])) {
+                    $docid = $this->data['id'];
+                } else {
+                    $docid = '(unknown)';
+                }
+                throw new \moodle_exception('error_indexing', 'search', '', null, '"' . $fieldname .
+                        '" value causes preg_replace error (may be caused by unusual characters) ' .
+                        'in document with id "' . $docid . '"');
+            }
         }
 
         return $this->data[$fieldname];
@@ -555,14 +583,20 @@ class document implements \renderable, \templatable {
      * Although content is a required field when setting up the document, it accepts '' (empty) values
      * as they may be the result of striping out HTML.
      *
+     * SECURITY NOTE: It is the responsibility of the document to properly escape any text to be displayed.
+     * The renderer will output the content without any further cleaning.
+     *
      * @param renderer_base $output The renderer.
      * @return array
      */
     public function export_for_template(\renderer_base $output) {
         list($componentname, $areaname) = \core_search\manager::extract_areaid_parts($this->get('areaid'));
 
-        $title = $this->is_set('title') ? $this->format_text($this->get('title')) : '';
+        $searcharea = \core_search\manager::get_search_area($this->data['areaid']);
+        $title = $this->is_set('title') ? $this->format_text($searcharea->get_document_display_title($this)) : '';
         $data = [
+            'componentname' => $componentname,
+            'areaname' => $areaname,
             'courseurl' => course_get_url($this->get('courseid')),
             'coursefullname' => format_string($this->get('coursefullname'), true, array('context' => $this->get('contextid'))),
             'modified' => userdate($this->get('modified')),
@@ -580,13 +614,13 @@ class document implements \renderable, \templatable {
             if (count($files) > 1) {
                 $filenames = array();
                 foreach ($files as $file) {
-                    $filenames[] = $file->get_filename();
+                    $filenames[] = format_string($file->get_filename(), true, array('context' => $this->get('contextid')));
                 }
                 $data['multiplefiles'] = true;
                 $data['filenames'] = $filenames;
             } else {
                 $file = reset($files);
-                $data['filename'] = $file->get_filename();
+                $data['filename'] = format_string($file->get_filename(), true, array('context' => $this->get('contextid')));
             }
         }
 

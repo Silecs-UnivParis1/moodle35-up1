@@ -234,20 +234,9 @@ class filter_manager {
 
     /**
      * @deprecated Since Moodle 3.0 MDL-50491. This was used by the old text filtering system, but no more.
-     * @todo MDL-50632 This will be deleted in Moodle 3.2.
-     * @param context $context the context.
-     * @return string the hash.
      */
-    public function text_filtering_hash($context) {
-        debugging('filter_manager::text_filtering_hash() is deprecated. ' .
-                'It was an internal part of the old format_text caching, ' .
-                'and should not have been called from other code.', DEBUG_DEVELOPER);
-        $filters = $this->get_text_filters($context);
-        $hashes = array();
-        foreach ($filters as $filter) {
-            $hashes[] = $filter->hash();
-        }
-        return implode('-', $hashes);
+    public function text_filtering_hash() {
+        throw new coding_exception('filter_manager::text_filtering_hash() can not be used any more');
     }
 
     /**
@@ -272,6 +261,36 @@ class filter_manager {
             $filter->setup($page, $context);
         }
     }
+
+    /**
+     * Setup the page for globally available filters.
+     *
+     * This helps setting up the page for filters which may be applied to
+     * the page, even if they do not belong to the current context, or are
+     * not yet visible because the content is lazily added (ajax). This method
+     * always uses to the system context which determines the globally
+     * available filters.
+     *
+     * This should only ever be called once per request.
+     *
+     * @param moodle_page $page The page.
+     * @since Moodle 3.2
+     */
+    public function setup_page_for_globally_available_filters($page) {
+        $context = context_system::instance();
+        $filterdata = filter_get_globally_enabled_filters_with_config();
+        foreach ($filterdata as $name => $config) {
+            if (isset($this->textfilters[$context->id][$name])) {
+                $filter = $this->textfilters[$context->id][$name];
+            } else {
+                $filter = $this->make_filter_object($name, $context, $config);
+                if (is_null($filter)) {
+                    continue;
+                }
+            }
+            $filter->setup($page, $context);
+        }
+    }
 }
 
 
@@ -283,20 +302,38 @@ class filter_manager {
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class null_filter_manager {
+    /**
+     * As for the equivalent {@link filter_manager} method.
+     *
+     * @param string $text The text to filter
+     * @param context $context not used.
+     * @param array $options not used
+     * @param array $skipfilters not used
+     * @return string resulting text.
+     */
     public function filter_text($text, $context, array $options = array(),
             array $skipfilters = null) {
         return $text;
     }
 
+    /**
+     * As for the equivalent {@link filter_manager} method.
+     *
+     * @param string $string The text to filter
+     * @param context $context not used.
+     * @return string resulting string
+     */
     public function filter_string($string, $context) {
         return $string;
     }
 
+    /**
+     * As for the equivalent {@link filter_manager} method.
+     *
+     * @deprecated Since Moodle 3.0 MDL-50491.
+     */
     public function text_filtering_hash() {
-        debugging('filter_manager::text_filtering_hash() is deprecated. ' .
-                'It was an internal part of the old format_text caching, ' .
-                'and should not have been called from other code.', DEBUG_DEVELOPER);
-        return '';
+        throw new coding_exception('filter_manager::text_filtering_hash() can not be used any more');
     }
 }
 
@@ -387,14 +424,9 @@ abstract class moodle_text_filter {
 
     /**
      * @deprecated Since Moodle 3.0 MDL-50491. This was used by the old text filtering system, but no more.
-     * @todo MDL-50632 This will be deleted in Moodle 3.2.
-     * @return string The class name of the current class
      */
     public function hash() {
-        debugging('moodle_text_filter::hash() is deprecated. ' .
-                'It was an internal part of the old format_text caching, ' .
-                'and should not have been called from other code.', DEBUG_DEVELOPER);
-        return __CLASS__;
+        throw new coding_exception('moodle_text_filter::hash() can not be used any more');
     }
 
     /**
@@ -418,9 +450,9 @@ abstract class moodle_text_filter {
     /**
      * Override this function to actually implement the filtering.
      *
-     * @param $text some HTML content.
+     * @param string $text some HTML content to process.
      * @param array $options options passed to the filters
-     * @return the HTML content after the filtering has been applied.
+     * @return string the HTML content after the filtering has been applied.
      */
     public abstract function filter($text, array $options = array());
 }
@@ -509,8 +541,6 @@ function filter_get_name($filter) {
  * sorted in alphabetical order of name.
  */
 function filter_get_all_installed() {
-    global $CFG;
-
     $filternames = array();
     foreach (core_component::get_plugin_list('filter') as $filter => $fulldir) {
         if (is_readable("$fulldir/filter.php")) {
@@ -681,17 +711,62 @@ function filter_is_enabled($filtername) {
  * @return array where the keys and values are both the filter name, like 'tex'.
  */
 function filter_get_globally_enabled() {
-    static $enabledfilters = null;
-    if (is_null($enabledfilters)) {
-        $filters = filter_get_global_states();
-        $enabledfilters = array();
-        foreach ($filters as $filter => $filerinfo) {
-            if ($filerinfo->active != TEXTFILTER_DISABLED) {
-                $enabledfilters[$filter] = $filter;
-            }
+    $cache = \cache::make_from_params(\cache_store::MODE_REQUEST, 'core_filter', 'global_filters');
+    $enabledfilters = $cache->get('enabled');
+    if ($enabledfilters !== false) {
+        return $enabledfilters;
+    }
+
+    $filters = filter_get_global_states();
+    $enabledfilters = array();
+    foreach ($filters as $filter => $filerinfo) {
+        if ($filerinfo->active != TEXTFILTER_DISABLED) {
+            $enabledfilters[$filter] = $filter;
         }
     }
+
+    $cache->set('enabled', $enabledfilters);
     return $enabledfilters;
+}
+
+/**
+ * Get the globally enabled filters.
+ *
+ * This returns the filters which could be used in any context. Essentially
+ * the filters which are not disabled for the entire site.
+ *
+ * @return array Keys are filter names, and values the config.
+ */
+function filter_get_globally_enabled_filters_with_config() {
+    global $DB;
+
+    $sql = "SELECT f.filter, fc.name, fc.value
+              FROM {filter_active} f
+         LEFT JOIN {filter_config} fc
+                ON fc.filter = f.filter
+               AND fc.contextid = f.contextid
+             WHERE f.contextid = :contextid
+               AND f.active != :disabled
+          ORDER BY f.sortorder";
+
+    $rs = $DB->get_recordset_sql($sql, [
+        'contextid' => context_system::instance()->id,
+        'disabled' => TEXTFILTER_DISABLED
+    ]);
+
+    // Massage the data into the specified format to return.
+    $filters = array();
+    foreach ($rs as $row) {
+        if (!isset($filters[$row->filter])) {
+            $filters[$row->filter] = array();
+        }
+        if ($row->name !== null) {
+            $filters[$row->filter][$row->name] = $row->value;
+        }
+    }
+    $rs->close();
+
+    return $filters;
 }
 
 /**
@@ -957,7 +1032,7 @@ function filter_preload_activities(course_modinfo $modinfo) {
 
     // Get all filter_active rows relating to all these contexts
     list ($sql, $params) = $DB->get_in_or_equal($allcontextids);
-    $filteractives = $DB->get_records_select('filter_active', "contextid $sql", $params);
+    $filteractives = $DB->get_records_select('filter_active', "contextid $sql", $params, 'sortorder');
 
     // Get all filter_config only for the cm contexts
     list ($sql, $params) = $DB->get_in_or_equal($cmcontextids);
@@ -1189,7 +1264,7 @@ function filter_phrases($text, &$link_array, $ignoretagsopen=NULL, $ignoretagscl
         // A list of open/close tags that we should not replace within
         // Extended to include <script>, <textarea>, <select> and <a> tags
         // Regular expression allows tags with or without attributes
-        $filterignoretagsopen  = array('<head>' , '<nolink>' , '<span class="nolink">',
+        $filterignoretagsopen  = array('<head>' , '<nolink>' , '<span(\s[^>]*?)?class="nolink"(\s[^>]*?)?>',
                 '<script(\s[^>]*?)?>', '<textarea(\s[^>]*?)?>',
                 '<select(\s[^>]*?)?>', '<a(\s[^>]*?)?>');
         $filterignoretagsclose = array('</head>', '</nolink>', '</span>',
@@ -1377,9 +1452,10 @@ function filter_phrases($text, &$link_array, $ignoretagsopen=NULL, $ignoretagscl
 }
 
 /**
- * @todo Document this function
- * @param array $linkarray
- * @return array
+ * Remove duplicate from a list of {@link filterobject}.
+ *
+ * @param filterobject[] $linkarray a list of filterobject.
+ * @return filterobject[] the same list, but with dupicates removed.
  */
 function filter_remove_duplicates($linkarray) {
 
@@ -1476,7 +1552,7 @@ function filter_add_javascript($text) {
     <script type=\"text/javascript\">
     <!--
         function openpopup(url,name,options,fullscreen) {
-          fullurl = \"".$CFG->httpswwwroot."\" + url;
+          fullurl = \"".$CFG->wwwroot."\" + url;
           windowobj = window.open(fullurl,name,options);
           if (fullscreen) {
             windowobj.moveTo(0,0);

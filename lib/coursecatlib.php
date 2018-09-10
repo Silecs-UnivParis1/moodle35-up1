@@ -212,7 +212,7 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
     /**
      * Returns coursecat object for requested category
      *
-     * If category is not visible to user it is treated as non existing
+     * If category is not visible to the given user, it is treated as non existing
      * unless $alwaysreturnhidden is set to true
      *
      * If id is 0, the pseudo object for root category is returned (convenient
@@ -226,10 +226,11 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
      *     returned even if this category is not visible to the current user
      *     (category is hidden and user does not have
      *     'moodle/category:viewhiddencategories' capability). Use with care!
+     * @param int|stdClass $user The user id or object. By default (null) checks the visibility to the current user.
      * @return null|coursecat
      * @throws moodle_exception
      */
-    public static function get($id, $strictness = MUST_EXIST, $alwaysreturnhidden = false) {
+    public static function get($id, $strictness = MUST_EXIST, $alwaysreturnhidden = false, $user = null) {
         if (!$id) {
             if (!isset(self::$coursecat0)) {
                 $record = new stdClass();
@@ -251,7 +252,7 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
                 $coursecatrecordcache->set($id, $coursecat);
             }
         }
-        if ($coursecat && ($alwaysreturnhidden || $coursecat->is_uservisible())) {
+        if ($coursecat && ($alwaysreturnhidden || $coursecat->is_uservisible($user))) {
             return $coursecat;
         } else {
             if ($strictness == MUST_EXIST) {
@@ -289,6 +290,48 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
             $coursecatrecordcache->set_many($toset);
         }
         return $categories;
+    }
+
+    /**
+     * Load all coursecat objects.
+     *
+     * @param   array   $options Options:
+     * @param   bool    $options.returnhidden Return categories even if they are hidden
+     * @return  coursecat[]
+     */
+    public static function get_all($options = []) {
+        global $DB;
+
+        $coursecatrecordcache = cache::make('core', 'coursecatrecords');
+
+        $catcontextsql = \context_helper::get_preload_record_columns_sql('ctx');
+        $catsql = "SELECT cc.*, {$catcontextsql}
+                     FROM {course_categories} cc
+                     JOIN {context} ctx ON cc.id = ctx.instanceid";
+        $catsqlwhere = "WHERE ctx.contextlevel = :contextlevel";
+        $catsqlorder = "ORDER BY cc.depth ASC, cc.sortorder ASC";
+
+        $catrs = $DB->get_recordset_sql("{$catsql} {$catsqlwhere} {$catsqlorder}", [
+            'contextlevel' => CONTEXT_COURSECAT,
+        ]);
+
+        $types['categories'] = [];
+        $categories = [];
+        $toset = [];
+        foreach ($catrs as $record) {
+            $category = new coursecat($record);
+            $toset[$category->id] = $category;
+
+            if (!empty($options['returnhidden']) || $category->is_uservisible()) {
+                $categories[$record->id] = $category;
+            }
+        }
+        $catrs->close();
+
+        $coursecatrecordcache->set_many($toset);
+
+        return $categories;
+
     }
 
     /**
@@ -361,15 +404,13 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         $newcategory->name = $data->name;
 
         // Validate and set idnumber.
-        if (!empty($data->idnumber)) {
+        if (isset($data->idnumber)) {
             if (core_text::strlen($data->idnumber) > 100) {
                 throw new moodle_exception('idnumbertoolong');
             }
-            if ($DB->record_exists('course_categories', array('idnumber' => $data->idnumber))) {
+            if (strval($data->idnumber) !== '' && $DB->record_exists('course_categories', array('idnumber' => $data->idnumber))) {
                 throw new moodle_exception('categoryidnumbertaken');
             }
-        }
-        if (isset($data->idnumber)) {
             $newcategory->idnumber = $data->idnumber;
         }
 
@@ -484,11 +525,11 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
             $newcategory->name = $data->name;
         }
 
-        if (isset($data->idnumber) && $data->idnumber != $this->idnumber) {
+        if (isset($data->idnumber) && $data->idnumber !== $this->idnumber) {
             if (core_text::strlen($data->idnumber) > 100) {
                 throw new moodle_exception('idnumbertoolong');
             }
-            if ($DB->record_exists('course_categories', array('idnumber' => $data->idnumber))) {
+            if (strval($data->idnumber) !== '' && $DB->record_exists('course_categories', array('idnumber' => $data->idnumber))) {
                 throw new moodle_exception('categoryidnumbertaken');
             }
             $newcategory->idnumber = $data->idnumber;
@@ -540,17 +581,18 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
     }
 
     /**
-     * Checks if this course category is visible to current user
+     * Checks if this course category is visible to a user.
      *
      * Please note that methods coursecat::get (without 3rd argumet),
      * coursecat::get_children(), etc. return only visible categories so it is
      * usually not needed to call this function outside of this class
      *
+     * @param int|stdClass $user The user id or object. By default (null) checks the visibility to the current user.
      * @return bool
      */
-    public function is_uservisible() {
+    public function is_uservisible($user = null) {
         return !$this->id || $this->visible ||
-                has_capability('moodle/category:viewhiddencategories', $this->get_context());
+                has_capability('moodle/category:viewhiddencategories', $this->get_context(), $user);
     }
 
     /**
@@ -628,9 +670,7 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         }
         // We must add countall to all in case it was the requested ID.
         $all['countall'] = $count;
-        foreach ($all as $key => $children) {
-            $coursecattreecache->set($key, $children);
-        }
+        $coursecattreecache->set_many($all);
         if (array_key_exists($id, $all)) {
             return $all[$id];
         }
@@ -683,6 +723,9 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
             // No changes to course contacts if role was assigned on the module/block level.
             return;
         }
+
+        // Trigger a purge for all caches listening for changes to category enrolment.
+        cache_helper::purge_by_event('changesincategoryenrolment');
 
         if (!$CFG->coursecontact || !in_array($roleid, explode(',', $CFG->coursecontact))) {
             // The role is not one of course contact roles.
@@ -934,7 +977,7 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         $ctxselect = context_helper::get_preload_record_columns_sql('ctx');
         $fields = array('c.id', 'c.category', 'c.sortorder',
                         'c.shortname', 'c.fullname', 'c.idnumber',
-                        'c.startdate', 'c.visible', 'c.cacherev');
+                        'c.startdate', 'c.enddate', 'c.visible', 'c.cacherev');
         if (!empty($options['summary'])) {
             $fields[] = 'c.summary';
             $fields[] = 'c.summaryformat';
@@ -1134,6 +1177,27 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
     }
 
     /**
+     * Returns an array of ids of categories that are (direct and indirect) children
+     * of this category.
+     *
+     * @return int[]
+     */
+    public function get_all_children_ids() {
+        $children = [];
+        $walk = [$this->id];
+        while (count($walk) > 0) {
+            $catid = array_pop($walk);
+            $directchildren = self::get_tree($catid);
+            if ($directchildren !== false && count($directchildren) > 0) {
+                $walk = array_merge($walk, $directchildren);
+                $children = array_merge($children, $directchildren);
+            }
+        }
+
+        return $children;
+    }
+
+    /**
      * Returns true if the user has the manage capability on any category.
      *
      * This method uses the coursecat cache and an entry `has_manage_capability` to speed up
@@ -1260,6 +1324,17 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         global $DB;
         return $DB->record_exists_sql("select 1 from {course} where category = ?",
                 array($this->id));
+    }
+
+    /**
+     * Get the link used to view this course category.
+     *
+     * @return  \moodle_url
+     */
+    public function get_view_link() {
+        return new \moodle_url('/course/index.php', [
+            'categoryid' => $this->id,
+        ]);
     }
 
     /**
@@ -1707,6 +1782,9 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
             throw new moodle_exception('cannotdeletecategoryquestions', '', '', $this->get_formatted_name());
         }
 
+        // Delete all events in the category.
+        $DB->delete_records('event', array('categoryid' => $this->id));
+
         // Finally delete the category and it's context.
         $DB->delete_records('course_categories', array('id' => $this->id));
 
@@ -1843,6 +1921,7 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         }
 
         if ($coursesids) {
+            require_once($CFG->dirroot.'/course/lib.php');
             if (!move_courses($coursesids, $newparentid)) {
                 if ($showfeedback) {
                     echo $OUTPUT->notification("Error moving courses");
@@ -2159,6 +2238,32 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         } else {
             return get_string('top');
         }
+    }
+
+    /**
+     * Get the nested name of this category, with all of it's parents.
+     *
+     * @param   bool    $includelinks Whether to wrap each name in the view link for that category.
+     * @param   string  $separator The string between each name.
+     * @param   array   $options Formatting options.
+     * @return  string
+     */
+    public function get_nested_name($includelinks = true, $separator = ' / ', $options = []) {
+        // Get the name of hierarchical name of this category.
+        $parents = $this->get_parents();
+        $categories = static::get_many($parents);
+        $categories[] = $this;
+
+        $names = array_map(function($category) use ($options, $includelinks) {
+            if ($includelinks) {
+                return html_writer::link($category->get_view_link(), $category->get_formatted_name($options));
+            } else {
+                return $category->get_formatted_name($options);
+            }
+
+        }, $categories);
+
+        return implode($separator, $names);
     }
 
     /**
@@ -2745,6 +2850,7 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
  * @property-read int $showgrades Retrieved from DB on first request
  * @property-read int $newsitems Retrieved from DB on first request
  * @property-read int $startdate
+ * @property-read int $enddate
  * @property-read int $marker Retrieved from DB on first request
  * @property-read int $maxbytes Retrieved from DB on first request
  * @property-read int $legacyfiles Retrieved from DB on first request

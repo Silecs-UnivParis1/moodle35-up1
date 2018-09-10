@@ -34,17 +34,20 @@ Feature: A user can navigate to previous and next discussions
       | activity   | name                   | intro             | course | idnumber     | groupmode |
       | forum      | Test forum name        | Test forum name   | C1     | forum        | 0         |
     And I log in as "teacher1"
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
     And I follow "Test forum name"
     And I add a new discussion to "Test forum name" forum with:
       | Subject | Discussion 1 |
       | Message | Test post message |
+    And I wait "1" seconds
     And I add a new discussion to "Test forum name" forum with:
       | Subject | Discussion 2 |
       | Message | Test post message |
+    And I wait "1" seconds
     And I add a new discussion to "Test forum name" forum with:
       | Subject | Discussion 3 |
       | Message | Test post message |
+    And I wait "1" seconds
     When I follow "Discussion 3"
     Then I should not see "Discussion 1"
     And I should see "Discussion 2"
@@ -58,7 +61,6 @@ Feature: A user can navigate to previous and next discussions
     And I set the following fields to these values:
       | Message | Answer to discussion |
     And I press "Post to forum"
-    And I wait to be redirected
     And I should not see "Discussion 2"
     And I should see "Discussion 3"
     And I follow "Discussion 3"
@@ -73,7 +75,7 @@ Feature: A user can navigate to previous and next discussions
       | activity   | name                   | intro             | course | idnumber     | groupmode |
       | forum      | Test forum name        | Test forum name   | C1     | forum        | 2         |
     And I log in as "teacher1"
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
     And I follow "Test forum name"
     And I add a new discussion to "Test forum name" forum with:
       | Subject | Discussion 1 Group 0 |
@@ -99,7 +101,7 @@ Feature: A user can navigate to previous and next discussions
       | Group   | Group 2 |
     And I log out
     When I log in as "student1"
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
     And I follow "Test forum name"
     And I select "All participants" from the "Visible groups" singleselect
     And I follow "Discussion 1 Group 0"
@@ -130,7 +132,7 @@ Feature: A user can navigate to previous and next discussions
       | activity   | name                   | intro             | course | idnumber     | groupmode |
       | forum      | Test forum name        | Test forum name   | C1     | forum        | 1         |
     And I log in as "teacher1"
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
     And I follow "Test forum name"
     And I add a new discussion to "Test forum name" forum with:
       | Subject | Discussion 1 Group 0 |
@@ -156,7 +158,7 @@ Feature: A user can navigate to previous and next discussions
       | Group   | Group 2 |
     And I log out
     When I log in as "student1"
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
     And I follow "Test forum name"
     And I follow "Discussion 1 Group 1"
     Then I should see "Discussion 2 Group 0"

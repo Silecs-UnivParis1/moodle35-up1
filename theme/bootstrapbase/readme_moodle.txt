@@ -37,3 +37,24 @@ https://github.com/aFarkas/html5shiv/blob/master/src/html5shiv.js
 To update to the latest release of html5shiv:
 * download and replace: javascript/html5shiv.js
 * update ./thirdpartylibs.xml
+
+variables.less
+------------
+The calculations for the following variables have been enclosed in parentheses in order for them to be correctly output
+in the compiled CSS (MDL-53152):
+* @fontSizeLarge
+* @fontSizeSmall
+* @fontSizeMini
+* @inputHeight
+* @navbarCollapseDesktopWidth
+* @popoverArrowOuterWidth
+* @gridRowWidth
+* @gridRowWidth1200
+* @gridRowWidth768
+
+popovers.less
+-------------
+MDL-60250 - The '/*rtl:ignore*/' directive has been added to the 'left' attribute of the 'popover' class so that
+the rtlcss-php tool (https://github.com/moodlehq/rtlcss-php) does not flip this to a 'right' attribute and cause
+the popover to be misplaced on the page when the JavaScript calculates the postion of the popover and adds an
+overriding inline CSS 'left' attribute which is fine in LTR languages but confuses it in RTL languages.

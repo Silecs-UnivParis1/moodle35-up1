@@ -76,13 +76,16 @@ class profile_field_datetime extends custominfo_field_base {
      * @since Moodle 2.5
      */
     public function edit_save_data_preprocess($datetime, $datarecord) {
-        // If timestamp then explode it to check if year is within field limit.
-        $isstring = strpos($datetime, '-');
-        if (empty($isstring)) {
-            $datetime = userdate($datetime, '%Y-%m-%d-%H-%M-%S');
+        if (!$datetime) {
+            return 0;
         }
-        $datetime = explode('-', $datetime);
 
+        if (is_numeric($datetime)) {
+            $gregoriancalendar = \core_calendar\type_factory::get_calendar_instance('gregorian');
+            $datetime = $gregoriancalendar->timestamp_to_date_string($datetime, '%Y-%m-%d-%H-%M-%S', 99, true, true);
+        }
+
+        $datetime = explode('-', $datetime);
         // Bound year with start and end year.
         $datetime[0] = min(max($datetime[0], $this->field->param1), $this->field->param2);
 
@@ -119,5 +122,16 @@ class profile_field_datetime extends custominfo_field_base {
      */
     public function is_empty() {
         return empty($this->data);
+    }
+
+    /**
+     * Return the field type and null properties.
+     * This will be used for validating the data submitted by a user.
+     *
+     * @return array the param type and null property
+     * @since Moodle 3.2
+     */
+    public function get_field_properties() {
+        return array(PARAM_INT, NULL_NOT_ALLOWED);
     }
 }

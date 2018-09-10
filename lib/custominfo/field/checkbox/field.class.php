@@ -14,6 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Strings for component 'profilefield_checkbox', language 'en', branch 'MOODLE_20_STABLE'
+ *
+ * @package   profilefield_checkbox
+ * @copyright  2008 onwards Shane Elliot {@link http://pukunui.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/**
+ * Class profile_field_checkbox
+ *
+ * @copyright  2008 onwards Shane Elliot {@link http://pukunui.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class profile_field_checkbox extends custominfo_field_base {
 
     /**
@@ -45,9 +59,9 @@ class profile_field_checkbox extends custominfo_field_base {
      *
      * @deprecated since Moodle 3.1
      */
-    public function profile_field_checkbox($fieldid=0, $userid=0) {
+    public function profile_field_checkbox($fieldid=0, $userid=0, $objectid=0) {
         debugging('Use of class name as constructor is deprecated', DEBUG_DEVELOPER);
-        self::__construct($fieldid, $userid);
+        self::__construct($fieldid, $userid, $objectid);
     }
 
     /**
@@ -78,6 +92,16 @@ class profile_field_checkbox extends custominfo_field_base {
         return '<input disabled="disabled" type="checkbox" name="'.$this->inputname.'" '.$checked.' />';
     }
 
+    /**
+     * Return the field type and null properties.
+     * This will be used for validating the data submitted.
+     *
+     * @return array the param type and null property
+     * @since Moodle 3.2
+     */
+    public function get_field_properties() {
+        return array(PARAM_BOOL, NULL_NOT_ALLOWED);
+    }
 }
 
 

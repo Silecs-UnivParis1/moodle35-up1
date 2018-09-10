@@ -51,6 +51,8 @@ $edit = optional_param('edit', -1, PARAM_BOOL);
 $action = optional_param('action', '', PARAM_ALPHA);
 $swid = optional_param('swid', 0, PARAM_INT); // Subwiki ID
 
+$PAGE->force_settings_menu();
+
 /*
  * Case 0:
  *
@@ -68,7 +70,7 @@ if ($id) {
     // Checking course instance
     $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 
-    require_login($course, true, $cm);
+    require_course_login($course, true, $cm);
 
     // Checking wiki instance
     if (!$wiki = wiki_get_wiki($cm->instance)) {
@@ -140,7 +142,7 @@ if ($id) {
     // Checking course instance
     $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 
-    require_login($course, true, $cm);
+    require_course_login($course, true, $cm);
     /*
      * Case 2:
      *
@@ -171,9 +173,13 @@ if ($id) {
     // Checking course instance
     $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 
-    require_login($course, true, $cm);
+    require_course_login($course, true, $cm);
 
     $groupmode = groups_get_activity_groupmode($cm);
+
+    // This is where people will land when they change groups using the drop-down selector.
+    // Set the activity group so tabs and content are shown correctly.
+    $currentgroup = groups_get_activity_group($cm, true);
 
     if ($wiki->wikimode == 'individual' && ($groupmode == SEPARATEGROUPS || $groupmode == VISIBLEGROUPS)) {
         list($gid, $uid) = explode('-', $groupanduser);

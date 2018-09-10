@@ -658,7 +658,7 @@ class grade_category extends grade_object {
 
                 // If successful trigger a user_graded event.
                 if ($success) {
-                    \core\event\user_graded::create_from_grade($grade)->trigger();
+                    \core\event\user_graded::create_from_grade($grade, \core\event\base::USER_OTHER)->trigger();
                 }
             }
             $dropped = $grade_values;
@@ -743,7 +743,7 @@ class grade_category extends grade_object {
 
                 // If successful trigger a user_graded event.
                 if ($success) {
-                    \core\event\user_graded::create_from_grade($grade)->trigger();
+                    \core\event\user_graded::create_from_grade($grade, \core\event\base::USER_OTHER)->trigger();
                 }
             }
             $this->set_usedinaggregation($userid, $usedweights, $novalue, $dropped, $extracredit);
@@ -786,7 +786,7 @@ class grade_category extends grade_object {
 
             // If successful trigger a user_graded event.
             if ($success) {
-                \core\event\user_graded::create_from_grade($grade)->trigger();
+                \core\event\user_graded::create_from_grade($grade, \core\event\base::USER_OTHER)->trigger();
             }
         }
 
@@ -996,6 +996,8 @@ class grade_category extends grade_object {
                                                        & $weights = null,
                                                        $grademinoverrides = array(),
                                                        $grademaxoverrides = array()) {
+        global $CFG;
+
         $category_item = $this->load_grade_item();
         $grademin = $category_item->grademin;
         $grademax = $category_item->grademax;
@@ -1283,8 +1285,9 @@ class grade_category extends grade_object {
 
                 // This setting indicates if we should use algorithm prior to MDL-49257 fix for calculating extra credit weights.
                 // Even though old algorith has bugs in it, we need to preserve existing grades.
-                $gradebookcalculationfreeze = (int)get_config('core', 'gradebook_calculations_freeze_' . $this->courseid);
-                $oldextracreditcalculation = $gradebookcalculationfreeze && ($gradebookcalculationfreeze <= 20150619);
+                $gradebookcalculationfreeze = 'gradebook_calculations_freeze_' . $this->courseid;
+                $oldextracreditcalculation = isset($CFG->$gradebookcalculationfreeze)
+                        && ($CFG->$gradebookcalculationfreeze <= 20150619);
 
                 $sumweights = 0;
                 $grademin = 0;
@@ -1479,7 +1482,7 @@ class grade_category extends grade_object {
      * @return void
      */
     private function auto_update_max() {
-        global $DB;
+        global $CFG, $DB;
         if ($this->aggregation != GRADE_AGGREGATE_SUM) {
             // not needed at all
             return;
@@ -1491,11 +1494,10 @@ class grade_category extends grade_object {
 
         // Check to see if the gradebook is frozen. This allows grades to not be altered at all until a user verifies that they
         // wish to update the grades.
-        $gradebookcalculationsfreeze = get_config('core', 'gradebook_calculations_freeze_' . $this->courseid);
+        $gradebookcalculationfreeze = 'gradebook_calculations_freeze_' . $this->courseid;
+        $oldextracreditcalculation = isset($CFG->$gradebookcalculationfreeze) && ($CFG->$gradebookcalculationfreeze <= 20150627);
         // Only run if the gradebook isn't frozen.
-        if ($gradebookcalculationsfreeze && (int)$gradebookcalculationsfreeze <= 20150627) {
-            // Do nothing.
-        } else{
+        if (!$oldextracreditcalculation) {
             // Don't automatically update the max for calculated items.
             if ($this->grade_item->is_calculated()) {
                 return;
@@ -2307,10 +2309,12 @@ class grade_category extends grade_object {
         // For a course category, we return the course name if the fullname is set to '?' in the DB (empty in the category edit form)
         if (empty($this->parent) && $this->fullname == '?') {
             $course = $DB->get_record('course', array('id'=> $this->courseid));
-            return format_string($course->fullname);
+            return format_string($course->fullname, false, array("context" => context_course::instance($this->courseid)));
 
         } else {
-            return $this->fullname;
+            // Grade categories can't be set up at system context (unlike scales and outcomes)
+            // We therefore must have a courseid, and don't need to handle system contexts when filtering.
+            return format_string($this->fullname, false, array("context" => context_course::instance($this->courseid)));
         }
     }
 

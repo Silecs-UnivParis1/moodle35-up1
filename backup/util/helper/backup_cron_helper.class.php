@@ -264,7 +264,8 @@ abstract class backup_cron_automated_helper {
             $subject = $prefix.get_string('automatedbackupstatus', 'backup');
 
             //Send the message
-            $eventdata = new stdClass();
+            $eventdata = new \core\message\message();
+            $eventdata->courseid          = SITEID;
             $eventdata->modulename        = 'moodle';
             $eventdata->userfrom          = $admin;
             $eventdata->userto            = $admin;
@@ -729,9 +730,16 @@ abstract class backup_cron_automated_helper {
     protected static function is_course_modified($courseid, $since) {
         $logmang = get_log_manager();
         $readers = $logmang->get_readers('core\log\sql_reader');
-        $where = "courseid = :courseid and timecreated > :since and crud <> 'r'";
         $params = array('courseid' => $courseid, 'since' => $since);
-        foreach ($readers as $reader) {
+
+        foreach ($readers as $readerpluginname => $reader) {
+            $where = "courseid = :courseid and timecreated > :since and crud <> 'r'";
+
+            // Prevent logs of prevous backups causing a false positive.
+            if ($readerpluginname != 'logstore_legacy') {
+                $where .= " and target <> 'course_backup'";
+            }
+
             if ($reader->get_events_select_count($where, $params)) {
                 return true;
             }

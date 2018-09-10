@@ -267,7 +267,18 @@ class qformat_gift_test extends question_testcase {
         $this->assert_same_gift($expectedgift, $gift);
     }
 
-    public function test_import_multichoice() {
+    /**
+     * Test import of multichoice question in GIFT format
+     *
+     * @dataProvider numberingstyle_provider
+     *
+     * @param string $numberingstyle multichoice numbering style to set for qtype_multichoice
+     *
+     */
+    public function test_import_multichoice($numberingstyle) {
+        $this->resetAfterTest(true);
+
+        set_config('answernumbering', $numberingstyle, 'qtype_multichoice');
         $gift = "
 // multiple choice with specified feedback for right and wrong answers
 ::Q2:: What's between orange and green in the spectrum?
@@ -293,7 +304,7 @@ class qformat_gift_test extends question_testcase {
             'length' => 1,
             'single' => 1,
             'shuffleanswers' => '1',
-            'answernumbering' => 'abc',
+            'answernumbering' => $numberingstyle,
             'correctfeedback' => array(
                 'text' => '',
                 'format' => FORMAT_MOODLE,
@@ -350,6 +361,23 @@ class qformat_gift_test extends question_testcase {
         $this->assertEquals($expectedq->answer, $q->answer);
         $this->assertEquals($expectedq->feedback, $q->feedback);
         $this->assert(new question_check_specified_fields_expectation($expectedq), $q);
+    }
+
+    /**
+     * Return a list of numbering styles (see question/type/multichoice/questiontype.php
+     * for valid choices)
+     *
+     * @return array Array of 1-element arrays of qtype_multichoice numbering styles
+     */
+    public function numberingstyle_provider() {
+        return [
+            ['abc'],
+            ['ABCD'],
+            ['123'],
+            ['iii'],
+            ['IIII'],
+            ['none']
+        ];
     }
 
     public function test_import_multichoice_multi() {
@@ -448,6 +476,91 @@ class qformat_gift_test extends question_testcase {
         $this->assert(new question_check_specified_fields_expectation($expectedq), $q);
     }
 
+    public function test_import_multichoice_multi_tricky() {
+        $gift = "
+// multiple choice, multiple response with specified feedback for right and wrong answers
+::colours:: What's between orange and green in the spectrum?
+{
+    ~%100%yellow # right; good!
+    ~%-50%red # wrong
+    ~%-50%blue # wrong
+}";
+        $lines = preg_split('/[\\n\\r]/', str_replace("\r\n", "\n", $gift));
+
+        $importer = new qformat_gift();
+        $q = $importer->readquestion($lines);
+
+        $expectedq = (object) array(
+                'name' => 'colours',
+                'questiontext' => "What's between orange and green in the spectrum?",
+                'questiontextformat' => FORMAT_MOODLE,
+                'generalfeedback' => '',
+                'generalfeedbackformat' => FORMAT_MOODLE,
+                'qtype' => 'multichoice',
+                'defaultmark' => 1,
+                'penalty' => 0.3333333,
+                'length' => 1,
+                'single' => 0,
+                'shuffleanswers' => '1',
+                'answernumbering' => 'abc',
+                'correctfeedback' => array(
+                        'text' => '',
+                        'format' => FORMAT_MOODLE,
+                        'files' => array(),
+                ),
+                'partiallycorrectfeedback' => array(
+                        'text' => '',
+                        'format' => FORMAT_MOODLE,
+                        'files' => array(),
+                ),
+                'incorrectfeedback' => array(
+                        'text' => '',
+                        'format' => FORMAT_MOODLE,
+                        'files' => array(),
+                ),
+                'answer' => array(
+                        0 => array(
+                                'text' => 'yellow',
+                                'format' => FORMAT_MOODLE,
+                                'files' => array(),
+                        ),
+                        1 => array(
+                                'text' => 'red',
+                                'format' => FORMAT_MOODLE,
+                                'files' => array(),
+                        ),
+                        2 => array(
+                                'text' => 'blue',
+                                'format' => FORMAT_MOODLE,
+                                'files' => array(),
+                        ),
+                ),
+                'fraction' => array(1, -0.5, -0.5),
+                'feedback' => array(
+                        0 => array(
+                                'text' => 'right; good!',
+                                'format' => FORMAT_MOODLE,
+                                'files' => array(),
+                        ),
+                        1 => array(
+                                'text' => "wrong",
+                                'format' => FORMAT_MOODLE,
+                                'files' => array(),
+                        ),
+                        2 => array(
+                                'text' => "wrong",
+                                'format' => FORMAT_MOODLE,
+                                'files' => array(),
+                        ),
+                ),
+        );
+
+        // Repeated test for better failure messages.
+        $this->assertEquals($expectedq->answer, $q->answer);
+        $this->assertEquals($expectedq->feedback, $q->feedback);
+        $this->assert(new question_check_specified_fields_expectation($expectedq), $q);
+    }
+
     public function test_export_multichoice() {
         $qdata = (object) array(
             'id' => 666 ,
@@ -507,6 +620,72 @@ class qformat_gift_test extends question_testcase {
 \t=yellow#right; good!
 \t~red#[html]wrong, it's yellow
 \t~[plain]blue#wrong, it's yellow
+}
+
+";
+
+        $this->assert_same_gift($expectedgift, $gift);
+    }
+
+    public function test_export_multichoice_multi_tricky() {
+        $qdata = (object) array(
+            'id' => 666 ,
+            'name' => 'Q8',
+            'questiontext' => "What's between orange and green in the spectrum?",
+            'questiontextformat' => FORMAT_MOODLE,
+            'generalfeedback' => '',
+            'generalfeedbackformat' => FORMAT_MOODLE,
+            'defaultmark' => 1,
+            'penalty' => 0.3333333,
+            'length' => 1,
+            'qtype' => 'multichoice',
+            'options' => (object) array(
+                'single' => 0,
+                'shuffleanswers' => '1',
+                'answernumbering' => 'abc',
+                'correctfeedback' => '',
+                'correctfeedbackformat' => FORMAT_MOODLE,
+                'partiallycorrectfeedback' => '',
+                'partiallycorrectfeedbackformat' => FORMAT_MOODLE,
+                'incorrectfeedback' => '',
+                'incorrectfeedbackformat' => FORMAT_MOODLE,
+                'answers' => array(
+                    123 => (object) array(
+                        'id' => 123,
+                        'answer' => 'yellow',
+                        'answerformat' => FORMAT_MOODLE,
+                        'fraction' => 1,
+                        'feedback' => 'right; good!',
+                        'feedbackformat' => FORMAT_MOODLE,
+                    ),
+                    124 => (object) array(
+                        'id' => 124,
+                        'answer' => 'red',
+                        'answerformat' => FORMAT_MOODLE,
+                        'fraction' => -0.5,
+                        'feedback' => "wrong, it's yellow",
+                        'feedbackformat' => FORMAT_MOODLE,
+                    ),
+                    125 => (object) array(
+                        'id' => 125,
+                        'answer' => 'blue',
+                        'answerformat' => FORMAT_MOODLE,
+                        'fraction' => -0.5,
+                        'feedback' => "wrong, it's yellow",
+                        'feedbackformat' => FORMAT_MOODLE,
+                    ),
+                ),
+            ),
+        );
+
+        $exporter = new qformat_gift();
+        $gift = $exporter->writequestion($qdata);
+
+        $expectedgift = "// question: 666  name: Q8
+::Q8::What's between orange and green in the spectrum?{
+\t~%100%yellow#right; good!
+\t~%-50%red#wrong, it's yellow
+\t~%-50%blue#wrong, it's yellow
 }
 
 ";

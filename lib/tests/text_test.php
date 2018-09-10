@@ -345,10 +345,41 @@ class core_text_testcase extends advanced_testcase {
 
     /**
      * Tests the static encode_mimeheader method.
+     * This also tests method moodle_phpmailer::encodeHeader that calls core_text::encode_mimeheader
      */
     public function test_encode_mimeheader() {
+        global $CFG;
+        require_once($CFG->libdir.'/phpmailer/moodle_phpmailer.php');
+        $mailer = new moodle_phpmailer();
+
+        // Encode short string with non-latin characters.
         $str = "Žluťoučký koníček";
-        $this->assertSame('=?utf-8?B?xb1sdcWlb3XEjWvDvSBrb27DrcSNZWs=?=', core_text::encode_mimeheader($str));
+        $encodedstr = '=?utf-8?B?xb1sdcWlb3XEjWvDvSBrb27DrcSNZWs=?=';
+        $this->assertSame($encodedstr, core_text::encode_mimeheader($str));
+        $this->assertSame($encodedstr, $mailer->encodeHeader($str));
+        $this->assertSame('"' . $encodedstr . '"', $mailer->encodeHeader($str, 'phrase'));
+
+        // Encode short string without non-latin characters. Make sure the quotes are escaped in quoted email headers.
+        $latinstr = 'text"with quotes';
+        $this->assertSame($latinstr, core_text::encode_mimeheader($latinstr));
+        $this->assertSame($latinstr, $mailer->encodeHeader($latinstr));
+        $this->assertSame('"text\\"with quotes"', $mailer->encodeHeader($latinstr, 'phrase'));
+
+        // Encode long string without non-latin characters.
+        $longlatinstr = 'This is a very long text that still should not be split into several lines in the email headers because '.
+            'it does not have any non-latin characters. The "quotes" and \\backslashes should be escaped only if it\'s a part of email address';
+        $this->assertSame($longlatinstr, core_text::encode_mimeheader($longlatinstr));
+        $this->assertSame($longlatinstr, $mailer->encodeHeader($longlatinstr));
+        $longlatinstrwithslash = preg_replace(['/\\\\/', "/\"/"], ['\\\\\\', '\\"'], $longlatinstr);
+        $this->assertSame('"' . $longlatinstrwithslash . '"', $mailer->encodeHeader($longlatinstr, 'phrase'));
+
+        // Encode long string with non-latin characters.
+        $longstr = "Неопознанная ошибка в файле C:\\tmp\\: \"Не пользуйтесь виндоуз\"";
+        $encodedlongstr = "=?utf-8?B?0J3QtdC+0L/QvtC30L3QsNC90L3QsNGPINC+0YjQuNCx0LrQsCDQsiDRhNCw?=
+ =?utf-8?B?0LnQu9C1IEM6XHRtcFw6ICLQndC1INC/0L7Qu9GM0LfRg9C50YLQtdGB?=
+ =?utf-8?B?0Ywg0LLQuNC90LTQvtGD0Lci?=";
+        $this->assertSame($encodedlongstr, $mailer->encodeHeader($longstr));
+        $this->assertSame('"' . $encodedlongstr . '"', $mailer->encodeHeader($longstr, 'phrase'));
     }
 
     /**
@@ -379,6 +410,27 @@ class core_text_testcase extends advanced_testcase {
         $bom = "\xef\xbb\xbf";
         $str = "Žluťoučký koníček";
         $this->assertSame($str.$bom, core_text::trim_utf8_bom($bom.$str.$bom));
+    }
+
+    /**
+     * Tests the static remove_unicode_non_characters method.
+     */
+    public function test_remove_unicode_non_characters() {
+        // Confirm that texts which don't contain these characters are unchanged.
+        $this->assertSame('Frogs!', core_text::remove_unicode_non_characters('Frogs!'));
+
+        // Even if they contain some very scary characters.
+        $example = html_entity_decode('A&#xfffd;&#x1d15f;B');
+        $this->assertSame($example, core_text::remove_unicode_non_characters($example));
+
+        // Non-characters are removed wherever they may be, with other characters left.
+        $example = html_entity_decode('&#xfffe;A&#xffff;B&#x8fffe;C&#xfdd0;D&#xfffd;E&#xfdd5;');
+        $expected = html_entity_decode('ABCD&#xfffd;E');
+        $this->assertSame($expected, core_text::remove_unicode_non_characters($example));
+
+        // If you only have a non-character, you get empty string.
+        $example = html_entity_decode('&#xfffe;');
+        $this->assertSame('', core_text::remove_unicode_non_characters($example));
     }
 
     /**

@@ -27,7 +27,16 @@ namespace core_mocksearch\search;
 
 defined('MOODLE_INTERNAL') || die;
 
-class mock_search_area extends \core_search\area\base {
+class mock_search_area extends \core_search\base {
+
+    /** @var float If set, waits when doing the indexing query (seconds) */
+    protected $indexingdelay = 0;
+
+    /**
+     * Multiple context level so we can test get_areas_user_accesses.
+     * @var int[]
+     */
+    protected static $levels = [CONTEXT_COURSE, CONTEXT_USER];
 
     /**
      * To make things easier, base class required config stuff.
@@ -41,8 +50,26 @@ class mock_search_area extends \core_search\area\base {
     public function get_recordset_by_timestamp($modifiedfrom = 0) {
         global $DB;
 
-        // Filter by capability as we want this quick.
-        return $DB->get_recordset_sql("SELECT * FROM {temp_mock_search_area} WHERE timemodified >= ?", array($modifiedfrom));
+        if ($this->indexingdelay) {
+            \testable_core_search::fake_current_time(
+                    \core_search\manager::get_current_time() + $this->indexingdelay);
+        }
+
+        $sql = "SELECT * FROM {temp_mock_search_area} WHERE timemodified >= ? ORDER BY timemodified ASC";
+        return $DB->get_recordset_sql($sql, array($modifiedfrom));
+    }
+
+
+    /**
+     * A helper function that will turn a record into 'data array', for use with document building.
+     */
+    public function convert_record_to_doc_array($record) {
+        $docdata = (array)unserialize($record->info);
+        $docdata['areaid'] = $this->get_area_id();
+        $docdata['itemid'] = $record->id;
+        $docdata['modified'] = $record->timemodified;
+
+        return $docdata;
     }
 
     public function get_document($record, $options = array()) {
@@ -54,6 +81,8 @@ class mock_search_area extends \core_search\area\base {
         $doc = \core_search\document_factory::instance($record->id, $this->componentname, $this->areaname);
         $doc->set('title', $info->title);
         $doc->set('content', $info->content);
+        $doc->set('description1', $info->description1);
+        $doc->set('description2', $info->description2);
         $doc->set('contextid', $info->contextid);
         $doc->set('courseid', $info->courseid);
         $doc->set('userid', $info->userid);
@@ -101,4 +130,18 @@ class mock_search_area extends \core_search\area\base {
     public function get_context_url(\core_search\document $doc) {
         return new \moodle_url('/index.php');
     }
+
+    public function get_visible_name($lazyload = false) {
+        return 'Mock search area';
+    }
+
+    /**
+     * Sets a fake delay to simulate time taken doing the indexing query.
+     *
+     * @param float $seconds Delay in seconds for each time indexing query is called
+     */
+    public function set_indexing_delay($seconds) {
+        $this->indexingdelay = $seconds;
+    }
+
 }

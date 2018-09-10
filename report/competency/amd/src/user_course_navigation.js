@@ -26,16 +26,15 @@ define(['jquery'], function($) {
     /**
      * UserCourseNavigation
      *
-     * @param {String} The selector of the user element.
-     * @param {String} The base url for the page (no params).
-     * @param {Number} The course id
-     * @param {Number} The user id
+     * @param {String} userSelector The selector of the user element.
+     * @param {String} baseUrl The base url for the page (no params).
+     * @param {Number} userId The course id
+     * @param {Number} courseId The user id
      */
     var UserCourseNavigation = function(userSelector, baseUrl, userId, courseId) {
         this._baseUrl = baseUrl;
         this._userId = userId + '';
         this._courseId = courseId;
-        this._ignoreFirstUser = true;
 
         $(userSelector).on('change', this._userChanged.bind(this));
     };
@@ -44,14 +43,9 @@ define(['jquery'], function($) {
      * The user was changed in the select list.
      *
      * @method _userChanged
-     * @param {Event} e
+     * @param {Event} e the event
      */
     UserCourseNavigation.prototype._userChanged = function(e) {
-        if (this._ignoreFirstUser) {
-            this._ignoreFirstUser = false;
-            return;
-        }
-
         var newUserId = $(e.target).val();
         var queryStr = '?user=' + newUserId + '&id=' + this._courseId;
         document.location = this._baseUrl + queryStr;
@@ -63,8 +57,6 @@ define(['jquery'], function($) {
     UserCourseNavigation.prototype._courseId = null;
     /** @type {String} Plugin base url. */
     UserCourseNavigation.prototype._baseUrl = null;
-    /** @type {Boolean} Ignore the first change event for users. */
-    UserCourseNavigation.prototype._ignoreFirstUser = null;
 
     return /** @alias module:report_competency/user_course_navigation */ UserCourseNavigation;
 
