@@ -1081,6 +1081,7 @@ function signup_is_enabled() {
  * @param boolean $mapremotefields Map fields or lock only.
  * @param boolean $updateremotefields Allow remote updates
  * @param array $customfields list of custom profile fields
+ * @global moodle_database $DB
  * @since Moodle 3.3
  */
 function display_auth_lock_options($settings, $auth, $userfields, $helptext, $mapremotefields, $updateremotefields, $customfields = array()) {
@@ -1105,7 +1106,7 @@ function display_auth_lock_options($settings, $auth, $userfields, $helptext, $ma
     // Generate the list of profile fields to allow updates / lock.
     if (!empty($customfields)) {
         $userfields = array_merge($userfields, $customfields);
-        $customfieldname = $DB->get_records('user_info_field', null, '', 'shortname, name');
+        $customfieldname = $DB->get_records('custom_info_field', ['objectname' => 'user'], '', 'shortname, name');
     }
 
     foreach ($userfields as $field) {
