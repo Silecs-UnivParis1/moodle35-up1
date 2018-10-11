@@ -13,7 +13,7 @@ jQuery(function () {
 		var id = $(this).attr('id');
 		$('#'+id+' ~ *').remove();
 
-		var select = $(this).children('option[selected=selected]');
+		var select = $(this).children("option:selected");
 		var codeid = select.attr('id');
 
 		if (codeid) {
@@ -44,7 +44,7 @@ jQuery(function () {
         if ( $('#choose-item-select').hasClass("readonly") ) {
             readonly = true;
         }
-        if ($(this).parent(".dip-sel").size()) {
+        if ($(this).parent(".dip-sel").length) {
             return false;
         }
 		var niv = parseInt($(this).attr('data-deep'));
@@ -78,7 +78,7 @@ jQuery(function () {
 		}
 		$(this).append(plus);
 
-		var fr = $(this).parent('.elem-li').siblings('ul').size();
+		var fr = $(this).parent('.elem-li').siblings('ul').length;
 		if (fr === 0) {
             // creation liste ul
 			$.get(rootUrl + 'roffinal.php', {niveau: niv, rofid: rofid, selected: 1, path: path, readonly: readonly},  function(data){
@@ -116,7 +116,7 @@ jQuery(function () {
 			alert('"'+intitule+'" fait déjà partie de la sélection.');
 		} else {
             /** patch si uniquement rattachements secondaires (cours hybrides) **/
-            if (! $('#items-selected1').size()) {
+            if (! $('#items-selected1').length) {
                reference[0] = 0;
             }
             /** rattachement de reference **/
