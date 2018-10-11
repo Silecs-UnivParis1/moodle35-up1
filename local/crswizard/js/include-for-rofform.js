@@ -54,7 +54,7 @@ $(document).ready(function() {
         var intitule = select.children('div[class=intitule-selected]').text();
         if (intitule == '') {
             $('#id_complement').val(intitule);
-            var isoldmyurl = $("#id_oldmyurl").size();
+            var isoldmyurl = $("#id_oldmyurl").length;
             if (isoldmyurl == 0) {
                 $('#id_myurl').val('');
             }
@@ -67,7 +67,7 @@ $(document).ready(function() {
     $('#mform1').submit(function(event){
         var ret = true;
         var select = $("#items-selected1").children('div[class=item-selected]');
-        if (select.size()==0) {
+        if (select.length==0) {
             ret = false;
             var textm = 'Vous devez sélectionner un élément pédagogique comme rattachement de référence de votre espace de cours avant de passer à l\'étape suivante.';
             $('#mgerrorrof').empty();

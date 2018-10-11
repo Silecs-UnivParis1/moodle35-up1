@@ -5,7 +5,7 @@ $(document).ready(function() {
         labels: ["Période :", "Cours :"]
     });
 
-    if (! $("#id_modeletype_selm2").attr("checked")) {
+    if (! $("#id_modeletype_selm2").prop('checked')) {
         $("#fitem_id_selm2").addClass('cache');
         $("#bb_duplication").addClass('cache');
     }
@@ -19,7 +19,7 @@ $(document).ready(function() {
 
     $("#id_modeletype_selm2").click(
         function() {
-            if ($(this).attr("checked")) {
+            if ($(this).prop('checked')) {
 
 /*                if (cpt == 1) {
 			$("#fitem_id_selm2").find(".fitemtitle").first().addClass("clearfix");
@@ -39,7 +39,7 @@ $(document).ready(function() {
 
     $("#id_modeletype_selm1").click(
         function() {
-            if ($(this).attr("checked")) {
+            if ($(this).prop('checked')) {
                 $("#fitem_id_selm2").addClass('cache');
                 $("#bb_duplication").addClass('cache');
             }
@@ -49,7 +49,7 @@ $(document).ready(function() {
         function() {
             var sel = this.value;
             var text = $("#id_course_summary").children('option[value='+sel+']').text();
-            if ($('#text_summary').size()) {
+            if ($('#text_summary').length) {
                 $('#text_summary').remove();
             }
             $(this).parent('fieldset').after('<div id="text_summary" class="felement fselect text_summary"><span class="text_summary">'+text+'</span></div>');

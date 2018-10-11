@@ -7,7 +7,7 @@ $(document).ready(function() {
     $('#fitem_id_category > div.subselects > div:first-child').change(
         function() {
             var etab = $('#fitem_id_category > div.subselects > div:nth-child(2) > div.felement > select');
-            if (etab.children().size() < 3) {
+            if (etab.children().length < 3) {
                 var paris = etab.children('option').eq(1);
                 etab.val(paris.val()).trigger('change');
             }
