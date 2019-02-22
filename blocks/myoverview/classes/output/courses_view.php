@@ -37,7 +37,7 @@ use core_course\external\course_summary_exporter;
  */
 class courses_view implements renderable, templatable {
     /** Quantity of courses per page. */
-    const COURSES_PER_PAGE = 6;
+    const COURSES_PER_PAGE = 100;
 
     /** @var array $courses List of courses the user is enrolled in. */
     protected $courses = [];
@@ -54,6 +54,66 @@ class courses_view implements renderable, templatable {
     public function __construct($courses, $coursesprogress) {
         $this->courses = $courses;
         $this->coursesprogress = $coursesprogress;
+    }
+
+    private function summary_completed($courseid) {
+	global $DB, $CFG;
+	// select responsable EPI : id=22
+	// select enseignat editeur : id=3
+	$select = "
+	select ra.roleid, u.firstname as prenom, u.lastname as nom
+	from {user} u 
+	inner join {role_assignments} ra on (ra.userid=u.id) 
+	inner join {context} ctx on (ctx.id = ra.contextid) 
+	where (ctx.contextlevel = 50 and ctx.instanceid = ?) 
+	and ra.roleid in (22,3)
+";
+/*
+	$select = "select e.roleid, u.firstname as prenom, u.lastname as nom
+		   from {user} u
+		   inner join {user_enrolments} ue on (ue.userid=u.id)
+		   inner join {enrol} e on (ue.enrolid=e.id)
+		   where e.courseid=? 
+		   and e.roleid in (22,3)
+		   order by nom, prenom";
+ */
+	$obj_ens = $DB->get_records_sql($select,array($courseid));
+	$tab_ens_resp = array();
+	$tab_ens_edit = array();
+	foreach ($obj_ens as $i=>$row) {
+		if ($row->roleid == 22) 
+		    $tab_ens_resp[] = $row->prenom .' ' . $row->nom;
+		else
+		    $tab_ens_edit[] = $row->prenom . ' ' . $row->nom;	
+	}
+	$chaine_courte = '';
+	$chaine_longue = '';
+	if (count($tab_ens_resp)==0) {
+		if (count($tab_ens_edit)>0) {
+		    $chaine_longue = implode(', ',$tab_ens_edit); 
+	            $chaine_courte = $tab_ens_edit[0];
+		}
+	} else {
+	    $chaine_longue = implode(', ',$tab_ens_resp);
+	    $chaine_courte= $tab_ens_resp[0] ;
+	    if (!empty($tab_ens_edit))
+		    $chaine_longue.= ', ' . implode(', ',$tab_ens_edit);
+	}
+	$cpt = count($tab_ens_resp) + count($tab_ens_edit);
+	if ($cpt >1)
+		$chaine_courte .= ', ...';
+	$span_summary = '';
+	$span_summary = '<span class="myoverview_summary_link"><a href="'.$CFG->wwwroot.'/report/up1synopsis/index.php?id='.$courseid.'">[+ info]</a></span>';
+	
+	$retour ='';
+	if (!empty($chaine_courte))
+		$retour = '
+			<div class="myoverview_added_description">
+				<span title="'.$chaine_longue.'" class="myoverview_author">'.$chaine_courte.'</span>
+				'.$span_summary.'
+			</div>		
+';	
+	return $retour;
     }
 
     /**
@@ -81,9 +141,12 @@ class courses_view implements renderable, templatable {
                 'context' => $context
             ]);
             $exportedcourse = $exporter->export($output);
-            // Convert summary to plain text.
-            $exportedcourse->summary = content_to_text($exportedcourse->summary, $exportedcourse->summaryformat);
-
+	    // Convert summary to plain text.
+	    
+	    
+	    $summary_completed = $this->summary_completed($course->id);
+            //$exportedcourse->summary = content_to_text($exportedcourse->summary, $exportedcourse->summaryformat);
+	    $exportedcourse->summary = $summary_completed;
             $course = new \course_in_list($course);
             foreach ($course->get_course_overviewfiles() as $file) {
                 $isimage = $file->is_valid_image();
