@@ -31,7 +31,7 @@ function profile_load_data($user) {
  */
 function profile_definition($mform, $userid = 0) {
     $custominfo = new custominfo_form_extension('user', $userid);
-    $canviewall = has_capability('moodle/user:update', get_context_instance(CONTEXT_SYSTEM));
+    $canviewall = has_capability('moodle/user:update', context_system::instance());
     $custominfo->definition($mform, $canviewall);
 }
 
