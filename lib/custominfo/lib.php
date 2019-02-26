@@ -24,6 +24,7 @@ abstract class custominfo_field_base {
     protected $fieldid;
     protected $objectname;
     protected $objectid;
+    protected $legalobjects = ['user', 'course'];
 
     public $field;
     public $inputname;
@@ -44,6 +45,9 @@ abstract class custominfo_field_base {
     public function __construct($objectname, $fieldid=0, $objectid=0) {
         global $CFG;
         $modelclass = 'custominfo_field_extension_' . $objectname;
+        if (! in_array($objectname, $this->legalobjects)) {
+            throw new \coding_exception($objectname . ': illegal object name.');
+        }
         require_once($CFG->dirroot.'/'.$objectname.'/custominfo/locallib.php');
         $this->objectname = $objectname;
         $this->extension = new $modelclass();
