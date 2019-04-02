@@ -38,14 +38,12 @@ class filter_courseup1 extends moodle_text_filter {
                 case 'table':
                 case 'list':
                     $params = self::parse_parameters($paramstr, true);
-                    $jsurl = new moodle_url('/local/jquery/init.dataTables.js');
-                    $jsscript = '<script type="text/javascript" src="' . $jsurl . '"></script>';
                     /** @todo Simplify by using only one function in every case? */
                     if (isset($params['node']) && count($params) === 1) {
                         // simple case, without an extended search
-                        $replace = courselist_common::list_courses_html($params['node'], $format) . $jsscript;
+                        $replace = courselist_common::list_courses_html($params['node'], $format);
                     } else {
-                        $replace = widget_courselist_query($format, (object) $params, false) . $jsscript;
+                        $replace = widget_courselist_query($format, (object) $params, false);
                     }
                     break;
                 case 'search':
