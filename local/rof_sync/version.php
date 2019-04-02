@@ -13,3 +13,14 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version   = 2013052903;        // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2012061700;        // Requires this Moodle version
 $plugin->component = 'local_rof_sync';       // Full name of the plugin (used for diagnostics)
+
+/** 
+   2019-04-02  Silecs Guillaume Allègre
+
+  Ce fichier sert à maintenir le plugin local/rof_sync minimaliste
+  tant que les tables rof_* lui sont liées
+  par le mécanisme de déclaration de table dans Moodle.
+
+  Si ce plugin est désinstallé normalement dans Moodle,
+  les tables rof_* seront supprimées. A EVITER.
+**/
