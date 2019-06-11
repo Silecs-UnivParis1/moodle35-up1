@@ -62,7 +62,9 @@ function html_table_informations($course) {
     echo html_rows_informations($course);
     echo html_rows_teachers($course);
     echo html_rows_cohorts($course);
-    echo html_rows_status($course);
+    if (has_capability('local/crswizard:supervalidator', context_system::instance())) {
+        echo html_rows_status($course);
+    }
     echo "</table>\n";
 }
 
