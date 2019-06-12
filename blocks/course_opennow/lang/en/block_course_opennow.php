@@ -4,14 +4,14 @@
  *
  * @package    block
  * @subpackage course_opennow
- * @copyright  2012-2014 Silecs {@link http://www.silecs.info/societe}
+ * @copyright  2012-2019 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['pluginname'] = 'UP1 course open now';
 
-$string['close'] = 'This course is close';
-$string['closecourse'] = 'Course close';
-$string['open'] = 'This course is open';
-$string['opencourse'] = 'Course open';
+$string['statusclosed'] = 'This course is closed to students';
+$string['closecourse'] = 'Close the course';
+$string['statusopen'] = 'This course is open to students';
+$string['opencourse'] = 'Open the course';
 $string['startdate'] = 'Course start';

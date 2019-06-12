@@ -2,7 +2,7 @@
 /**
  * @package    block
  * @subpackage course_opennow
- * @copyright  2012-2014 Silecs {@link http://www.silecs.info/societe}
+ * @copyright  2012-2019 Silecs {@link http://www.silecs.info/societe}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -20,7 +20,7 @@ class block_course_opennow extends block_base {
     function get_content() {
         global $CFG;
 
-        if($this->content !== NULL) {
+        if ($this->content !== NULL) {
             return $this->content;
         }
 
@@ -40,27 +40,29 @@ class block_course_opennow extends block_base {
         }
 		if (has_capability('moodle/course:update', $context)) {
 			$startDate = date('d-m-Y', $this->page->course->startdate);
-			$open = $this->page->course->visible;
+			$isvisible = $this->page->course->visible;
+            $status = [ 0 => 'statusclosed', 1 => 'statusopen'];
+            $message = get_string($status[$isvisible], 'block_course_opennow');
 			$this->content->text = '<div class="">' . get_string('startdate', 'block_course_opennow');
 			$this->content->text .= ' : '. $startDate;
-            $buttonname = get_string('opencourse', 'block_course_opennow');
-            $message = get_string('close', 'block_course_opennow');
-			if ($open) {
-                $message = get_string('open', 'block_course_opennow');
-                $buttonname = get_string('closecourse', 'block_course_opennow');
-			}
             $this->content->text .= '<div>' . $message . '</div>';
-            $this->content->text .= '<form action="' . $CFG->wwwroot . '/blocks/course_opennow/open.php" method="post">'
-                . '<input type="hidden" value="'.$this->page->course->id.'" name="courseid" />'
-                . '<input type="hidden" value="'.sesskey().'" name="sesskey" />'
-                . '<input type="hidden" value="'.$open.'" name="visible" />'
-                . '<button type="submit" name="datenow" value="open">'
-                . $buttonname . '</button>'
-                .'</form>';
+            $this->content->text .= $this->get_button_form($isvisible);
 			$this->content->text .= '</div>';
 		}
 
         return $this->content;
+    }
+
+    private function get_button_form($isvisible) {
+        $verb = [ 0 => 'opencourse', 1 => 'closecourse'];
+        $buttonname = get_string($verb[$isvisible], 'block_course_opennow');
+
+        return sprintf('<form action="%s" method="post">', new moodle_url('/blocks/course_opennow/open.php'))
+             . sprintf('<input type="hidden" value="%d" name="courseid" />', $this->page->course->id)
+             . sprintf('<input type="hidden" value="%s" name="sesskey" />', sesskey())
+             . sprintf('<input type="hidden" value="%d" name="visible" />', $isvisible)
+             . sprintf('<button type="submit" name="datenow" value="open">%s</button>', $buttonname)
+             .'</form>';
     }
 
     private function set_footer() {
@@ -84,8 +86,13 @@ class block_course_opennow extends block_base {
     }
 
      function applicable_formats() {
-        return array('course' => true, 'mod' => false, 'my' => false, 'admin' => false,
-                     'tag' => false);
+        return [
+            'course' => true,
+            'mod'    => false,
+            'my'     => false,
+            'admin'  => false,
+            'tag'    => false
+            ];
     }
 
 }
