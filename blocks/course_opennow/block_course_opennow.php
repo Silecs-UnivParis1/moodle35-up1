@@ -12,6 +12,10 @@ class block_course_opennow extends block_base {
     function init() {
         $this->title = get_string('pluginname', 'block_course_opennow');
     }
+    
+    function has_config() {
+        return true;
+    }
 
     function get_content() {
         global $CFG;
@@ -27,9 +31,11 @@ class block_course_opennow extends block_base {
         $this->content = new stdClass();
         $context = context_course::instance($this->page->course->id);
         $dates = up1_meta_get_date($this->page->course->id, 'datearchivage');
+
+        $this->set_footer();
+
         if ($dates['datefr']) {
             $this->content->text = '<div class="">Cours archivé depuis le ' . $dates['datefr'] .'</div>';
-            $this->content->footer = '';
             return $this->content;
         }
 		if (has_capability('moodle/course:update', $context)) {
@@ -53,9 +59,20 @@ class block_course_opennow extends block_base {
                 .'</form>';
 			$this->content->text .= '</div>';
 		}
-        $this->content->footer = '';
 
         return $this->content;
+    }
+
+    private function set_footer() {
+        $this->content->footer = '';
+        if (null !== (get_config('block_course_opennow', 'faqurl'))) {
+            $this->content->footer = html_writer::link(
+                get_config('block_course_opennow', 'faqurl'),
+                "Plus d'explications"
+                );
+            return true;
+        }
+        return false;
     }
 
     function hide_header() {
