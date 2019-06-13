@@ -36,17 +36,21 @@ class block_course_opennow extends block_base {
 
         if ($dates['datefr']) {
             $this->content->text = '<div class="">Cours archivé depuis le ' . $dates['datefr'] .'</div>';
-            return $this->content;
         }
 		if (has_capability('moodle/course:update', $context)) {
 			$startDate = date('d-m-Y', $this->page->course->startdate);
 			$isvisible = $this->page->course->visible;
             $status = [ 0 => 'statusclosed', 1 => 'statusopen'];
             $message = get_string($status[$isvisible], 'block_course_opennow');
+            $archiveyear = $this->get_course_year();
+
 			$this->content->text = '<div class="">' . get_string('startdate', 'block_course_opennow');
 			$this->content->text .= ' : '. $startDate;
             $this->content->text .= '<div>' . $message . '</div>';
             $this->content->text .= $this->get_button_form($isvisible);
+            if ($archiveyear) {
+                $this->content->text .= "à la consultation des étudiants de l'année " . $archiveyear;
+            }
 			$this->content->text .= '</div>';
 		}
 
@@ -65,13 +69,33 @@ class block_course_opennow extends block_base {
              .'</form>';
     }
 
+    /**
+     * renvoie l'année scolaire du cours courant s'il est archivé,
+     * d'après la catégorie ancestrale, champ idnumber
+     * @param array $dates
+     * @return string or null
+     */
+    private function get_course_year() {
+
+        if (up1_meta_get_text($this->page->course->id, 'up1datearchivage') == 0) {
+            return null;
+        }
+        $cat = coursecat::get($this->page->course->category);
+        if (preg_match('@^\d:(\d{4}-\d{4})/@', $cat->idnumber, $matches)) {
+            return $matches[1];
+        } else {
+            return null;
+        }
+    }
+
     private function set_footer() {
+        global $OUTPUT;
+
         $this->content->footer = '';
         if (null !== (get_config('block_course_opennow', 'faqurl'))) {
-            $this->content->footer = html_writer::link(
-                get_config('block_course_opennow', 'faqurl'),
-                "Plus d'explications"
-                );
+            $url = get_config('block_course_opennow', 'faqurl');
+            $this->content->footer = html_writer::link($url, "Plus d'explications")
+            . " " . $OUTPUT->action_icon($url, new pix_icon('i/info', 'FAQ EPI'));
             return true;
         }
         return false;
