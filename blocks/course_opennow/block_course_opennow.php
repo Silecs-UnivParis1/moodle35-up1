@@ -47,9 +47,11 @@ class block_course_opennow extends block_base {
 			$this->content->text = '<div class="">' . get_string('startdate', 'block_course_opennow');
 			$this->content->text .= ' : '. $startDate;
             $this->content->text .= '<div>' . $message . '</div>';
-            $this->content->text .= $this->get_button_form($isvisible);
-            if ($archiveyear) {
-                $this->content->text .= "à la consultation des étudiants de l'année " . $archiveyear;
+            if ( ! $archiveyear || has_capability('block/course_opennow:openarchived', $context)) {
+                $this->content->text .= $this->get_button_form($isvisible);
+                if ($archiveyear) {
+                    $this->content->text .= "à la consultation des étudiants de l'année " . $archiveyear;
+                }
             }
 			$this->content->text .= '</div>';
 		}

@@ -10,25 +10,32 @@ defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
 
-    'block/course_opennow:myaddinstance' => array(
+    'block/course_opennow:myaddinstance' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
+        'archetypes' => [
             'editingteacher' => CAP_ALLOW,
-        ),
-
+        ],
         'clonepermissionsfrom' => 'moodle/my:manageblocks'
-    ),
+    ],
 
-    'block/course_opennow:addinstance' => array(
+    'block/course_opennow:addinstance' => [
         'riskbitmask' => RISK_CONFIG,
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
+        'archetypes' => [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
-        ),
-
+        ],
         'clonepermissionsfrom' => 'moodle/site:manageblocks'
-    ),
+    ],
+
+    'block/course_opennow:openarchived' => [
+        'riskbitmask' => 0,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => [
+            'manager' => CAP_ALLOW
+        ],
+    ],
 );
