@@ -102,7 +102,10 @@ EOL;
     }
 
     public function getIntro() {
-        return self::$tpl_intro;
+	global $CFG;
+	$annee = get_config('local_roftools','rof_year_name');
+	$html_annee = '<h4>'.$annee.'</h4>';
+        return $html_annee . self::$tpl_intro;
     }
 
     public function getContent() {
