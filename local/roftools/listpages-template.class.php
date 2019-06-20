@@ -15,7 +15,6 @@
 class ListpagesTemplates
 {
 // {format} = table | tree
-
     /** @var string tableau | arborescence */
     public $view;
     /** @var string link to page arbre if current page = tableau, and reverse */
@@ -26,7 +25,6 @@ class ListpagesTemplates
     private $compname;
     /** @var array 4th depth subcategories (Licence, Master, ...) */
     private $niveauxLmda;
-
     private static $tpl_name = 'Espaces de cours de {compname} ({vue})';
     private static $tpl_intro = <<<EOL
 <p>

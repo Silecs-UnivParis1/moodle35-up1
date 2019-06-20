@@ -53,7 +53,8 @@ function listpages_delete() {
     $cms = $DB->get_records('course_modules', array('course' => 1, 'module' => MOD_PAGE));
     foreach ($cms as $cm) {
         $DB->delete_records('page', array('id' => $cm->instance));
-        delete_course_module($cm->id);
+	course_delete_module($cm->id,true);
+	//delete_course_module($cm->id);
         delete_mod_from_section($cm->id, $cm->section);
     }
 }
