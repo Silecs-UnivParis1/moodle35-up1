@@ -28,9 +28,6 @@ class ListpagesTemplates
     private static $tpl_name = 'Espaces de cours de {compname} ({vue})';
     private static $tpl_intro = <<<EOL
 <p>
-    L'espace que vous cherchez n'est pas listé sur cette page ?
-    Avez-vous pensé à le trouver du côté des
-    “<a title="EPI" href="http://epi.univ-paris1.fr">anciens EPI</a>” ?
 </p>
 EOL;
     private static $tpl_contenttab = array(
