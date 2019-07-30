@@ -1644,6 +1644,37 @@ class core_questionlib_testcase extends advanced_testcase {
     }
 
     /**
+     * Tests that question_has_capability_on does not throw exception on broken questions.
+     */
+    public function test_question_has_capability_on_broken_question() {
+        global $DB;
+
+        // Create the test data.
+        $generator = $this->getDataGenerator();
+        $questiongenerator = $generator->get_plugin_generator('core_question');
+
+        $category = $generator->create_category();
+        $context = context_coursecat::instance($category->id);
+        $questioncat = $questiongenerator->create_question_category([
+            'contextid' => $context->id,
+        ]);
+
+        // Create a cloze question.
+        $question = $questiongenerator->create_question('multianswer', null, [
+            'category' => $questioncat->id,
+        ]);
+        // Now, break the question.
+        $DB->delete_records('question_multianswer', ['question' => $question->id]);
+
+        $this->setAdminUser();
+
+        $result = question_has_capability_on($question->id, 'tag');
+        $this->assertTrue($result);
+
+        $this->assertDebuggingCalled();
+    }
+
+    /**
      * Tests for the deprecated question_has_capability_on function when passing a stdClass as parameter.
      *
      * @dataProvider question_capability_on_question_provider
@@ -1985,5 +2016,26 @@ class core_questionlib_testcase extends advanced_testcase {
         $this->expectException('coding_exception');
         $this->expectExceptionMessage('$questionorid parameter needs to be an integer or an object.');
         question_has_capability_on('one', 'tag');
+    }
+
+    /**
+     * Test of question_categorylist_parents function.
+     */
+    public function test_question_categorylist_parents() {
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $questiongenerator = $generator->get_plugin_generator('core_question');
+        $category = $generator->create_category();
+        $context = context_coursecat::instance($category->id);
+        // Create a top category.
+        $cat0 = question_get_top_category($context->id, true);
+        // Add sub-categories.
+        $cat1 = $questiongenerator->create_question_category(['parent' => $cat0->id]);
+        $cat2 = $questiongenerator->create_question_category(['parent' => $cat1->id]);
+        // Test the 'get parents' function.
+        $parentcategories = question_categorylist_parents($cat2->id);
+        $this->assertEquals($cat0->id, $parentcategories[0]);
+        $this->assertEquals($cat1->id, $parentcategories[1]);
+        $this->assertCount(2, $parentcategories);
     }
 }
