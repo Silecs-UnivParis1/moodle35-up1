@@ -350,13 +350,19 @@ class course_wizard_step2_rof_form extends moodleform {
     }
 
     private function validation_category($idcategory, &$errors) {
-        global $DB;
+        global $DB, $SESSION;
 
         $category = $DB->get_record('course_categories', array('id' => $idcategory));
         if ($category) {
             if ($category->depth < 1) {
                 $errors['category'] = get_string('categoryerrormsg1', 'local_crswizard');
             }
+
+            $update = isset($SESSION->wizard['init_course']['id']);
+            if ($update) {
+                return $errors;
+            }
+
             $cat_annee_courante = get_config('local_crswizard', 'cas2_default_etablissement');
             if ( ! empty($cat_annee_courante)) {
                 if (!preg_match('#' . $cat_annee_courante . '#i', $category->path)) {
