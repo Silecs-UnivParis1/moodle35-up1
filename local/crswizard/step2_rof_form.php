@@ -51,6 +51,10 @@ class course_wizard_step2_rof_form extends moodleform {
             $isnew = FALSE;
         }
         if ($rofeditor_permission) {
+            $update = isset($SESSION->wizard['init_course']['id']);
+            if (!$update) {
+                $SESSION->wizard['form_step2']['category']=null;
+            }
             $default_cat = get_config('local_crswizard','cas2_default_etablissement');
             $mform->addElement(
                 'select', 'category', '', wizard_get_catlevel2(),
