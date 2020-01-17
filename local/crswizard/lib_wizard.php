@@ -1505,7 +1505,7 @@ function wizard_is_fastCopy() {
     }
     if ($SESSION->wizard['wizardcase'] == 2 && isset($SESSION->wizard['form_step2']['all-rof'])) {
         foreach ($SESSION->wizard['form_step2']['all-rof'] as $rofpath => $rof) {
-            if (!isset($rof['object'])) { // && $rof['nature'] == 'p'
+            if (!isset($rof['object']) || stristr($rof['chemin'], 'Référence cassée')) { // && $rof['nature'] == 'p'
                 return false;
             }
         }
