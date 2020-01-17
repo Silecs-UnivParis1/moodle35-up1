@@ -91,7 +91,7 @@ class course_wizard_step2_rof_form extends moodleform {
         if (isset($SESSION->wizard['form_step2']['broken-rof']) && count($SESSION->wizard['form_step2']['broken-rof'])) {
             $brokenrof = '<div class="felement fselect error"><span class="error">Attention, références cassées :</span><ul>';
             foreach ($SESSION->wizard['form_step2']['broken-rof'] as $broken) {
-                $brokenrof .= '<li>' . strip_tags($broken['chemin']) . '</li>';
+                $brokenrof .= '<li>' . strip_tags($broken['chemin'], '<b>') . '</li>';
             }
             $brokenrof .= '</ul></div>';
             $mform->addElement('html', $brokenrof);

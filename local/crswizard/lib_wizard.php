@@ -1040,7 +1040,7 @@ function wizard_preselected_rof($form_step = 'form_step2') {
     $liste = array();
     if (!empty($SESSION->wizard[$form_step]['all-rof'])) {
         foreach ($SESSION->wizard[$form_step]['all-rof'] as $rofpath => $rof) {
-            if (isset($rof['object'])) {
+            if (isset($rof['object']) && stristr($rof['chemin'], 'Référence cassée') == false) {
                 $object = $rof['object'];
                 $tabrof = rof_get_combined_path(explode('_', $rof['path']));
                 $chemin = substr(rof_format_path($tabrof, 'name', false, ' > '), 3);
